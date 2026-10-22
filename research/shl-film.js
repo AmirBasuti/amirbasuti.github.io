@@ -1,8 +1,11 @@
+import { createFilmCopy } from '../film-copy.js?v=20261022h';
+
 const clamp = n => Math.max(0, Math.min(1, n));
 const smooth = n => { n = clamp(n); return n * n * (3 - 2 * n); };
 const prefersReduced = matchMedia('(prefers-reduced-motion: reduce)');
 
-for (const film of document.querySelectorAll('[data-shl-film]')) {
+for (const film of document.querySelectorAll('[data-shl-film], [data-film="fog"]')) {
+  const kind = film.dataset.film === 'fog' ? 'fog' : 'shl';
   const track = film.querySelector('.shl-film-track');
   const sticky = film.querySelector('.shl-film-sticky');
   const host = film.querySelector('[data-film-canvas]');
@@ -13,6 +16,7 @@ for (const film of document.querySelectorAll('[data-shl-film]')) {
   const follow = film.querySelector('[data-film-follow]');
   let scene, loading, frame = 0, current = 0, target = 0, previous = 0;
   let visible = false, manual = false, playing = false, reduced = false, lastRendered = -1, failed = false;
+  const copyTransition = createFilmCopy(film.querySelector('.shl-film-copy'), { reduced: () => reduced, requestFrame });
   film.classList.add('is-enhanced');
 
   function updateMotionPreference() {
@@ -29,20 +33,15 @@ for (const film of document.querySelectorAll('[data-shl-film]')) {
     const travel = track.offsetHeight - sticky.offsetHeight;
     return travel > 0 ? clamp((top - track.getBoundingClientRect().top) / travel) : current;
   }
-  function updateCopy(p) {
-    // One fully readable headline at every scroll position, including a paused transition.
-    const active = p < .23 ? 0 : p < .56 ? 1 : p < .84 ? 2 : 3;
-    copies.forEach((copy, index) => {
-      const opacity = index === active ? 1 : 0;
-      copy.style.opacity = opacity;
-      copy.style.visibility = opacity > .001 ? 'visible' : 'hidden';
-      copy.style.transform = `translateY(${(1 - opacity) * 10}px)`;
-    });
-    copies.forEach((copy, index) => copy.setAttribute('aria-hidden', index === active ? 'false' : 'true'));
+  function updateCopy(p, immediate = false) {
+    const active = kind === 'fog' ? (p < .29 ? 0 : p < .55 ? 1 : p < .81 ? 2 : 3) : (p < .23 ? 0 : p < .56 ? 1 : p < .84 ? 2 : 3);
+    copyTransition.set(active, { immediate });
     const reveal = smooth((p - .88) / .10);
-    result.style.opacity = reveal;
-    result.style.transform = `translate(-50%, ${-45 - reveal * 5}%)`;
-    result.setAttribute('aria-hidden', reveal < .5 ? 'true' : 'false');
+    if (result) {
+      result.style.opacity = reveal;
+      result.style.transform = `translate(-50%, ${-45 - reveal * 5}%)`;
+      result.setAttribute('aria-hidden', reveal < .5 ? 'true' : 'false');
+    }
     scrub.value = Math.round(p * 1000);
     scrub.setAttribute('aria-valuetext', copies[active].querySelector('h3').textContent);
   }
@@ -62,7 +61,8 @@ for (const film of document.querySelectorAll('[data-shl-film]')) {
       updateCopy(current);
       lastRendered = current;
     }
-    if (playing || Math.abs(target - current) >= .0001) requestFrame();
+    const copyMoving = copyTransition.tick(time);
+    if (playing || copyMoving || Math.abs(target - current) >= .0001) requestFrame();
     else previous = 0;
   }
   function requestFrame() {
@@ -79,7 +79,7 @@ for (const film of document.querySelectorAll('[data-shl-film]')) {
     if (scene || loading) return;
     loading = true;
     try {
-      const { createScene } = await import('./shl-scene.js?v=20261022f');
+      const { createScene } = kind === 'fog' ? await import('./fog-scene.js?v=20261022h') : await import('./shl-scene.js?v=20261022f');
       scene = createScene(host);
       film.classList.add('is-ready');
       lastRendered = -1;
@@ -89,8 +89,8 @@ for (const film of document.querySelectorAll('[data-shl-film]')) {
       failed = true;
       film.classList.add('is-fallback');
       // Static text and the method remain available when WebGL is unavailable.
-      current = target = 0; updateCopy(0);
-      console.warn('The SHL illustration is using its static fallback.', error);
+      current = target = 0; updateCopy(0, true);
+      console.warn('The research illustration is using its static fallback.', error);
     }
   }
   const observer = new IntersectionObserver(entries => {
@@ -136,7 +136,7 @@ for (const film of document.querySelectorAll('[data-shl-film]')) {
   host.addEventListener('webglcontextlost', event => {
     event.preventDefault(); playing = false; failed = true;
     film.classList.add('is-fallback');
-    current = target = 0; updateCopy(0);
+    current = target = 0; updateCopy(0, true);
   }, true);
   host.addEventListener('webglcontextrestored', () => {
     scene?.dispose(); scene = null; loading = false; failed = false;
@@ -145,3 +145,4 @@ for (const film of document.querySelectorAll('[data-shl-film]')) {
   updateMotionPreference();
   updateCopy(0);
 }
+

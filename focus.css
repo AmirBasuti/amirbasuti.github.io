@@ -1,4 +1,6 @@
 /* Reading hierarchy for the academic homepage. The SHL film owns its layout. */
+.journey-copy[data-reading-copy]{display:grid!important;grid-template-columns:minmax(0,1fr);gap:0}
+.journey-copy[data-reading-copy]>article{grid-area:1/1;min-width:0;will-change:opacity,transform}
 .hero .hero-intro{font-size:18px;line-height:1.7;color:#46513f}
 .hero .hero-eyebrow{font-size:12px;line-height:1.6;letter-spacing:.04em;color:#526149}
 .hero-bottom-line{font-size:14px;line-height:1.6;color:#4d5b45}

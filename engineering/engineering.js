@@ -109,6 +109,9 @@
     $('data-unit').textContent = active.unit;
     slider.max = String(points.length - 1);
     inspect(Number.isFinite(selectedIndex) ? selectedIndex : points.length - 1);
+    window.dispatchEvent(new CustomEvent('engineering:chart-rendered', {
+      detail: { points: points.map(point => ({ date: point.date, value: point.value, x: x(point.time), y: y(point.value) })), unit: active.unit }
+    }));
   }
   slider.addEventListener('input', () => inspect(Number(slider.value)));
   select.addEventListener('change', () => render());

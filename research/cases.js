@@ -1,3 +1,4 @@
+import { createFilmCopy } from '../film-copy.js?v=20261022h';
 /* A continuous schematic journey. Geometry is illustrative, never a model result. */
 (() => {
   'use strict';
@@ -157,7 +158,16 @@
     const copy = document.createElement('div');
     copy.className = 'journey-copy';
     copy.setAttribute('aria-hidden',String(!lab.closest('.project-story')));
-    copy.innerHTML = '<span class="journey-chapter"></span><h3></h3><p></p>';
+    copy.dataset.readingCopy = '';
+    notes.forEach((note, index) => {
+      const article = document.createElement('article');
+      article.dataset.filmCopy = index;
+      const heading = document.createElement('h3');
+      const description = document.createElement('p');
+      heading.textContent = note.querySelector('h3').textContent;
+      description.textContent = note.querySelector('p').textContent;
+      article.append(heading, description); copy.append(article);
+    });
     scene.prepend(copy);
     const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.setAttribute('viewBox','0 0 1200 680');
@@ -192,7 +202,15 @@
     const clinicalBranches=[...svg.querySelectorAll('[data-clinical-branch]')];
     const clinicalTargets=[...svg.querySelectorAll('[data-clinical-target]')];
     let previous=-1, progress=0, manual=false, visible=true;
-    const copyParts=[copy.querySelector('span'),copy.querySelector('h3'),copy.querySelector('p')];
+    let copyFrame=0;
+    const requestCopyFrame=()=>{
+      if(copyFrame||!visible||document.hidden)return;
+      copyFrame=requestAnimationFrame(time=>{
+        copyFrame=0;
+        if(visible&&!document.hidden&&copyTransition.tick(time))requestCopyFrame();
+      });
+    };
+    const copyTransition=createFilmCopy(copy,{reduced:()=>reduced.matches||motionOff(),requestFrame:requestCopyFrame});
     const render = (p, announce=false) => {
       progress=clamp(p);
       const index=Math.min(3,Math.floor(progress*3+.5));
@@ -214,11 +232,9 @@
       if(previous!==index){
         buttons.forEach((button,i)=>button.setAttribute('aria-pressed',String(index===i)));
         notes.forEach((note,i)=>note.classList.toggle('is-current',index===i));
-        copyParts[0].textContent=notes[index].querySelector('.stage-number').textContent;
-        copyParts[1].textContent=notes[index].querySelector('h3').textContent;
-        copyParts[2].textContent=notes[index].querySelector('p').textContent;
         previous=index;
       }
+      copyTransition.set(index);
       const explode=ease(progress*5);
       planes.forEach((plane,i)=>plane.setAttribute('transform',`translate(${(i+1)*62*explode} ${-(i+1)*24*explode}) rotate(${-16+explode*7} 750 330)`));
       const phone=svg.querySelector('[data-phone-shell]');
@@ -302,8 +318,9 @@
     render(0);
     syncMotion();
     if('IntersectionObserver' in window){
-      new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;if(visible)update();},{rootMargin:'120px'}).observe(track);
+      new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;if(visible){update();requestCopyFrame();}else if(copyFrame){cancelAnimationFrame(copyFrame);copyFrame=0;}},{rootMargin:'120px'}).observe(track);
     }
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)requestCopyFrame();});
     stories.push({update,syncMotion,refresh:()=>{render(progress);syncMotion();}});
   });
 

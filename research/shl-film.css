@@ -64,6 +64,7 @@
   .shl-film-controls{min-height:68px;padding:8px 16px 16px;gap:12px}
   .shl-film-controls button,.shl-film-controls summary{font-size:13px}
   .shl-film-controls button{padding:10px 16px}
+  .shl-film-controls details label{left:auto;right:0;transform:none;max-width:calc(100vw - 48px);box-sizing:border-box}
   .shl-film-caption{font-size:13px!important;text-align:left}
   .shl-film-result strong{font-size:25px}
   .shl-film-result svg{width:44px;height:63px}
