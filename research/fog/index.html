@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f1eb">
+  <meta name="color-scheme" content="light">
+  <meta name="darkreader-lock">
+  <title>When stepping is interrupted — Amir Basuti</title>
+  <meta name="description" content="A research case study in offline freezing-of-gait detection from four wearable IMUs, using frozen time-series representations.">
+  <link rel="canonical" href="https://amirbasuti.github.io/research/fog/">
+  <link rel="icon" type="image/svg+xml" href="../../mark.svg">
+  <link rel="stylesheet" href="../cases.css">
+  <script defer src="../cases.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header wrap"><a class="wordmark" href="../../">Amir Basuti<span>.</span></a><nav aria-label="Primary navigation"><a href="../../">Home</a><a href="../../engineering/">Engineering</a><a href="../../#papers">Papers</a></nav></header>
+  <main id="main">
+    <section class="case-hero wrap" aria-labelledby="case-title">
+      <p class="eyebrow">Selected research <span class="divider" aria-hidden="true"></span> Freezing of gait / 2026</p>
+      <div class="hero-grid"><h1 id="case-title">A rhythm.<br><em>A step<br>interrupted.</em></h1><div class="hero-summary"><p>Freezing of gait can briefly interrupt effective forward stepping. Our research studies how wearable signals and frozen time-series representations can help detect these episodes.</p><a class="text-link" href="#inside">Look inside the method <span aria-hidden="true">↓</span></a></div></div>
+      <div class="hero-bottom"><span>Wearable sensing · Movement &amp; health</span><span>One example of my work across machine learning and software.</span></div>
+    </section>
+    <div class="fact-strip wrap" aria-label="Study setup"><div class="fact"><strong>22</strong><span>People with Parkinson’s disease · FoG-STAR</span></div><div class="fact"><strong>4 <small>IMUs</small></strong><span>Both ankles, lower back, affected-side wrist</span></div><div class="fact"><strong>60 <small>Hz</small></strong><span>24 accelerometer + gyroscope channels</span></div><div class="fact"><strong>2 <small>seconds</small></strong><span>120 samples · 0.5-second hop</span></div></div>
+
+    <section class="lab-section wrap" id="inside" aria-labelledby="lab-title">
+      <div class="lab" data-case-story="fog">
+        <div class="lab-heading"><h2 id="lab-title">A change in stepping.<br>A pattern to examine.</h2><div class="lab-label"><i aria-hidden="true"></i>Explore the method<br> Schematic / offline analysis</div></div>
+        <div class="story-controls" role="group" aria-label="Explore the freezing-of-gait method"><button class="stage-button" type="button" data-stage="0" data-title="Regular progression" aria-pressed="true" aria-controls="fog-stage-0"><span>01</span>A stepping rhythm</button><button class="stage-button" type="button" data-stage="1" data-title="Interrupted forward stepping" aria-pressed="false" aria-controls="fog-stage-1"><span>02</span>An interruption</button><button class="stage-button" type="button" data-stage="2" data-title="Windowed IMU signals" aria-pressed="false" aria-controls="fog-stage-2"><span>03</span>Windowed signals</button><button class="stage-button" type="button" data-stage="3" data-title="Offline FoG detection" aria-pressed="false" aria-controls="fog-stage-3"><span>04</span>Offline detection</button></div>
+        <div class="scene">
+          <svg viewBox="0 0 960 555" role="img" aria-labelledby="fog-svg-title fog-svg-desc">
+            <title id="fog-svg-title">Schematic of stepping progression and offline freezing-of-gait analysis</title>
+            <desc id="fog-svg-desc">Footprints progress regularly, cluster during an illustrative interruption, and continue. Four wearable IMUs supply 24 accelerometer and gyroscope channels at 60 Hz. Two-second windows, stepped every half second, feed UniShape and MantisV2 with cross-attention for FoG or non-FoG detection. Footprints, traces and labels are schematic, not patient data or model results.</desc>
+            <defs><g id="foot"><path d="M-9-17C-8-25 5-27 10-20C15-13 12-4 8 3L4 12C1 18-8 17-10 11C-12 5-8 0-9-7C-10-12-10-14-9-17Z"/><path d="M-8 22C-8 17 3 17 4 22L3 29C2 33-8 33-9 28Z"/></g><clipPath id="fog-signal-clip"><rect x="55" y="337" width="360" height="126"/></clipPath></defs>
+            <rect class="diagram-panel" data-focus="0" x="25" y="32" width="890" height="218" rx="5"/>
+            <text class="svg-title" x="49" y="68">A schematic of forward progression</text><text class="svg-small mobile-optional" x="890" y="66" text-anchor="end">NOT A PATIENT RECORDING</text>
+            <path class="motion-track" data-track d="M70 208C200 208 250 208 360 208S495 214 565 208S750 208 870 208"/>
+            <g class="footprint" data-footstep="0" transform="translate(82 122)"><use href="#foot" transform="rotate(82) scale(.68)"/></g><g class="footprint" data-footstep="1" transform="translate(152 171)"><use href="#foot" transform="rotate(92) scale(.68)"/></g><g class="footprint" data-footstep="2" transform="translate(222 122)"><use href="#foot" transform="rotate(82) scale(.68)"/></g><g class="footprint" data-footstep="3" transform="translate(292 171)"><use href="#foot" transform="rotate(92) scale(.68)"/></g><g class="footprint" data-footstep="4" transform="translate(362 122)"><use href="#foot" transform="rotate(82) scale(.68)"/></g>
+            <g class="footprint interrupted" data-footstep="5" transform="translate(415 171)"><use href="#foot" transform="rotate(92) scale(.68)"/></g><g class="footprint interrupted" data-footstep="6" transform="translate(436 122)"><use href="#foot" transform="rotate(82) scale(.68)"/></g><g class="footprint interrupted" data-footstep="7" transform="translate(457 171)"><use href="#foot" transform="rotate(92) scale(.68)"/></g><g class="footprint interrupted" data-footstep="8" transform="translate(478 122)"><use href="#foot" transform="rotate(82) scale(.68)"/></g><g class="footprint interrupted" data-footstep="9" transform="translate(499 171)"><use href="#foot" transform="rotate(92) scale(.68)"/></g>
+            <g class="footprint" data-footstep="10" transform="translate(530 122)"><use href="#foot" transform="rotate(82) scale(.68)"/></g><g class="footprint" data-footstep="11" transform="translate(602 171)"><use href="#foot" transform="rotate(92) scale(.68)"/></g><g class="footprint" data-footstep="12" transform="translate(674 122)"><use href="#foot" transform="rotate(82) scale(.68)"/></g><g class="footprint" data-footstep="13" transform="translate(746 171)"><use href="#foot" transform="rotate(92) scale(.68)"/></g><g class="footprint" data-footstep="14" transform="translate(818 122)"><use href="#foot" transform="rotate(82) scale(.68)"/></g>
+            <g data-cursor transform="translate(166 208)"><circle class="progress-marker" r="5.5"/></g>
+            <text class="svg-small" x="65" y="233">Regular steps</text><text class="svg-small" x="404" y="233">Brief interruption</text><text class="svg-small" x="741" y="233">Progression</text>
+            <path class="flow-line" d="M469 250V271H242V292"/><path class="flow-active" data-flow d="M469 250V271H242V292"/>
+            <rect class="diagram-panel" data-focus="2" x="25" y="292" width="430" height="225" rx="5"/>
+            <text class="svg-title" x="49" y="325">Windowed IMU patterns</text>
+            <g class="grid-line"><path d="M57 337V462 M128 337V462 M199 337V462 M270 337V462 M341 337V462 M412 337V462"/><path d="M57 353H412 M57 382H412 M57 411H412 M57 440H412"/></g>
+            <g clip-path="url(#fog-signal-clip)"><g data-window><rect class="window-area" x="206" y="338" width="146" height="124"/><path class="window-top" d="M206 346V338H352V346"/></g>
+              <path class="trace" data-signal="0" d="M57 353l18-6 18 10 18-6 18-4 18 8 18-5 18 5 18-7 18 8 18-4 18 2 18-7 18 5 18-4 18 7 18-6 18 4 31-3"/>
+              <path class="trace" data-signal="1" d="M57 382l18 4 18-8 18 6 18-5 18 7 18-6 18 2 18 5 18-8 18 5 18-3 18 6 18-7 18 5 18-4 18 6 18-8 31 4"/>
+              <path class="trace trace-alt" data-signal="2" d="M57 411l18-4 18 9 18-7 18 2 18-5 18 8 18-6 18 4 18-7 18 8 18-5 18 4 18-6 18 7 18-4 18 4 18-5 31 2"/>
+              <path class="trace trace-warm" data-signal="3" d="M57 440l18 3 18-7 18 8 18-6 18 5 18-7 18 9 18-5 18 2 18-5 18 6 18-8 18 7 18-3 18 5 18-8 18 4 31-1"/>
+            </g>
+            <text class="svg-small" x="49" y="488">2 s / 120 samples · 0.5 s hop</text>
+            <text class="svg-micro mobile-optional" x="49" y="504">Four schematic traces stand for four 6-channel IMUs.</text>
+            <path class="flow-line" d="M455 400H489V337H530 M489 400V426H530"/><path class="flow-active" data-flow d="M455 400H489V337H530 M489 400V426H530"/>
+            <rect class="node" data-focus="3" x="530" y="305" width="171" height="64" rx="4"/><text class="node-label" x="549" y="332">UniShape</text><text class="node-sub" x="549" y="354">Frozen representation</text>
+            <rect class="node" data-focus="3" x="530" y="394" width="171" height="64" rx="4"/><text class="node-label" x="549" y="421">MantisV2</text><text class="node-sub" x="549" y="443">Frozen representation</text>
+            <path class="flow-line" d="M701 337H730V382H752 M701 426H730V382 M819 417V449"/><path class="flow-active" data-flow d="M701 337H730V382H752 M701 426H730V382 M819 417V449"/>
+            <rect class="node" data-focus="3" x="752" y="350" width="134" height="67" rx="4"/><text class="node-label" x="819" y="379" text-anchor="middle">Cross-</text><text class="node-label" x="819" y="401" text-anchor="middle">attention</text>
+            <text class="phase-tag" x="819" y="479" text-anchor="middle">FoG / non-FoG</text><text class="svg-small" x="819" y="501" text-anchor="middle">Offline detection</text>
+          </svg>
+        </div>
+        <div class="scrub-row"><label for="fog-progress">Explore the flow</label><input id="fog-progress" data-scrub type="range" min="0" max="1000" value="120" aria-describedby="fog-control-help"><output data-progress for="fog-progress">01 / 04</output></div>
+        <p id="fog-control-help" class="visually-hidden control-help">Use the slider or stage buttons. Arrow keys move the slider; left and right arrows move between stage buttons. Scrolling also advances the schematic until you use a control.</p><p class="visually-hidden" data-announcement role="status" aria-live="polite" aria-atomic="true"></p>
+        <div class="lab-caption"><p>Movement, signals and labels are schematic. No patients or model execution.</p><p>Offline window analysis · no forecasting or latency claim</p></div>
+      </div>
+      <div class="stage-notes"><article class="stage-note is-current" id="fog-stage-0" data-stage-note><span class="stage-number">01 / PROGRESSION</span><h3>A stepping rhythm.</h3><p>Spaced footprints suggest regular forward progression. They are an abstract illustration, not a reconstruction of someone’s gait.</p></article><article class="stage-note" id="fog-stage-1" data-stage-note><span class="stage-number">02 / INTERRUPTION</span><h3>Less forward movement.</h3><p>Clustered footprints illustrate brief, ineffective forward stepping. FoG can take different forms; this is one schematic example.</p></article><article class="stage-note" id="fog-stage-2" data-stage-note><span class="stage-number">03 / MEASUREMENT</span><h3>Four complementary views.</h3><p>IMUs on both ankles, the lower back and the most affected wrist measure acceleration and angular velocity across 24 channels.</p></article><article class="stage-note" id="fog-stage-3" data-stage-note><span class="stage-number">04 / DETECTION</span><h3>Patterns in a window.</h3><p>The selected UniShape + MantisV2 system uses cross-attention for FoG/non-FoG detection in offline two-second windows.</p></article></div>
+    </section>
+
+    <section class="method-section wrap" aria-labelledby="method-title"><div class="section-grid"><div><p class="eyebrow">A precise endpoint</p><h2 id="method-title">Detect the event.<br>Keep the context.</h2></div><div><p class="method-intro">The question is whether a window contains freezing of gait. The setup preserves the sensor locations, physical time and offline processing context around that decision.</p><dl class="method-rows"><div class="method-row"><dt>Dataset</dt><dd>FoG-STAR: 22 people with Parkinson’s disease. This is temporal FoG detection, a different task from participant diagnosis.</dd></div><div class="method-row"><dt>Sensor placement</dt><dd>Left ankle, right ankle, lower back at L3–L5, and the wrist on the most affected side. Each IMU provides accelerometer xyz and gyroscope xyz at 60 Hz.</dd></div><div class="method-row"><dt>Window contract</dt><dd>Two seconds, 120 samples per channel, advanced every 0.5 seconds. Four sensors × six channels gives 24 simultaneous channels.</dd></div><div class="method-row"><dt>Selected system</dt><dd>Frozen UniShape and MantisV2 representations with cross-attention for the FoG/non-FoG decision.</dd></div><div class="method-row"><dt>Analysis context</dt><dd>Zero-phase preprocessing and offline window analysis. The setup does not establish online latency, advance warning or future-event forecasting.</dd></div></dl><p class="principle"><strong>The research responsibility:</strong> a clear label and an honest processing boundary matter as much as the representation. The illustration explains the method; it does not show clinical performance.</p></div></div></section>
+
+    <section class="paper-section wrap" aria-labelledby="paper-title"><div class="section-grid"><div><p class="eyebrow">The paper</p><h2 id="paper-title">From a question<br>to a study.</h2></div><div><h3 class="paper-name">Leveraging Frozen Time-Series Foundation Models for IMU-Based Freezing of Gait Detection</h3><p class="paper-meta">Mehdi Mohebbi, Amir Basuti, Mohammad Mahdi Azizi, Bagher BabaAli<br>ICBME 2026 · Accepted for oral presentation</p><div class="paper-actions"><a href="../../#papers">See selected papers ↗</a></div></div></div></section>
+    <a class="next-case wrap" href="../shl/"><div><p>Another research question</p><h2>Nine signals. Eight ways to move.</h2></div><span class="arrow" aria-hidden="true">↗</span></a>
+  </main>
+  <footer class="site-footer wrap"><span>Amir Basuti</span><span>Research, built with care.</span><a href="../../">Back to all work ↗</a></footer>
+</body>
+</html>

@@ -3,15 +3,16 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Amir Basuti | Machine Learning & Wearable Sensing</title>
-  <meta name="description" content="Amir Basuti — software engineer and MSc student in Computer Science at the University of Tehran. Machine learning, wearable sensing and human movement.">
-  <meta name="theme-color" content="#f5f5f7">
-  <meta property="og:title" content="Amir Basuti — From motion to meaning">
+  <title>Amir Basuti | Research &amp; Software</title>
+  <meta name="description" content="Amir Basuti — software engineer and MSc student in Computer Science at the University of Tehran. Machine learning research, software engineering and selected work.">
+  <meta name="theme-color" content="#f4f1eb">
+  <meta property="og:title" content="Amir Basuti — Research &amp; Software">
   <meta property="og:description" content="Software, sensing and machine learning. Research and selected work at the University of Tehran.">
   <meta property="og:type" content="profile">
   <meta property="og:url" content="https://amirbasuti.github.io/">
   <link rel="canonical" href="https://amirbasuti.github.io/">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="portfolio.css">
   <link rel="icon" type="image/svg+xml" href="mark.svg">
   <script defer src="site.js"></script>
   <script defer src="motion.js"></script>
@@ -20,8 +21,8 @@
   <a class="skip" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="nav-inner">
-      <a class="wordmark" href="#about" aria-label="Amir Basuti, home">Amir Basuti<span>.</span></a>
-      <nav aria-label="Main navigation"><a href="#research">Research</a><a href="#papers">Papers</a><a href="#contact">Contact</a></nav>
+      <a class="wordmark" href="#about" aria-label="Amir Basuti, home"><span class="wordmark-full">Amir Basuti</span><span class="wordmark-short">AB</span><span>.</span></a>
+      <nav aria-label="Main navigation"><a href="#work">Research</a><a href="engineering/">Engineering</a><a href="#contact">Contact</a></nav>
       <button class="motion-toggle" type="button" aria-label="Motion" aria-pressed="false" hidden><span class="motion-icon" aria-hidden="true">Ⅱ</span><span class="motion-label">Motion</span></button>
     </div>
   </header>
@@ -29,64 +30,32 @@
     <section class="hero wrap" id="about" aria-labelledby="name">
       <div class="hero-eyebrow"><span class="live-dot" aria-hidden="true"></span> Research × Software</div>
       <h1 id="name">Amir Basuti.</h1>
-      <p class="hero-title">From signals.<br><span>To real life.</span></p>
-      <p class="hero-intro">I build software and study how machines<br class="desktop-break"> can understand human movement.</p>
+      <p class="hero-title">Curiosity,<br><span>put to work.</span></p>
+      <p class="hero-intro">I explore machine learning and build software.<br class="desktop-break"> Here’s some recent work, and the questions behind it.</p>
       <p class="hero-affiliation">MSc Computer Science · University of Tehran</p>
-      <div class="hero-actions"><a class="pill primary" href="#papers">Explore my work <span aria-hidden="true">↓</span></a><a class="pill secondary" href="https://github.com/AmirBasuti">GitHub <span aria-hidden="true">↗</span></a></div>
-      <figure class="hero-art" aria-label="A smartphone connecting movement to inertial sensor signals">
-        <div class="sensor-halo" aria-hidden="true"></div>
-        <img class="hero-phone" src="images/shl-phone-hero.svg" alt="An illustrative smartphone showing accelerometer, gyroscope and magnetometer signals." width="680" height="480">
-        <figcaption>SHL 2026 · From the phone to the way we move</figcaption>
+      <div class="hero-actions"><a class="pill primary" href="#work">Selected work <span aria-hidden="true">↓</span></a><a class="pill secondary" href="https://github.com/AmirBasuti">GitHub <span aria-hidden="true">↗</span></a></div>
+      <figure class="workbench" aria-label="Research and software, shown through a paper and a data-interface sketch">
+        <div class="bench-topline"><span>A little research. A little engineering.</span><span>Selected work / 2026</span></div>
+        <div class="bench-composition">
+          <a class="bench-paper" href="#papers"><span class="bench-overline">THE RESEARCH SIDE</span><span class="paper-corner" aria-hidden="true">↗</span><h2>Questions worth<br>looking closer at.</h2><div class="paper-sketch" aria-hidden="true"><svg viewBox="0 0 430 150"><defs><linearGradient id="ink-fade"><stop stop-color="#3b6d54"/><stop offset="1" stop-color="#3b6d54" stop-opacity=".15"/></linearGradient></defs><path class="bench-trace" d="M0 99C20 99 20 98 30 98L35 94 41 104 46 88 53 113 61 63 68 109 78 76 87 102 99 67 108 120 121 74 131 100 145 83 160 93 174 85 187 67 202 90 212 46 222 102 235 52 249 93 260 66 274 81 288 52 302 91 316 63 329 75 340 49 350 86 369 66 386 84 405 72 430 80"/><path d="M0 126h430" stroke="#d9dfd1"/><g fill="#ced9c9"><rect x="38" y="134" width="47" height="4" rx="2"/><rect x="93" y="134" width="25" height="4" rx="2"/><rect x="129" y="134" width="65" height="4" rx="2"/></g></svg></div><p>Machine learning · representations · careful evaluation</p><span class="bench-link">Read the papers <span aria-hidden="true">↗</span></span></a>
+          <a class="bench-software" href="engineering/"><div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div><span class="bench-overline">THE ENGINEERING SIDE</span><h2>Data, made<br>useful.</h2><div class="interface-sketch" aria-hidden="true"><div class="chart-grid"></div><svg viewBox="0 0 400 150"><path class="chart-area" d="M0 133 22 123 44 128 65 101 87 109 109 83 131 95 153 67 175 78 196 55 218 61 240 31 262 46 284 26 305 36 327 12 350 22 375 4 400 17V150H0Z"/><path class="chart-line" d="M0 133 22 123 44 128 65 101 87 109 109 83 131 95 153 67 175 78 196 55 218 61 240 31 262 46 284 26 305 36 327 12 350 22 375 4 400 17"/></svg></div><p>Services · integrations · interfaces</p><span class="bench-link">Explore engineering <span aria-hidden="true">↗</span></span><small>Interface sketch · illustrative trace</small></a>
+        </div><figcaption>Different kinds of work. The same habit of asking, building and checking.</figcaption>
       </figure>
-      <a class="scroll-cue" href="#research">Follow the signal <span aria-hidden="true">↓</span></a>
+      <a class="scroll-cue" href="#work">A few things I’ve worked on <span aria-hidden="true">↓</span></a>
     </section>
 
-    <section class="signal-story" id="research" aria-labelledby="research-heading">
-      <div class="story-sticky">
-        <div class="story-heading wrap"><p class="eyebrow">Inside our SHL work</p><h2 id="research-heading">One phone.<br>A world in motion.</h2></div>
-        <div class="story-layout wrap">
-          <div class="signal-stage" aria-hidden="true">
-            <img class="pipeline-scene" data-scene="0" src="images/shl-phone.svg" alt="" width="680" height="480">
-            <img class="pipeline-scene" data-scene="1" src="images/shl-signals.svg" alt="" width="680" height="480">
-            <img class="pipeline-scene" data-scene="2" src="images/shl-models.svg" alt="" width="680" height="480">
-            <img class="pipeline-scene" data-scene="3" src="images/shl-activities.svg" alt="" width="680" height="480">
-            <div class="stage-legend"><span class="legend-dot"></span><span id="visual-label">Smartphone sensing</span><span class="legend-code">01 / 04</span></div>
-          </div>
-          <div class="story-narrative">
-            <div class="stage-controls" role="group" aria-label="Explore the SHL pipeline">
-              <button type="button" data-stage-target="0" aria-controls="stage-0" aria-pressed="true" disabled><span>01</span> Phone</button>
-              <button type="button" data-stage-target="1" aria-controls="stage-1" aria-pressed="false" disabled><span>02</span> Signals</button>
-              <button type="button" data-stage-target="2" aria-controls="stage-2" aria-pressed="false" disabled><span>03</span> Models</button>
-              <button type="button" data-stage-target="3" aria-controls="stage-3" aria-pressed="false" disabled><span>04</span> Movement</button>
-            </div>
-            <div class="stage-details">
-              <article class="stage-detail" id="stage-0"><p class="stage-kicker">01 / The phone</p><h3>Everyday device.<br>Remarkable signals.</h3><p>In SHL, a smartphone records motion as people go about their day. The task is to recognize how they are moving from those sensor signals.</p></article>
-              <article class="stage-detail" id="stage-1"><p class="stage-kicker">02 / The sensors</p><h3>Three sensors.<br>Nine channels.</h3><p>Accelerometer, gyroscope and magnetometer, with three axes each. Every five-second window contains 500 samples per channel at 100 Hz, prepared with filtering and normalization.</p></article>
-              <article class="stage-detail" id="stage-2"><p class="stage-kicker">03 / The models</p><h3>Frozen models.<br>Combined strengths.</h3><p>We studied five frozen models with model-specific classifiers. The final system combines probabilities from NuTime, Mantis and TiRex using weighted linear late fusion.</p><p class="model-note">Final fusion weights: NuTime 54% · Mantis 29% · TiRex 17%. UniShape and TSPulse: 0%.</p></article>
-              <article class="stage-detail" id="stage-3"><p class="stage-kicker">04 / The movement</p><h3>From a signal<br>to a way of moving.</h3><p>Still, Walk, Run, Bike, Car, Bus, Train or Subway. Eight modes connecting the phone’s measurements to a person’s journey.</p></article>
-            </div>
-            <p class="scene-disclaimer">Method illustration · signal traces are schematic</p><a class="scene-link" id="scene-link" href="images/shl-phone.svg">Open full-size illustration ↗</a>
-          </div>
-        </div>
-        <div class="story-progress wrap" aria-hidden="true"><span></span></div>
-      </div>
-    </section>
-
-    <section class="research-section section wrap" aria-labelledby="interests-heading">
-      <p class="eyebrow reveal">Research interests</p><h2 class="section-title reveal" id="interests-heading">The questions<br>that keep me building.</h2>
-      <div class="interest-grid">
-        <article class="interest reveal"><div class="interest-symbol" aria-hidden="true">∿</div><h3>Time-series<br>representation learning.</h3><p>Learning useful representations from sensor data, with a particular interest in foundation models and generalization.</p></article>
-        <article class="interest reveal"><div class="interest-symbol dots-symbol" aria-hidden="true">⠿</div><h3>Human activity.<br>Real-world signals.</h3><p>Recognizing activity and transportation modes from IMU signals and complementary pretrained models.</p></article>
-        <article class="interest reveal"><div class="interest-symbol" aria-hidden="true">↗</div><h3>Machine learning.<br>Human health.</h3><p>Studying clinical gait and freezing of gait, with careful attention to participant-level evaluation.</p></article>
-      </div>
-    </section>
-
-    <section class="highlight" aria-labelledby="highlight-heading"><div class="wrap highlight-grid">
-      <div class="rank-art reveal" aria-hidden="true"><span class="rank-orbit"></span><span class="rank-number">1<span>st.</span></span><span class="rank-caption">SHL CHALLENGE · 2026</span></div>
-      <div class="highlight-copy reveal"><p class="eyebrow">A shared achievement</p><h2 id="highlight-heading">Small sensors.<br>A world-stage result.</h2><p>First place in the Sussex–Huawei Locomotion Challenge 2026, as a member of <strong>team UT-IR</strong> at the University of Tehran.</p><p class="highlight-detail">Our work explored early and late fusion of frozen time-series foundation models for human activity recognition.</p><a class="text-link" href="https://news.ut.ac.ir/fa/news/56078/">University of Tehran announcement <span aria-hidden="true">↗</span></a></div>
+    <section class="selected-work section" id="work" aria-labelledby="work-heading"><div class="wrap">
+      <div class="work-heading"><div><p class="eyebrow reveal">A selection, not the whole picture</p><h2 class="section-title reveal" id="work-heading">Some things<br>I’ve worked on.</h2></div><p class="work-aside reveal">Research questions.<br>Software that does something.</p></div>
+      <article class="work-row reveal"><div class="work-visual shl-visual"><img src="images/shl-models.svg" width="680" height="480" loading="lazy" alt="Schematic of the selected three-model probability fusion in our SHL work."></div><div class="work-copy"><p class="project-meta">01 / MACHINE LEARNING · SHL 2026</p><h3>Different models.<br>Complementary strengths.</h3><p>Our team explored how frozen foundation models can work together for activity recognition. One project that brought research, implementation and careful comparison together.</p><div class="project-links"><a href="research/shl/">Explore the case study ↗</a><a href="#papers">Paper details ↗</a></div><span class="project-note">Team UT-IR · 1st place, Sussex–Huawei Locomotion Challenge</span></div></article>
+      <article class="work-row reverse reveal"><div class="work-visual fog-visual"><div class="footprint-study" aria-hidden="true"><div class="footprint-row"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="mini-window"></div><span class="study-label">A change in the pattern.</span><span class="study-caption">SCHEMATIC · WINDOWED ANALYSIS</span></div></div><div class="work-copy"><p class="project-meta">02 / MOVEMENT &amp; HEALTH</p><h3>Looking closer<br>at human movement.</h3><p>Wearable signals offer a way to study gait. In this work, we investigated frozen time-series models for detecting freezing of gait from body-worn IMUs.</p><div class="project-links"><a href="research/fog/">Explore the case study ↗</a><a href="#papers">Paper details ↗</a></div><span class="project-note">ICBME 2026 · accepted for oral presentation</span></div></article>
+      <article class="work-row engineering-row reveal"><div class="work-visual engineering-visual" aria-hidden="true"><div class="service-stack"><span><b>01</b> Integrate</span><i>↓</i><span><b>02</b> Make it consistent</span><i>↓</i><span><b>03</b> Make it useful</span></div></div><div class="work-copy"><p class="project-meta">03 / SOFTWARE ENGINEERING</p><h3>From backend details<br>to a usable interface.</h3><p>Java/Spring and Python/FastAPI services, data integrations, and React/TypeScript interfaces. Work that connects careful implementation with something people can use.</p><div class="project-links"><a href="engineering/">See the engineering side ↗</a></div><span class="project-note">Software Engineer · Milli</span></div></article>
     </div></section>
 
-    <section class="paper-evidence" aria-label="Figure from our SHL paper"><div class="wrap"><details class="paper-figure"><summary>The research, on paper. <span aria-hidden="true">＋</span></summary><figure><a href="images/shl-paper-overview.png"><img src="images/shl-paper-overview.png" width="2880" height="864" loading="lazy" alt="Figure 1 from our SHL paper: nine input channels, five-second preprocessing, five frozen models, classifier and fusion alternatives, and activity-mode outputs."></a><figcaption>Original overview figure from <a href="papers/shl-2026-frozen-model-fusion.pdf">Mohebbi et al. (2026)</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. It shows the study’s alternatives; the interactive story above follows the selected late-fusion system. Open the image for the full-size figure.</figcaption></figure></details></div></section>
+    <section class="research-section section wrap" aria-labelledby="interests-heading"><p class="eyebrow reveal">What interests me</p><h2 class="section-title reveal" id="interests-heading">Good questions<br>don’t stay in one box.</h2><div class="interest-grid"><article class="interest reveal"><span class="interest-number">01</span><h3>Learning useful<br>representations.</h3><p>How machine learning can turn complex data into representations that help us understand and solve a problem.</p></article><article class="interest reveal"><span class="interest-number">02</span><h3>Knowing what<br>really works.</h3><p>Careful evaluation, generalization and experiments that make the strengths and limits of a method clear.</p></article><article class="interest reveal"><span class="interest-number">03</span><h3>Building things<br>people can use.</h3><p>Reliable services, thoughtful interfaces and the software work that connects an idea to its use.</p></article></div></section>
+
+    <aside class="recognition wrap reveal"><span class="recognition-mark">1st</span><p>SHL 2026 Challenge winners, with team UT-IR at the University of Tehran.</p><a href="https://news.ut.ac.ir/fa/news/56078/">University announcement ↗</a></aside>
+
+    <section class="paper-evidence" aria-label="Figure from our SHL paper"><div class="wrap"><details class="paper-figure"><summary>The research, on paper. <span aria-hidden="true">＋</span></summary><figure><a href="images/shl-paper-overview.png"><img src="images/shl-paper-overview.png" width="2880" height="864" loading="lazy" alt="Figure 1 from our SHL paper: nine input channels, five-second preprocessing, five frozen models, classifier and fusion alternatives, and activity-mode outputs."></a><figcaption>Original overview figure from <a href="papers/shl-2026-frozen-model-fusion.pdf">Mohebbi et al. (2026)</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. It shows the study’s alternatives; the SHL case study follows the selected late-fusion system. Open the image for the full-size figure.</figcaption></figure></details></div></section>
 
     <section class="papers-section section" id="papers" aria-labelledby="papers-heading"><div class="wrap">
       <div class="papers-header reveal"><div><p class="eyebrow">Selected research · 2026</p><h2 id="papers-heading">Ideas.<br>Put to paper.</h2></div><p class="section-aside">Full titles. Clear status.<br>Work you can explore.</p></div>
@@ -128,16 +97,16 @@
     <section class="craft-section section" id="experience" aria-labelledby="experience-heading"><div class="wrap">
       <p class="eyebrow reveal">Experience</p><h2 class="section-title reveal" id="experience-heading">Research.<br>And real software.</h2>
       <div class="experience-list">
-        <article class="experience-row reveal"><p class="experience-date">Feb 2026 — present</p><div><p class="experience-place">Milli</p><h3>Software Engineer</h3><p>Building services, real-time data integrations and web interfaces with Python, FastAPI, Redis and React/TypeScript. Attention to caching, reconnection, tests and deployment.</p></div><span class="experience-mark" aria-hidden="true">↗</span></article>
+        <article class="experience-row reveal"><p class="experience-date">Feb 2026 — present</p><div><p class="experience-place">Milli</p><h3>Software engineering</h3><p>Contributing to Java/Spring and Python/FastAPI services, asynchronous data integrations, and React/TypeScript interfaces. Careful APIs, data handling, tests and maintainability.</p></div><span class="experience-mark" aria-hidden="true">↗</span></article>
         <article class="experience-row reveal"><p class="experience-date">Jan 2025 — Mar 2026</p><div><p class="experience-place">Kharazmi University</p><h3>Research Assistant</h3><p>Implemented Python genetic-algorithm methods for graphical unequal-probability sampling research.</p><a class="text-link" href="https://github.com/mehdimhb/graphical-sampling">Explore the project ↗</a></div><span class="experience-mark" aria-hidden="true">∿</span></article>
         <article class="experience-row reveal"><p class="experience-date">2024 — 2025</p><div><p class="experience-place">Kharazmi University</p><h3>Teaching Assistant</h3><p>Supported Artificial Intelligence, BP Code and Advanced Programming through Python/PyTorch assignments, Git instruction and autograding.</p></div><span class="experience-mark" aria-hidden="true">＋</span></article>
       </div>
-      <div class="education-row reveal"><div><span class="education-label">University of Tehran · 2025 — present</span><h3>MSc Computer Science</h3><p>Algorithm and Computability Theory</p></div><div><span class="education-label">Kharazmi University · 2021 — 2025</span><h3>BSc Computer Science</h3><p>Where the path began.</p></div></div>
+      <div class="education-row reveal"><div><img class="university-logo" src="images/university-tehran.png" width="190" height="66" loading="lazy" alt="University of Tehran"><span class="education-label">University of Tehran · 2025 — present</span><h3>MSc Computer Science</h3><p>Algorithm and Computability Theory</p></div><div><img class="university-logo kharazmi-logo" src="images/kharazmi-university.png" width="66" height="66" loading="lazy" alt="Kharazmi University"><span class="education-label">Kharazmi University · 2021 — 2025</span><h3>BSc Computer Science</h3><p>Where the path began.</p></div></div>
     </div></section>
 
     <section class="contact-section" id="contact" aria-labelledby="contact-heading"><div class="wrap">
-      <p class="eyebrow reveal">Keep the conversation moving</p><h2 id="contact-heading" class="reveal">Let’s build<br>what’s next.</h2>
-      <p class="contact-intro reveal">Research, software and thoughtful collaboration.</p><a class="email" href="mailto:amirbasuti@ut.ac.ir">amirbasuti@ut.ac.ir <span aria-hidden="true">↗</span></a>
+      <p class="eyebrow reveal">Keep the conversation moving</p><h2 id="contact-heading" class="reveal">Let’s talk.</h2>
+      <p class="contact-intro reveal">For research, engineering and collaboration.</p><a class="email" href="mailto:amirbasuti@ut.ac.ir">amirbasuti@ut.ac.ir <span aria-hidden="true">↗</span></a>
       <div class="contact-profiles" aria-label="Professional profiles"><a href="https://www.linkedin.com/in/amirbasuti/">LinkedIn ↗</a><a href="https://orcid.org/0009-0003-6180-2031">ORCID ↗</a><a href="https://github.com/AmirBasuti">GitHub ↗</a><a href="https://www.researchgate.net/profile/Amirmohammad-Basuti">ResearchGate ↗</a></div>
       <footer><span>© 2026 Amir Basuti</span><span>University of Tehran</span><a href="#about">Back to top ↑</a></footer>
     </div></section>

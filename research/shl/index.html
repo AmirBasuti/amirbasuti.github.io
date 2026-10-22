@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f1eb">
+  <meta name="color-scheme" content="light">
+  <meta name="darkreader-lock">
+  <title>From nine signals to eight modes — Amir Basuti</title>
+  <meta name="description" content="A research case study in frozen time-series models, smartphone IMU signals and weighted probability fusion. SHL 2026, team UT-IR.">
+  <link rel="canonical" href="https://amirbasuti.github.io/research/shl/">
+  <link rel="icon" type="image/svg+xml" href="../../mark.svg">
+  <link rel="stylesheet" href="../cases.css">
+  <script defer src="../cases.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header wrap">
+    <a class="wordmark" href="../../">Amir Basuti<span>.</span></a>
+    <nav aria-label="Primary navigation"><a href="../../">Home</a><a href="../../engineering/">Engineering</a><a href="../../#papers">Papers</a></nav>
+  </header>
+  <main id="main">
+    <section class="case-hero wrap" aria-labelledby="case-title">
+      <p class="eyebrow">Selected research <span class="divider" aria-hidden="true"></span> SHL 2026 / Team UT-IR</p>
+      <div class="hero-grid">
+        <h1 id="case-title">Nine signals.<br><em>Eight ways<br>to move.</em></h1>
+        <div class="hero-summary"><p>A smartphone records movement. Our research asks how complementary frozen time-series models can turn those measurements into an activity decision.</p><a class="text-link" href="#inside">Follow the signal <span aria-hidden="true">↓</span></a></div>
+      </div>
+      <div class="hero-bottom"><span>Representation learning · Human activity recognition</span><span>One example of my work across machine learning and software.</span></div>
+    </section>
+    <div class="fact-strip wrap" aria-label="Study setup">
+      <div class="fact"><strong>100 <small>Hz</small></strong><span>Smartphone sensor sampling</span></div>
+      <div class="fact"><strong>9</strong><span>Accelerometer, gyroscope, magnetometer · xyz</span></div>
+      <div class="fact"><strong>5 <small>seconds</small></strong><span>500 samples per channel</span></div>
+      <div class="fact"><strong>3 <small>of 5</small></strong><span>Models in the selected final fusion</span></div>
+    </div>
+
+    <section class="lab-section wrap" id="inside" aria-labelledby="lab-title">
+      <div class="lab" data-case-story="shl">
+        <div class="lab-heading"><h2 id="lab-title">A small window.<br>A wider view of movement.</h2><div class="lab-label"><i aria-hidden="true"></i>Explore the method<br> Schematic / not recorded data</div></div>
+        <div class="story-controls" role="group" aria-label="Explore the SHL method">
+          <button class="stage-button" type="button" data-stage="0" data-title="Nine sensor traces" aria-pressed="true" aria-controls="shl-stage-0"><span>01</span>Sensor traces</button>
+          <button class="stage-button" type="button" data-stage="1" data-title="Five-second window" aria-pressed="false" aria-controls="shl-stage-1"><span>02</span>A five-second window</button>
+          <button class="stage-button" type="button" data-stage="2" data-title="Weighted probability fusion" aria-pressed="false" aria-controls="shl-stage-2"><span>03</span>Frozen models &amp; fusion</button>
+          <button class="stage-button" type="button" data-stage="3" data-title="Eight activity modes" aria-pressed="false" aria-controls="shl-stage-3"><span>04</span>Eight modes</button>
+        </div>
+        <div class="scene">
+          <svg viewBox="0 0 960 555" role="img" aria-labelledby="shl-svg-title shl-svg-desc">
+            <title id="shl-svg-title">Schematic of the selected SHL late-fusion method</title>
+            <desc id="shl-svg-desc">Nine smartphone traces form a five-second window. Frozen NuTime, MantisV2 and TiRex classifiers contribute weights of 54, 29 and 17 percent to probability fusion. The eight possible outputs are Still, Walk, Run, Bike, Car, Bus, Train and Subway. Waveforms and output bars are illustrative.</desc>
+            <defs><clipPath id="shl-signal-clip"><rect x="56" y="100" width="358" height="220"/></clipPath><linearGradient id="shl-window-fill" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#c4cda9" stop-opacity=".02"/><stop offset="1" stop-color="#c4cda9" stop-opacity=".12"/></linearGradient></defs>
+            <rect class="diagram-panel" data-focus="0" x="25" y="44" width="430" height="307" rx="5"/>
+            <text class="svg-title" x="49" y="78">Nine sensor traces</text><text class="svg-small mobile-optional" x="432" y="76" text-anchor="end">ACC · GYRO · MAG / XYZ</text>
+            <g class="grid-line"><path d="M58 100V319 M129 100V319 M200 100V319 M271 100V319 M342 100V319 M413 100V319"/><path d="M58 152H414 M58 221H414 M58 290H414"/></g>
+            <g clip-path="url(#shl-signal-clip)">
+              <path class="trace" data-signal="0" d="M59 118l18-4 18 8 18-9 18 1 18 7 18-8 18 7 18-6 18 5 18-9 18 4 18 5 18-7 18 8 18-6 18 4 18-5 28 5"/>
+              <path class="trace" data-signal="1" d="M59 141l18 5 18-9 18 4 18 5 18-8 18 4 18 5 18-8 18 4 18 4 18-8 18 5 18 1 18-7 18 8 18-2 18-6 28 5"/>
+              <path class="trace" data-signal="2" d="M59 164l18-5 18 8 18-4 18-5 18 9 18-6 18 5 18-4 18-2 18 7 18-9 18 4 18 4 18-7 18 6 18-6 18 7 28-4"/>
+              <path class="trace trace-alt" data-signal="3" d="M59 187l18 6 18-9 18 6 18-5 18 4 18-7 18 8 18-3 18-4 18 8 18-6 18 3 18-5 18 7 18-5 18 6 18-8 28 5"/>
+              <path class="trace trace-alt" data-signal="4" d="M59 210l18-6 18 9 18-3 18-7 18 8 18-5 18 2 18 5 18-8 18 4 18 5 18-9 18 7 18-4 18 4 18-6 18 3 28 2"/>
+              <path class="trace trace-alt" data-signal="5" d="M59 233l18 3 18-7 18 9 18-5 18 3 18-6 18 6 18-7 18 9 18-5 18 2 18-6 18 5 18-4 18 7 18-6 18 4 28-3"/>
+              <path class="trace trace-warm" data-signal="6" d="M59 256l18 5 18-8 18 4 18-4 18 7 18-6 18 2 18 5 18-8 18 5 18-3 18 6 18-7 18 5 18-4 18 6 18-8 28 4"/>
+              <path class="trace trace-warm" data-signal="7" d="M59 279l18-4 18 9 18-7 18 2 18-5 18 8 18-6 18 4 18-7 18 8 18-5 18 4 18-6 18 7 18-4 18 4 18-5 28 2"/>
+              <path class="trace trace-warm" data-signal="8" d="M59 302l18 3 18-7 18 8 18-6 18 5 18-7 18 9 18-5 18 2 18-5 18 6 18-8 18 7 18-3 18 5 18-8 18 4 28-1"/>
+              <g data-window><rect class="window-area" x="220" y="100" width="146" height="219" fill="url(#shl-window-fill)"/><path class="window-top" d="M220 108V100H366V108"/></g>
+              <g data-cursor transform="translate(104 0)"><path d="M0 100V319" stroke="#d0b37b" stroke-width="1" opacity=".65"/></g>
+            </g>
+            <path d="M47 106H42V174H47 M47 177H42V243H47 M47 246H42V313H47" stroke="#7b9e85" fill="none"/>
+            <text class="svg-small" x="59" y="336">Selected window: 5 s / 500 samples</text>
+            <path class="flow-line" d="M455 200H490V115H540 M490 200H540 M490 200V285H540"/>
+            <path class="flow-active" data-flow d="M455 200H490V115H540"/><path class="flow-active" data-flow d="M455 200H540"/><path class="flow-active" data-flow d="M455 200H490V285H540"/>
+            <g><rect class="node" data-focus="2" x="540" y="80" width="176" height="70" rx="4"/><text class="node-label" x="558" y="109">NuTime</text><text class="node-sub" x="558" y="133">Frozen classifier</text><text class="node-sub" x="696" y="110" text-anchor="end">.54</text></g>
+            <g><rect class="node" data-focus="2" x="540" y="165" width="176" height="70" rx="4"/><text class="node-label" x="558" y="194">MantisV2</text><text class="node-sub" x="558" y="218">Frozen classifier</text><text class="node-sub" x="696" y="195" text-anchor="end">.29</text></g>
+            <g><rect class="node" data-focus="2" x="540" y="250" width="176" height="70" rx="4"/><text class="node-label" x="558" y="279">TiRex</text><text class="node-sub" x="558" y="303">Frozen classifier</text><text class="node-sub" x="696" y="280" text-anchor="end">.17</text></g>
+            <path class="flow-line" d="M716 115H755V200H789 M716 200H789 M716 285H755V200 M852 237V375"/>
+            <path class="flow-active" data-flow d="M716 115H755V200H789 M716 200H789 M716 285H755V200"/>
+            <rect class="node" data-focus="2" x="789" y="164" width="126" height="73" rx="4"/><text class="node-label" x="852" y="193" text-anchor="middle">Weighted</text><text class="node-sub" x="852" y="216" text-anchor="middle">probabilities</text>
+            <path class="flow-active" data-flow d="M852 237V375"/>
+            <text class="svg-small mobile-optional" x="541" y="345">Final fusion weights · sum = 1</text>
+            <rect class="diagram-panel" data-focus="3" x="25" y="375" width="890" height="158" rx="5"/>
+            <text class="svg-title" x="49" y="407">Eight possible modes</text><text class="svg-small mobile-optional" x="892" y="405" text-anchor="end">SCHEMATIC OUTPUT EXAMPLE / WALK</text>
+            <path class="fine-line" d="M60 484H882"/>
+            <g><rect class="probability" data-bar="15" x="69" y="469" width="45" height="15" rx="2"/><rect class="probability-focus" data-bar="57" x="177" y="427" width="45" height="57" rx="2"/><rect class="probability" data-bar="21" x="285" y="463" width="45" height="21" rx="2"/><rect class="probability" data-bar="11" x="393" y="473" width="45" height="11" rx="2"/><rect class="probability" data-bar="9" x="501" y="475" width="45" height="9" rx="2"/><rect class="probability" data-bar="6" x="609" y="478" width="45" height="6" rx="2"/><rect class="probability" data-bar="7" x="717" y="477" width="45" height="7" rx="2"/><rect class="probability" data-bar="5" x="825" y="479" width="45" height="5" rx="2"/></g>
+            <g text-anchor="middle"><text class="class-label" x="92" y="513">Still</text><text class="class-label class-active" x="200" y="513">Walk</text><text class="class-label" x="308" y="513">Run</text><text class="class-label" x="416" y="513">Bike</text><text class="class-label" x="524" y="513">Car</text><text class="class-label" x="632" y="513">Bus</text><text class="class-label" x="740" y="513">Train</text><text class="class-label" x="848" y="513">Subway</text></g>
+          </svg>
+        </div>
+        <div class="scrub-row"><label for="shl-progress">Explore the flow</label><input id="shl-progress" data-scrub type="range" min="0" max="1000" value="120" aria-describedby="shl-control-help"><output data-progress for="shl-progress">01 / 04</output></div>
+        <p id="shl-control-help" class="visually-hidden control-help">Use the slider or stage buttons. Arrow keys move the slider; left and right arrows move between stage buttons. Scrolling also advances the schematic until you use a control.</p>
+        <p class="visually-hidden" data-announcement role="status" aria-live="polite" aria-atomic="true"></p>
+        <div class="lab-caption"><p>All traces and output bars are schematic. No model runs in this page.</p><p class="js-instruction">Scroll or use the stages · keyboard controls available</p></div>
+      </div>
+      <div class="stage-notes">
+        <article class="stage-note is-current" id="shl-stage-0" data-stage-note><span class="stage-number">01 / MEASURE</span><h3>Movement leaves a trace.</h3><p>Acceleration, rotation and the magnetic field, each along three axes: nine channels describing the phone’s movement.</p></article>
+        <article class="stage-note" id="shl-stage-1" data-stage-note><span class="stage-number">02 / GROUP</span><h3>Keep time intact.</h3><p>At 100 Hz, a five-second window holds 500 samples per channel. The same physical interval goes to each model.</p></article>
+        <article class="stage-note" id="shl-stage-2" data-stage-note><span class="stage-number">03 / COMBINE</span><h3>Different views, one decision.</h3><p>Three frozen-model classifiers contribute class probabilities. A weighted sum forms the selected final late-fusion output.</p></article>
+        <article class="stage-note" id="shl-stage-3" data-stage-note><span class="stage-number">04 / INTERPRET</span><h3>A vocabulary of movement.</h3><p>Still, Walk, Run, Bike, Car, Bus, Train and Subway. The highlighted example above illustrates the output format.</p></article>
+      </div>
+    </section>
+
+    <section class="method-section wrap" aria-labelledby="method-title"><div class="section-grid">
+      <div><p class="eyebrow">The research choice</p><h2 id="method-title">Complementary<br>representations.</h2></div>
+      <div><p class="method-intro">The study explored early and late fusion across five frozen time-series foundation models. The selected final system combines three classifiers at the probability level.</p>
+        <div class="weight-row" aria-label="Selected final fusion weights"><div><span>NuTime</span><strong>54<small>%</small></strong></div><div><span>MantisV2</span><strong>29<small>%</small></strong></div><div><span>TiRex</span><strong>17<small>%</small></strong></div></div>
+        <dl class="method-rows"><div class="method-row"><dt>Five studied</dt><dd>NuTime, MantisV2, TiRex, UniShape and TSPulse.</dd></div><div class="method-row"><dt>Selected fusion</dt><dd>NuTime 0.54 + MantisV2 0.29 + TiRex 0.17. UniShape and TSPulse have zero weight in this final fusion.</dd></div><div class="method-row"><dt>What “frozen” means</dt><dd>The pretrained representation models remain fixed. The study compares the representations and downstream classifier/fusion choices.</dd></div></dl>
+        <p class="principle"><strong>The engineering idea:</strong> agree on a clear input contract, preserve each model’s boundary, and combine the evidence where the outputs share the same meaning.</p>
+      </div>
+    </div></section>
+
+    <section class="paper-section wrap" aria-labelledby="paper-title"><div class="section-grid">
+      <div><p class="eyebrow">The paper</p><h2 id="paper-title">The method,<br>in full.</h2></div>
+      <div><h3 class="paper-name">Early and Late Fusion of Frozen Foundation Models for IMU-Based Human Activity Recognition</h3><p class="paper-meta">Mehdi Mohebbi, Ali Majlesi, Amir Basuti, Iraj Gharaee, Mohammad Mahdi Azizi, Bagher BabaAli, Pouya Mohseni<br>HASCA · UbiComp/ISWC 2026 Companion<br>Accepted · DOI issued</p><div class="paper-actions"><a href="https://doi.org/10.1145/3798063.3842618">DOI 10.1145/3798063.3842618 ↗</a><a href="../../papers/shl-2026-frozen-model-fusion.pdf">Author manuscript ↗</a><a href="https://github.com/AmirBasuti/shl2026-frozen-model-fusion">Paper companion &amp; fusion reference ↗</a></div></div>
+    </div>
+      <details class="paper-figure"><summary>Inspect the original paper overview</summary><figure><a href="../../images/shl-paper-overview.png"><img src="../../images/shl-paper-overview.png" width="2880" height="864" loading="lazy" alt="Original study overview: nine input channels, preprocessing, five frozen time-series models, early and late fusion alternatives, and eight activity outputs."></a><figcaption>Figure 1 from Mohebbi et al. (2026), <a href="../../papers/shl-2026-frozen-model-fusion.pdf">author manuscript</a>, licensed <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. The original overview shows the alternatives studied; the schematic above follows the selected final late-fusion system. Open the image to inspect it at full size.</figcaption></figure></details>
+    </section>
+    <a class="next-case wrap" href="../fog/"><div><p>Another research question</p><h2>When forward stepping is interrupted.</h2></div><span class="arrow" aria-hidden="true">↗</span></a>
+  </main>
+  <footer class="site-footer wrap"><span>Amir Basuti</span><span>Research, built with care.</span><a href="../../">Back to all work ↗</a></footer>
+</body>
+</html>
