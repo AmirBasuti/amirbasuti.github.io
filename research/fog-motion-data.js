@@ -3,10 +3,6 @@ import * as THREE from '../vendor/three-r180/three.module.min.js';
 const clamp = n => Math.max(0, Math.min(1, n));
 const smooth = t => { t = clamp(t); return t * t * (3 - 2 * t); };
 const ease = (a, b, t) => smooth((t - a) / (b - a));
-const integral = (a, b, t) => {
-  const x = clamp((t - a) / (b - a));
-  return (b - a) * (x * x * x - .5 * x * x * x * x) + Math.max(0, t - b);
-};
 
 /**
  * Illustrative kinematics sampled from the same posed skeleton as the scene.
@@ -14,47 +10,130 @@ const integral = (a, b, t) => {
  * calibrated acceleration units, or model inference is claimed.
  * Fixed 60 Hz finite differences are independent of scroll/frame timing.
  */
-export function createMotionData(model, mixer, walk, idle, bones) {
+export function createMotionData(model, mixer, walk, bones, contactBones) {
   const rate = 60, duration = 6, count = rate * duration + 1;
-  const slowStart = duration * .17 / .57;
-  const slowEnd = duration * .27 / .57;
+  const clipDuration = walk.getClip().duration;
+  const cycleCount = Math.max(2, Math.round(clipDuration * rate));
+  const point = new THREE.Vector3(), toe = new THREE.Vector3();
+  const feet = bones.slice(0, 2);
+  const cycle = Array.from({ length: cycleCount }, () => new Float32Array(12));
+  const floors = new Float32Array(4).fill(Infinity);
+  walk.setEffectiveWeight(1);
+
+  // Inspect the actual authored loop before choosing a stopping phase. Ankle
+  // and toe heights are measured separately; neither is the shoe's ground plane.
+  for (let i = 0; i < cycleCount; i++) {
+    mixer.setTime(i * clipDuration / cycleCount);
+    model.updateWorldMatrix(true, true);
+    feet.forEach((foot, side) => {
+      foot.getWorldPosition(point).toArray(cycle[i], side * 6);
+      contactBones[side].getWorldPosition(point).toArray(cycle[i], side * 6 + 3);
+      floors[side * 2] = Math.min(floors[side * 2], cycle[i][side * 6 + 1]);
+      floors[side * 2 + 1] = Math.min(floors[side * 2 + 1], cycle[i][side * 6 + 4]);
+    });
+  }
+  const clearance = (frame, side) => Math.min(
+    frame[side * 6 + 1] - floors[side * 2],
+    frame[side * 6 + 4] - floors[side * 2 + 1]);
+  let stopFrame = 0, bestScore = Infinity;
+  const margin = Math.max(1, Math.round(.06 * rate));
+  for (let i = 0; i < cycleCount; i++) {
+    const before = cycle[(i - margin + cycleCount) % cycleCount];
+    const after = cycle[(i + margin) % cycleCount];
+    // Prefer the interior of double support, with quiet vertical movement.
+    // A complete planted step stays intact; no unrelated idle pose is blended in.
+    const support = Math.max(...[cycle[i], before, after].flatMap(frame =>
+      [clearance(frame, 0), clearance(frame, 1)]));
+    const verticalChange = Math.abs(after[4] - before[4]) + Math.abs(after[10] - before[10]);
+    const score = support + verticalChange * .35;
+    if (score < bestScore) { bestScore = score; stopFrame = i; }
+  }
+  const stopPhase = stopFrame * clipDuration / cycleCount;
+  const stopTime = 3, slowStart = 2.1, slowDuration = stopTime - slowStart;
+  const traveledClipTime = slowStart + slowDuration * .5;
+  const startPhase = ((stopPhase - traveledClipTime) % clipDuration + clipDuration) % clipDuration;
   function pose(seconds) {
     const t = Math.max(0, Math.min(duration, seconds));
-    const hesitation = ease(slowStart, slowEnd, t);
-    const walkTime = t - .94 * integral(slowStart, slowEnd, t);
-    walk.setEffectiveWeight(1 - hesitation * .94);
-    idle.setEffectiveWeight(hesitation * .94);
-    mixer.setTime(walkTime);
-    // Idle breathing remains actual authored animation, not a frozen mannequin.
-    idle.time = (t * .55) % idle.getClip().duration;
-    mixer.update(0);
+    const u = clamp((t - slowStart) / slowDuration);
+    // The integral of 1 - smoothstep gives ordinary cadence, then continuous
+    // velocity and acceleration into a fully planted hold at exactly 3 s.
+    const walkTime = t <= slowStart ? t : t >= stopTime ? traveledClipTime
+      : slowStart + slowDuration * (u - u * u * u + .5 * u * u * u * u);
+    mixer.setTime(startPhase + walkTime);
     model.updateWorldMatrix(true, true);
   }
+
+  // Construct a small heel proxy in each foot's local coordinates at the
+  // selected planted pose. It then follows the authored foot rotation, while
+  // the supplied ball bone supplies the toe. These are visual contact aids,
+  // not anatomical measurements or inferred clinical contact labels.
+  mixer.setTime(stopPhase);
+  model.updateWorldMatrix(true, true);
+  let footLength = 0;
+  const heelOffsets = feet.map((foot, side) => {
+    foot.getWorldPosition(point);
+    contactBones[side].getWorldPosition(toe);
+    footLength += point.distanceTo(toe) * .5;
+    const heel = point.clone().addScaledVector(toe.clone().sub(point), -.25);
+    heel.y = toe.y;
+    return foot.worldToLocal(heel);
+  });
+  const contactHeight = (floors[1] + floors[3]) * .5;
+  const touchHeight = Math.max(.006, footLength * .08);
+  const releaseHeight = Math.max(.018, footLength * .20);
   const raw = bones.map(() => new Float32Array(count * 3));
+  const contacts = Array.from({ length: 4 }, () => new Float32Array(count * 3));
   const root = new Float32Array(count * 3);
-  const point = new THREE.Vector3();
   for (let i = 0; i < count; i++) {
     pose(i / rate);
     bones.forEach((bone, sensor) => {
       bone.getWorldPosition(point);
       point.toArray(raw[sensor], i * 3);
     });
+    feet.forEach((foot, side) => {
+      point.copy(heelOffsets[side]).applyMatrix4(foot.matrixWorld).toArray(contacts[side * 2], i * 3);
+      contactBones[side].getWorldPosition(point).toArray(contacts[side * 2 + 1], i * 3);
+    });
   }
-  // The asset's walk is in-place. Cancel displacement of the lower foot in
-  // world space; a soft support weighting avoids jumps when contact changes.
-  const initialFootY = Math.min(raw[0][1], raw[1][1]);
-  for (let i = 1; i < count; i++) {
+
+  // This clip is in-place. Keep a contact point latched for each stance and
+  // cancel its horizontal motion. Hysteresis prevents support flicker, and
+  // weights ease through double support instead of swapping on ankle height.
+  const planted = [false, false], selected = [0, 2], weights = [0, 0];
+  const blend = 1 - Math.exp(-1 / (rate * .045));
+  for (let i = 0; i < count; i++) {
     const at = i * 3, previous = at - 3;
-    const low = Math.min(raw[0][at + 1], raw[1][at + 1]);
-    const leftWeight = Math.exp(-(raw[0][at + 1] - low) / .045);
-    const rightWeight = Math.exp(-(raw[1][at + 1] - low) / .045);
-    const weight = leftWeight + rightWeight;
+    if (i / rate > stopTime) {
+      root[at] = root[previous]; root[at + 1] = root[previous + 1]; root[at + 2] = root[previous + 2];
+      continue;
+    }
+    feet.forEach((_, side) => {
+      const heelIndex = side * 2, toeIndex = heelIndex + 1;
+      const low = Math.min(contacts[heelIndex][at + 1], contacts[toeIndex][at + 1]) - contactHeight;
+      if (!planted[side] && low < touchHeight) {
+        planted[side] = true;
+        selected[side] = contacts[heelIndex][at + 1] <= contacts[toeIndex][at + 1] ? heelIndex : toeIndex;
+      } else if (planted[side] && low > releaseHeight) planted[side] = false;
+      const target = planted[side] ? 1 - ease(touchHeight, releaseHeight, low) : 0;
+      weights[side] = i === 0 ? target : weights[side] + (target - weights[side]) * blend;
+    });
+    const weight = weights[0] + weights[1];
+    if (weight < .0001) {
+      if (i) root.set(root.subarray(previous, previous + 3), at);
+      continue;
+    }
     for (const axis of [0, 2]) {
-      const displacement = (leftWeight * (raw[0][at + axis] - raw[0][previous + axis])
-        + rightWeight * (raw[1][at + axis] - raw[1][previous + axis])) / weight;
+      if (!i) continue;
+      const displacement = weights.reduce((total, value, side) => {
+        const values = contacts[selected[side]];
+        return total + value * (values[at + axis] - values[previous + axis]);
+      }, 0) / weight;
       root[at + axis] = root[previous + axis] - displacement;
     }
-    root[at + 1] = initialFootY - low;
+    const supportedHeight = weights.reduce((total, value, side) =>
+      total + value * contacts[selected[side]][at + 1], 0) / weight;
+    const vertical = contactHeight - supportedHeight;
+    root[at + 1] = i ? root[previous + 1] + (vertical - root[previous + 1]) * blend : vertical;
   }
   const positions = raw.map(source => {
     const values = new Float32Array(source.length);
@@ -107,5 +186,6 @@ export function createMotionData(model, mixer, walk, idle, bones) {
     return signals[sensor][a] + (signals[sensor][b] - signals[sensor][a]) * f;
   }
   pose(0);
-  return { rate, duration, root, positions, velocities, accelerations, signals, pose, readVector, signalAt };
+  return { rate, duration, root, positions, velocities, accelerations, signals, pose, readVector, signalAt,
+    stopTime, stopPhase, contactHeight };
 }

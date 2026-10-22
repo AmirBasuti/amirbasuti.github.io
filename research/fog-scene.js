@@ -1,38 +1,41 @@
 import * as THREE from '../vendor/three-r180/three.module.min.js';
 import { GLTFLoader } from '../vendor/three-r180/addons/loaders/GLTFLoader.js';
-import { createMotionData } from './fog-motion-data.js';
+import { createMotionData } from './fog-motion-data.js?v=20261022k';
 
 const clamp = n => Math.max(0, Math.min(1, n));
 const mix = (a, b, t) => a + (b - a) * t;
 const ease = (a, b, p) => { const t = clamp((p - a) / (b - a)); return t * t * (3 - 2 * t); };
 
 /**
- * Quaternius CC0 rigged character; see assets/models/README.md.
- * Authored walk/idle clips drive the full body. Four bone trajectories sampled
- * at 60 Hz from this exact blend and contact correction drive the curves.
+ * MakeHuman / Innerscene CC0 character; see assets/models/README.md.
+ * One authored walk settles onto its own support pose. Four bone trajectories
+ * sampled at 60 Hz from this exact pose and contact correction drive the curves.
  * They are illustrative kinematics, not clinical IMUs or model predictions.
  * Four placements feed both representation streams. The selected 2 s window
  * illustrates offline detection; no forecasting or real-time claim is made.
  * The caller owns frame scheduling, reduced motion and context recovery.
  */
 export async function createScene(host) {
-  const asset = await new GLTFLoader().loadAsync(new URL('../assets/models/quaternius-man.glb', import.meta.url).href);
+  const asset = await new GLTFLoader().loadAsync(new URL('../assets/models/fog-person.glb', import.meta.url).href);
   const model = asset.scene;
-  const walkClip = asset.animations.find(clip => clip.name === 'HumanArmature|Man_Walk');
-  const idleClip = asset.animations.find(clip => clip.name === 'HumanArmature|Man_Idle');
-  if (!walkClip || !idleClip) throw new Error('The character requires its authored walk and idle clips.');
+  // The source includes a phone; it is unrelated to this four-IMU illustration.
+  const accessory = model.getObjectByName('Phone');
+  if (accessory) accessory.visible = false;
+  const walkClip = asset.animations.find(clip => clip.name === 'Walk_Relaxed');
+  if (!walkClip) throw new Error('The character requires its authored walking clip.');
   const namedBones = new Map();
   model.traverse(object => {
     if (object.isBone) namedBones.set(object.name.replace(/[^a-z0-9]/gi, '').toLowerCase(), object);
   });
-  const bones = ['footl', 'footr', 'abdomen', 'palmr'].map(name => namedBones.get(name));
-  if (bones.some(bone => !bone)) throw new Error('The four illustrative movement attachments are missing.');
+  const bones = ['footl', 'footr', 'spine01', 'handr'].map(name => namedBones.get(name));
+  const contactBones = ['balll', 'ballr'].map(name => namedBones.get(name));
+  if ([...bones, ...contactBones].some(bone => !bone)) throw new Error('The movement and contact attachments are missing.');
 
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
   renderer.setClearColor(0xf3f1eb, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.10;
+  renderer.toneMappingExposure = .96;
   renderer.domElement.setAttribute('aria-hidden', 'true');
   host.append(renderer.domElement);
   const scene = new THREE.Scene();
@@ -40,11 +43,11 @@ export async function createScene(host) {
   const view = new THREE.Vector3(0, .16, 1).normalize();
   camera.position.copy(view).multiplyScalar(6.8);
   camera.lookAt(0, 0, 0);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x929781, 2.25));
-  const key = new THREE.DirectionalLight(0xfff6e7, 3.1);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xb3ada0, 1.5));
+  const key = new THREE.DirectionalLight(0xfffaf2, 2.3);
   key.position.set(-3, 5, 5);
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0xd4e2d5, 1.6);
+  const rim = new THREE.DirectionalLight(0xe8edef, .85);
   rim.position.set(3, 3, -4);
   scene.add(rim);
 
@@ -52,7 +55,6 @@ export async function createScene(host) {
   const bodyMaterials = new Map();
   const keepGeometry = geometry => { geometries.add(geometry); return geometry; };
   const keepMaterial = material => { materials.add(material); return material; };
-  const palette = { Shirt: 0x70856a, Pants: 0x3f5345, Skin: 0xc2b499, Eyes: 0x233128, Socks: 0xc7cbb6, Hair: 0x465043 };
   model.traverse(object => {
     if (!object.isMesh) return;
     geometries.add(object.geometry);
@@ -62,18 +64,16 @@ export async function createScene(host) {
     object.receiveShadow = false;
     const surfaces = Array.isArray(object.material) ? object.material : [object.material];
     surfaces.forEach(material => {
-      if (palette[material.name] !== undefined) material.color.setHex(palette[material.name]);
       material.metalness = 0;
-      material.roughness = .8;
       material.transparent = true;
+      material.forceSinglePass = true;
+      Object.values(material).forEach(value => { if (value?.isTexture) textures.add(value); });
       materials.add(material);
       bodyMaterials.set(material, material.opacity);
     });
   });
   const mixer = new THREE.AnimationMixer(model);
   const walk = mixer.clipAction(walkClip).play();
-  const idle = mixer.clipAction(idleClip).play();
-  idle.setEffectiveWeight(0);
   mixer.setTime(0);
   model.updateMatrixWorld(true);
   const bounds = new THREE.Box3().setFromObject(model);
@@ -89,7 +89,7 @@ export async function createScene(host) {
   actor.add(normalized);
   scene.add(actor);
   actor.updateMatrixWorld(true);
-  const motion = createMotionData(normalized, mixer, walk, idle, bones);
+  const motion = createMotionData(normalized, mixer, walk, bones, contactBones);
   const end = motion.readVector(motion.root, motion.duration, new THREE.Vector3());
   const heading = Math.hypot(end.x, end.z) > .05 ? Math.atan2(end.x, end.z) : 0;
   actor.rotation.y = Math.atan2(.80, .60) - heading;
@@ -117,7 +117,13 @@ export async function createScene(host) {
     scene.add(shadow);
     return shadow;
   });
-  const contactHeight = Math.min(motion.positions[0][1], motion.positions[1][1]);
+  const groundShadow = new THREE.Mesh(
+    keepGeometry(new THREE.PlaneGeometry(2.1, 1.45)),
+    keepMaterial(new THREE.MeshBasicMaterial({ map: shadowTexture, transparent: true, opacity: .23, depthWrite: false, toneMapped: false }))
+  );
+  groundShadow.rotation.x = -Math.PI / 2;
+  scene.add(groundShadow);
+  const contactHeight = motion.contactHeight;
   const sensorColors = [0x405f49, 0x6c8877, 0x9a8558, 0x637158].map(value => new THREE.Color(value));
   const markerGeometry = keepGeometry(new THREE.SphereGeometry(.043, 12, 8));
   const markers = sensorColors.map(color => {
@@ -177,7 +183,7 @@ export async function createScene(host) {
 
   const translation = new THREE.Vector3(), follow = new THREE.Vector3();
   const bonePosition = new THREE.Vector3();
-  let disposed = false, lastProgress = 0;
+  let disposed = false, lastProgress = 0, lastPoseSeconds = -1;
   function frameScene(p) {
     const portrait = 1 - ease(.95, 1.15, camera.aspect);
     const close = Math.max(5.8, mix(5.0, 4.1, portrait) / camera.aspect);
@@ -206,14 +212,20 @@ export async function createScene(host) {
     if (disposed) return;
     const p = clamp(Number.isFinite(progress) ? progress : 0);
     lastProgress = p;
-    const seconds = Math.min(1, p / .57) * motion.duration;
+    const seconds = Math.min(1, p / .5) * motion.duration;
     // The same pose() and root trajectory were used by the 60 Hz sampler.
-    motion.pose(seconds);
-    motion.readVector(motion.root, seconds, translation).applyQuaternion(direction);
-    actor.position.copy(origin).add(translation);
-    actor.updateMatrixWorld(true);
+    if (seconds !== lastPoseSeconds) {
+      motion.pose(seconds);
+      motion.readVector(motion.root, seconds, translation).applyQuaternion(direction);
+      actor.position.copy(origin).add(translation);
+      actor.updateMatrixWorld(true);
+      lastPoseSeconds = seconds;
+    }
     const bodyOpacity = 1 - ease(.48, .64, p);
     actor.visible = bodyOpacity > .001;
+    bones[2].getWorldPosition(bonePosition);
+    groundShadow.position.set(bonePosition.x, origin.y + .004, bonePosition.z);
+    groundShadow.material.opacity = .23 * bodyOpacity;
     bodyMaterials.forEach((opacity, material) => { material.opacity = opacity * bodyOpacity; material.depthWrite = bodyOpacity > .999; });
     frameScene(p);
     signalRoot.updateMatrixWorld(true);
@@ -222,9 +234,10 @@ export async function createScene(host) {
       markers[index].position.copy(bonePosition);
       markers[index].material.opacity = ease(.29, .37, p) * bodyOpacity;
       if (index < 2) {
+        contactBones[index].getWorldPosition(bonePosition);
         const height = Math.max(0, bonePosition.y - origin.y - contactHeight);
         shadows[index].position.set(bonePosition.x, origin.y + .008, bonePosition.z);
-        shadows[index].material.opacity = bodyOpacity * Math.max(.25, 1 - height * 1.6);
+        shadows[index].material.opacity = bodyOpacity * Math.exp(-height * 14);
         shadows[index].scale.setScalar(1 + height * .25);
       }
     });
@@ -239,6 +252,7 @@ export async function createScene(host) {
       signalRoot.worldToLocal(ribbon.port);
       ribbon.material.opacity = emergence * (branch ? models : 1) * mix(.92, .60, output);
       ribbon.mesh.visible = ribbon.material.opacity > .001;
+      if (!ribbon.mesh.visible) return;
       const sensorColor = sensorColors[sensor];
       for (let i = 0; i <= count; i++) {
         const u = i / count, sample = u * history;
@@ -291,7 +305,13 @@ export async function createScene(host) {
     skeletons.forEach(skeleton => skeleton.dispose());
     geometries.forEach(geometry => geometry.dispose());
     materials.forEach(material => material.dispose());
-    textures.forEach(texture => texture.dispose());
+    const bitmaps = new Set();
+    textures.forEach(texture => {
+      const data = texture.source?.data;
+      if (typeof data?.close === 'function') bitmaps.add(data);
+      texture.dispose();
+    });
+    bitmaps.forEach(bitmap => bitmap.close());
     scene.clear();
     renderer.dispose();
     renderer.domElement.remove();

@@ -56,7 +56,7 @@ for (const film of document.querySelectorAll('[data-shl-film], [data-film="fog"]
     const dt = Math.min((time - (previous || time - 16)) / 1000, .06);
     previous = time;
     if (playing) {
-      target = Math.min(1, target + dt / (kind === 'fog' ? 16 : 13));
+      target = Math.min(1, target + dt / (kind === 'fog' ? 12 : 13));
       if (target >= 1) { playing = false; play.textContent = 'Replay the sequence'; }
     } else if (!manual && !reduced) target = getScrollProgress();
     current = reduced ? target : current + (target - current) * (1 - Math.exp(-dt / .11));
@@ -84,7 +84,7 @@ for (const film of document.querySelectorAll('[data-shl-film], [data-film="fog"]
     if (scene || loading) return;
     loading = true;
     try {
-      const { createScene } = kind === 'fog' ? await import('./fog-scene.js?v=20261022j') : await import('./shl-scene.js?v=20261022f');
+      const { createScene } = kind === 'fog' ? await import('./fog-scene.js?v=20261022k') : await import('./shl-scene.js?v=20261022f');
       scene = await createScene(host);
       film.classList.add('is-ready');
       lastRendered = -1;
