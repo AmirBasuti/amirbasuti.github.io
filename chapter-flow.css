@@ -32,6 +32,15 @@ body{overflow-x:clip}
   .shl-film.is-enhanced .shl-film-track{height:240svh}
 }
 .shl-film.is-enhanced.is-static .shl-film-track,.shl-film.is-enhanced.is-fallback .shl-film-track{height:auto}
+@media(max-width:760px){
+  .site-header .wordmark{display:inline-flex;align-items:center;min-height:44px}
+  .site-header nav a{display:inline-flex;align-items:center;min-height:44px}
+  .nav-inner{gap:10px}
+  .nav-inner nav{font-size:10px;gap:10px}
+  .nav-inner .wordmark,.nav-inner nav a{min-width:44px}
+  .nav-inner nav a{justify-content:center}
+  .nav-inner .motion-toggle{min-height:44px;min-width:44px;justify-content:center}
+}
 @media(prefers-reduced-motion:reduce){
   [data-chapter-visual]{opacity:1!important}
 }

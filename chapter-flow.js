@@ -34,6 +34,9 @@ document.querySelectorAll('.shl-film, [data-data-film]').forEach(scene => {
   position.className = 'chapter-position';
   position.setAttribute('aria-hidden', 'true');
   position.innerHTML = '<span data-chapter-step></span><span class="chapter-meter"><i></i></span>';
+  const copies = [...scene.querySelectorAll('.shl-film-copy [data-film-copy], [data-sequence-copy] [data-film-copy]')];
+  const selected = Math.max(0, copies.findIndex(copy => copy.getAttribute('aria-hidden') !== 'true'));
+  position.querySelector('[data-chapter-step]').textContent = `${String(selected + 1).padStart(2, '0')} / ${String(copies.length).padStart(2, '0')}`;
   controls.before(position);
 });
 
