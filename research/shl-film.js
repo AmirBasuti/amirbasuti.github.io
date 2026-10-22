@@ -10,6 +10,11 @@ for (const film of document.querySelectorAll('[data-shl-film], [data-film="fog"]
   const sticky = film.querySelector('.shl-film-sticky');
   const host = film.querySelector('[data-film-canvas]');
   const copies = [...film.querySelectorAll('[data-film-copy]')];
+  const copyLabels = copies.map(copy => {
+    const heading = copy.querySelector('h3').cloneNode(true);
+    heading.querySelectorAll('br').forEach(br => br.replaceWith(' '));
+    return heading.textContent.replace(/\s+/g, ' ').trim();
+  });
   const result = film.querySelector('[data-film-result]');
   const play = film.querySelector('[data-film-play]');
   const scrub = film.querySelector('[data-film-scrub]');
@@ -34,7 +39,7 @@ for (const film of document.querySelectorAll('[data-shl-film], [data-film="fog"]
     return travel > 0 ? clamp((top - track.getBoundingClientRect().top) / travel) : current;
   }
   function updateCopy(p, immediate = false) {
-    const active = kind === 'fog' ? (p < .29 ? 0 : p < .55 ? 1 : p < .81 ? 2 : 3) : (p < .23 ? 0 : p < .56 ? 1 : p < .84 ? 2 : 3);
+    const active = kind === 'fog' ? (p < .18 ? 0 : p < .38 ? 1 : p < .64 ? 2 : p < .84 ? 3 : 4) : (p < .23 ? 0 : p < .56 ? 1 : p < .84 ? 2 : 3);
     copyTransition.set(active, { immediate });
     const reveal = smooth((p - .88) / .10);
     if (result) {
@@ -43,7 +48,7 @@ for (const film of document.querySelectorAll('[data-shl-film], [data-film="fog"]
       result.setAttribute('aria-hidden', reveal < .5 ? 'true' : 'false');
     }
     scrub.value = Math.round(p * 1000);
-    scrub.setAttribute('aria-valuetext', copies[active].querySelector('h3').textContent);
+    scrub.setAttribute('aria-valuetext', copyLabels[active]);
   }
   function render(time) {
     frame = 0;
@@ -51,7 +56,7 @@ for (const film of document.querySelectorAll('[data-shl-film], [data-film="fog"]
     const dt = Math.min((time - (previous || time - 16)) / 1000, .06);
     previous = time;
     if (playing) {
-      target = Math.min(1, target + dt / 13);
+      target = Math.min(1, target + dt / (kind === 'fog' ? 16 : 13));
       if (target >= 1) { playing = false; play.textContent = 'Replay the sequence'; }
     } else if (!manual && !reduced) target = getScrollProgress();
     current = reduced ? target : current + (target - current) * (1 - Math.exp(-dt / .11));
@@ -79,8 +84,8 @@ for (const film of document.querySelectorAll('[data-shl-film], [data-film="fog"]
     if (scene || loading) return;
     loading = true;
     try {
-      const { createScene } = kind === 'fog' ? await import('./fog-scene.js?v=20261022h') : await import('./shl-scene.js?v=20261022f');
-      scene = createScene(host);
+      const { createScene } = kind === 'fog' ? await import('./fog-scene.js?v=20261022j') : await import('./shl-scene.js?v=20261022f');
+      scene = await createScene(host);
       film.classList.add('is-ready');
       lastRendered = -1;
       requestFrame();
@@ -107,7 +112,9 @@ for (const film of document.querySelectorAll('[data-shl-film], [data-film="fog"]
     manual = true;
     follow.hidden = false;
     if (reduced) {
-      target = current < .25 ? .38 : current < .55 ? .65 : current < .9 ? 1 : 0;
+      target = kind === 'fog'
+        ? (current < .18 ? .27 : current < .38 ? .50 : current < .64 ? .74 : current < .84 ? 1 : 0)
+        : (current < .25 ? .38 : current < .55 ? .65 : current < .9 ? 1 : 0);
       play.textContent = 'Next view';
     } else {
       playing = !playing;

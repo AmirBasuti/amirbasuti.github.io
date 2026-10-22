@@ -1,264 +1,163 @@
 import * as THREE from '../vendor/three-r180/three.module.min.js';
+import { GLTFLoader } from '../vendor/three-r180/addons/loaders/GLTFLoader.js';
+import { createMotionData } from './fog-motion-data.js';
 
 const clamp = n => Math.max(0, Math.min(1, n));
 const mix = (a, b, t) => a + (b - a) * t;
-const ease = (a, b, p) => {
-  const t = clamp((p - a) / (b - a));
-  return t * t * (3 - 2 * t);
-};
-// Integral of smoothstep: slowing the gait never reverses its phase.
-const easedTime = (a, b, p) => {
-  const t = clamp((p - a) / (b - a));
-  return (b - a) * (t * t * t - .5 * t * t * t * t) + Math.max(0, p - b);
-};
+const ease = (a, b, p) => { const t = clamp((p - a) / (b - a)); return t * t * (3 - 2 * t); };
 
 /**
- * Original explanatory FoG scene, not a recording or a model prediction.
- * FoG-STAR: four IMUs (both ankles, lower back, affected-side wrist), 24
- * channels at 60 Hz. The study uses 2 s windows / 0.5 s hop and frozen
- * UniShape + MantisV2 with cross-attention and offline zero-phase processing.
- * The footwear illustrates gait only; the four ribbons represent all four
- * placements. Each model stream receives all four colors, not a sensor subset.
- * The highlighted interval illustrates detection, never future warning.
- * The caller owns scheduling, reduced motion, context recovery and HTML copy.
+ * Quaternius CC0 rigged character; see assets/models/README.md.
+ * Authored walk/idle clips drive the full body. Four bone trajectories sampled
+ * at 60 Hz from this exact blend and contact correction drive the curves.
+ * They are illustrative kinematics, not clinical IMUs or model predictions.
+ * Four placements feed both representation streams. The selected 2 s window
+ * illustrates offline detection; no forecasting or real-time claim is made.
+ * The caller owns frame scheduling, reduced motion and context recovery.
  */
-export function createScene(host) {
+export async function createScene(host) {
+  const asset = await new GLTFLoader().loadAsync(new URL('../assets/models/quaternius-man.glb', import.meta.url).href);
+  const model = asset.scene;
+  const walkClip = asset.animations.find(clip => clip.name === 'HumanArmature|Man_Walk');
+  const idleClip = asset.animations.find(clip => clip.name === 'HumanArmature|Man_Idle');
+  if (!walkClip || !idleClip) throw new Error('The character requires its authored walk and idle clips.');
+  const namedBones = new Map();
+  model.traverse(object => {
+    if (object.isBone) namedBones.set(object.name.replace(/[^a-z0-9]/gi, '').toLowerCase(), object);
+  });
+  const bones = ['footl', 'footr', 'abdomen', 'palmr'].map(name => namedBones.get(name));
+  if (bones.some(bone => !bone)) throw new Error('The four illustrative movement attachments are missing.');
+
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
   renderer.setClearColor(0xf3f1eb, 0);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.12;
+  renderer.toneMappingExposure = 1.10;
   renderer.domElement.setAttribute('aria-hidden', 'true');
   host.append(renderer.domElement);
-
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(36, 1, .1, 50);
-  const viewingDirection = new THREE.Vector3(0, 3.7, 8).normalize();
-  camera.position.copy(viewingDirection).multiplyScalar(8.2);
+  const view = new THREE.Vector3(0, .16, 1).normalize();
+  camera.position.copy(view).multiplyScalar(6.8);
   camera.lookAt(0, 0, 0);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x89917a, 2.4));
-  const key = new THREE.DirectionalLight(0xfff6e5, 3.8);
-  key.position.set(-3, 6, 5);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x929781, 2.25));
+  const key = new THREE.DirectionalLight(0xfff6e7, 3.1);
+  key.position.set(-3, 5, 5);
   scene.add(key);
-  const edgeLight = new THREE.DirectionalLight(0xd5e0d1, 2.0);
-  edgeLight.position.set(4, 2, -3);
-  scene.add(edgeLight);
+  const rim = new THREE.DirectionalLight(0xd4e2d5, 1.6);
+  rim.position.set(3, 3, -4);
+  scene.add(rim);
 
-  const geometries = new Set();
-  const materials = new Set();
-  const textures = new Set();
-  const footwearMaterials = new Map();
+  const geometries = new Set(), materials = new Set(), textures = new Set(), skeletons = new Set();
+  const bodyMaterials = new Map();
   const keepGeometry = geometry => { geometries.add(geometry); return geometry; };
-  function shoeMaterial(parameters) {
-    const material = new THREE.MeshStandardMaterial({ roughness: .68, transparent: true, ...parameters });
-    materials.add(material);
-    footwearMaterials.set(material, material.opacity);
-    return material;
-  }
-  const upperMaterial = shoeMaterial({ color: 0x70816c, roughness: .82 });
-  const panelMaterial = shoeMaterial({ color: 0x4c6555, roughness: .76 });
-  const soleMaterial = shoeMaterial({ color: 0xd9dbc7, roughness: .72 });
-  const outsoleMaterial = shoeMaterial({ color: 0x58614e, roughness: .9 });
-  const laceMaterial = shoeMaterial({ color: 0xc6cdb5, roughness: .92 });
-  const insideMaterial = shoeMaterial({ color: 0x263c30, roughness: 1, side: THREE.DoubleSide });
-  const stitchMaterial = shoeMaterial({ color: 0xa2ad8f, roughness: .9 });
-
-  const shoeRoot = new THREE.Group();
-  shoeRoot.rotation.y = -.28;
-  shoeRoot.position.set(0, -.72, -.72);
-  scene.add(shoeRoot);
-
-  // A continuous loft gives the upper a rounded toe, fitted waist and heel.
-  // The geometry is authored here; no third-party shoe or human assets.
-  const profile = [
-    [0, .008, .19], [.06, .24, .43], [.19, .29, .57],
-    [.36, .31, .56], [.53, .37, .44], [.70, .40, .32],
-    [.84, .35, .24], [.95, .20, .15], [1, .008, .08]
-  ];
-  function sectionAt(t) {
-    let index = 1;
-    while (index < profile.length - 1 && t > profile[index][0]) index++;
-    const a = profile[index - 1], b = profile[index];
-    const f = ease(a[0], b[0], t);
-    // An elliptical cap has a blunt, rounded front rather than a pointed taper.
-    const cap = clamp((t - .74) / .26);
-    const width = t > .74 ? Math.max(.003, .39 * Math.sqrt(1 - cap * cap)) : mix(a[1], b[1], f);
-    return { width, height: mix(a[2], b[2], f) };
-  }
-  const openingX = .17, openingZ = .24, openingCenter = -.61;
-  function upperHeight(x, z) {
-    const t = clamp((z + 1.08) / 2.2), section = sectionAt(t);
-    const asymmetry = .045 * Math.sin(Math.PI * t) * Math.sin(Math.PI * (t - .2));
-    const cosine = clamp(Math.abs(x - asymmetry) / section.width);
-    const sine = Math.sqrt(1 - cosine * cosine);
-    return .16 + Math.pow(sine, mix(.30, .72, ease(.35, .75, t))) * section.height;
-  }
-  function loft(kind) {
-    const rows = 48, sides = 32;
-    const positions = [], indices = [];
-    for (let row = 0; row <= rows; row++) {
-      const t = row / rows, section = sectionAt(t);
-      const asymmetry = .045 * Math.sin(Math.PI * t) * Math.sin(Math.PI * (t - .2));
-      for (let side = 0; side <= sides; side++) {
-        const angle = side / sides * Math.PI * 2;
-        const sine = Math.sin(angle);
-        const width = section.width + (kind === 'upper' ? 0 : .025 * Math.sin(Math.PI * t));
-        const x = Math.cos(angle) * width + asymmetry;
-        const upperRoundness = mix(.30, .72, ease(.35, .75, t));
-        const y = kind === 'upper'
-          ? .16 + (sine > 0 ? Math.pow(sine, upperRoundness) * section.height : sine * .025)
-          : (kind === 'sole' ? .115 : .047) + sine * (kind === 'sole' ? .067 : .028);
-        positions.push(x, y, -1.08 + t * 2.2);
-      }
-    }
-    function triangle(a, b, c) {
-      if (kind === 'upper') {
-        const x = (positions[a * 3] + positions[b * 3] + positions[c * 3]) / 3;
-        const y = (positions[a * 3 + 1] + positions[b * 3 + 1] + positions[c * 3 + 1]) / 3;
-        const z = (positions[a * 3 + 2] + positions[b * 3 + 2] + positions[c * 3 + 2]) / 3;
-        if (y > .4 && x * x / (openingX * openingX) + (z - openingCenter) * (z - openingCenter) / (openingZ * openingZ) < 1) return;
-      }
-      indices.push(a, b, c);
-    }
-    for (let row = 0; row < rows; row++) {
-      for (let side = 0; side < sides; side++) {
-        const a = row * (sides + 1) + side, b = a + sides + 1;
-        triangle(a, a + 1, b);
-        triangle(b, a + 1, b + 1);
-      }
-    }
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-    geometry.setIndex(indices);
-    geometry.computeVertexNormals();
-    return keepGeometry(geometry);
-  }
-  const upperGeometry = loft('upper');
-  const soleGeometry = loft('sole');
-  const outsoleGeometry = loft('outsole');
-  const openingPoints = Array.from({ length: 64 }, (_, index) => {
-    const angle = index / 64 * Math.PI * 2;
-    const x = openingX * Math.cos(angle), z = openingCenter + openingZ * Math.sin(angle);
-    return new THREE.Vector3(x, upperHeight(x, z) + .008, z);
-  });
-  const collarCurve = new THREE.CatmullRomCurve3(openingPoints, true);
-  const collarGeometry = keepGeometry(new THREE.TubeGeometry(collarCurve, 64, .018, 8, true));
-  const linerPositions = [], linerIndices = [];
-  openingPoints.forEach(point => linerPositions.push(point.x, point.y - .005, point.z, point.x * .94, .51, openingCenter + (point.z - openingCenter) * .94));
-  for (let index = 0; index < openingPoints.length; index++) {
-    const a = index * 2, b = ((index + 1) % openingPoints.length) * 2;
-    linerIndices.push(a, a + 1, b, a + 1, b + 1, b);
-  }
-  const linerGeometry = keepGeometry(new THREE.BufferGeometry());
-  linerGeometry.setAttribute('position', new THREE.Float32BufferAttribute(linerPositions, 3));
-  linerGeometry.setIndex(linerIndices);
-  linerGeometry.computeVertexNormals();
-  const insideGeometry = keepGeometry(new THREE.CircleGeometry(1, 40));
-
-  const details = [];
-  function detail(points, radius, material) {
-    const curve = new THREE.CatmullRomCurve3(points.map(point => new THREE.Vector3(...point)));
-    details.push({ geometry: keepGeometry(new THREE.TubeGeometry(curve, 22, radius, 6, false)), material });
-  }
-  // Small seams and laces provide scale without a logo or decorative dashboard.
-  [-1, 1].forEach(side => {
-    detail([[side * .27, .24, -.78], [side * .305, .28, -.35], [side * .37, .26, .28], [side * .31, .21, .75]], .008, stitchMaterial);
-    detail([[side * .22, .49, -.54], [side * .22, .52, -.22], [side * .25, .39, .16]], .021, panelMaterial);
-  });
-  for (let i = 0; i < 5; i++) {
-    const z = -.28 + i * .105;
-    const y = .16 + sectionAt((z + 1.08) / 2.2).height + .012;
-    detail([[-.17, y - .045, z], [0, y + .012, z + .025], [.17, y - .045, z + .047]], .012, laceMaterial);
-  }
-  const shoes = [-1, 1].map(side => {
-    const pose = new THREE.Group();
-    const shape = new THREE.Group();
-    shape.scale.x = side;
-    pose.add(shape);
-    shoeRoot.add(pose);
-    [[upperGeometry, upperMaterial], [soleGeometry, soleMaterial], [outsoleGeometry, outsoleMaterial]].forEach(([geometry, material]) => {
-      shape.add(new THREE.Mesh(geometry, material));
+  const keepMaterial = material => { materials.add(material); return material; };
+  const palette = { Shirt: 0x70856a, Pants: 0x3f5345, Skin: 0xc2b499, Eyes: 0x233128, Socks: 0xc7cbb6, Hair: 0x465043 };
+  model.traverse(object => {
+    if (!object.isMesh) return;
+    geometries.add(object.geometry);
+    if (object.skeleton) skeletons.add(object.skeleton);
+    object.frustumCulled = false;
+    object.castShadow = false;
+    object.receiveShadow = false;
+    const surfaces = Array.isArray(object.material) ? object.material : [object.material];
+    surfaces.forEach(material => {
+      if (palette[material.name] !== undefined) material.color.setHex(palette[material.name]);
+      material.metalness = 0;
+      material.roughness = .8;
+      material.transparent = true;
+      materials.add(material);
+      bodyMaterials.set(material, material.opacity);
     });
-    const collar = new THREE.Mesh(collarGeometry, panelMaterial);
-    shape.add(collar);
-    shape.add(new THREE.Mesh(linerGeometry, insideMaterial));
-    const inside = new THREE.Mesh(insideGeometry, insideMaterial);
-    inside.rotation.x = -Math.PI / 2;
-    inside.scale.set(openingX * .94, openingZ * .94, 1);
-    inside.position.set(0, .512, openingCenter);
-    shape.add(inside);
-    details.forEach(({ geometry, material }) => shape.add(new THREE.Mesh(geometry, material)));
-    return pose;
   });
+  const mixer = new THREE.AnimationMixer(model);
+  const walk = mixer.clipAction(walkClip).play();
+  const idle = mixer.clipAction(idleClip).play();
+  idle.setEffectiveWeight(0);
+  mixer.setTime(0);
+  model.updateMatrixWorld(true);
+  const bounds = new THREE.Box3().setFromObject(model);
+  const size = bounds.getSize(new THREE.Vector3());
+  const center = bounds.getCenter(new THREE.Vector3());
+  const scale = 3.05 / Math.max(size.y, .001);
+  // Preserve the armature and mesh's authored transforms; normalize one wrapper.
+  const normalized = new THREE.Group();
+  normalized.scale.setScalar(scale);
+  normalized.position.set(-center.x * scale, -bounds.min.y * scale, -center.z * scale);
+  normalized.add(model);
+  const actor = new THREE.Group();
+  actor.add(normalized);
+  scene.add(actor);
+  actor.updateMatrixWorld(true);
+  const motion = createMotionData(normalized, mixer, walk, idle, bones);
+  const end = motion.readVector(motion.root, motion.duration, new THREE.Vector3());
+  const heading = Math.hypot(end.x, end.z) > .05 ? Math.atan2(end.x, end.z) : 0;
+  actor.rotation.y = Math.atan2(.80, .60) - heading;
+  const direction = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), actor.rotation.y);
+  const endWorld = end.clone().applyQuaternion(direction);
+  const origin = new THREE.Vector3(-endWorld.x * .35, -1.53, -endWorld.z * .35);
 
   const shadowCanvas = document.createElement('canvas');
   shadowCanvas.width = shadowCanvas.height = 128;
-  const context = shadowCanvas.getContext('2d');
-  if (!context) throw new Error('A 2D canvas is required for the footwear shadow.');
-  const gradient = context.createRadialGradient(64, 64, 0, 64, 64, 64);
-  gradient.addColorStop(0, 'rgba(34,48,31,.26)');
-  gradient.addColorStop(.42, 'rgba(34,48,31,.12)');
-  gradient.addColorStop(1, 'rgba(34,48,31,0)');
-  context.fillStyle = gradient;
-  context.fillRect(0, 0, 128, 128);
+  const shadowContext = shadowCanvas.getContext('2d');
+  if (!shadowContext) throw new Error('A 2D canvas is required for contact shadows.');
+  const gradient = shadowContext.createRadialGradient(64, 64, 0, 64, 64, 64);
+  gradient.addColorStop(0, 'rgba(35,48,32,.3)');
+  gradient.addColorStop(.45, 'rgba(35,48,32,.12)');
+  gradient.addColorStop(1, 'rgba(35,48,32,0)');
+  shadowContext.fillStyle = gradient;
+  shadowContext.fillRect(0, 0, 128, 128);
   const shadowTexture = new THREE.CanvasTexture(shadowCanvas);
   textures.add(shadowTexture);
-  const shadowGeometry = keepGeometry(new THREE.PlaneGeometry(1.6, 3.1));
-  const shadows = shoes.map(() => {
-    const material = new THREE.MeshBasicMaterial({ map: shadowTexture, transparent: true, depthWrite: false, toneMapped: false });
-    materials.add(material);
-    const mesh = new THREE.Mesh(shadowGeometry, material);
-    mesh.rotation.x = -Math.PI / 2;
-    mesh.position.y = .005;
-    shoeRoot.add(mesh);
-    return mesh;
+  const shadowGeometry = keepGeometry(new THREE.PlaneGeometry(.68, 1.0));
+  const shadows = [0, 1].map(() => {
+    const material = keepMaterial(new THREE.MeshBasicMaterial({ map: shadowTexture, transparent: true, depthWrite: false, toneMapped: false }));
+    const shadow = new THREE.Mesh(shadowGeometry, material);
+    shadow.rotation.set(-Math.PI / 2, 0, -actor.rotation.y);
+    scene.add(shadow);
+    return shadow;
+  });
+  const contactHeight = Math.min(motion.positions[0][1], motion.positions[1][1]);
+  const sensorColors = [0x405f49, 0x6c8877, 0x9a8558, 0x637158].map(value => new THREE.Color(value));
+  const markerGeometry = keepGeometry(new THREE.SphereGeometry(.043, 12, 8));
+  const markers = sensorColors.map(color => {
+    const material = keepMaterial(new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, depthWrite: false, depthTest: false, toneMapped: false }));
+    const marker = new THREE.Mesh(markerGeometry, material);
+    marker.renderOrder = 4;
+    scene.add(marker);
+    return marker;
   });
 
-  // The signal plane faces the fixed viewing direction throughout the dolly.
   const signalRoot = new THREE.Group();
   signalRoot.quaternion.copy(camera.quaternion);
   scene.add(signalRoot);
-  const count = 160;
-  const sensorColors = [0x405f49, 0x6c8877, 0x9a8558, 0x637158].map(value => new THREE.Color(value));
-  const brass = new THREE.Color(0xa08042);
-  const quiet = new THREE.Color(0x8a9b83);
-  const ribbonIndices = [];
-  for (let i = 0; i < count; i++) {
-    const n = i * 2;
-    ribbonIndices.push(n, n + 1, n + 2, n + 1, n + 3, n + 2);
-  }
-  // Branch 1 initially overlaps invisibly. Both model streams later contain
-  // every sensor, keeping the illustration faithful to a shared input window.
+  const count = 180, indices = [];
+  for (let i = 0; i < count; i++) { const n = i * 2; indices.push(n, n + 1, n + 2, n + 1, n + 3, n + 2); }
+  const brass = new THREE.Color(0xa08042), quiet = new THREE.Color(0x8a9b83);
   const ribbons = Array.from({ length: 8 }, (_, index) => {
     const sensor = index % 4, branch = Math.floor(index / 4);
-    const positions = new Float32Array((count + 1) * 6);
-    const colors = new Float32Array((count + 1) * 6);
+    const positions = new Float32Array((count + 1) * 6), colors = new Float32Array((count + 1) * 6);
     const centers = new Float32Array((count + 1) * 3);
     const geometry = keepGeometry(new THREE.BufferGeometry());
     geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3).setUsage(THREE.DynamicDrawUsage));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3).setUsage(THREE.DynamicDrawUsage));
-    geometry.setIndex(ribbonIndices);
-    const material = new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, toneMapped: false });
-    materials.add(material);
+    geometry.setIndex(indices);
+    const material = keepMaterial(new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false, toneMapped: false }));
     const mesh = new THREE.Mesh(geometry, material);
     mesh.frustumCulled = false;
     signalRoot.add(mesh);
-    return { sensor, branch, positions, colors, centers, geometry, material, mesh };
+    return { sensor, branch, positions, colors, centers, geometry, material, mesh, port: new THREE.Vector3() };
   });
-
+  const windowStart = 3.5 / motion.duration, windowEnd = 5.5 / motion.duration;
+  const leftBound = -2.35 + 4.7 * windowStart, rightBound = -2.35 + 4.7 * windowEnd;
   const boundsGeometry = keepGeometry(new THREE.BufferGeometry());
-  const leftBound = -2.35 + 4.7 * .43, rightBound = -2.35 + 4.7 * .69;
   boundsGeometry.setAttribute('position', new THREE.Float32BufferAttribute([
-    leftBound, -.92, .06, leftBound, -.48, .06,
-    rightBound, -.92, .06, rightBound, -.48, .06
+    leftBound, -.91, .07, leftBound, -.43, .07, rightBound, -.91, .07, rightBound, -.43, .07
   ], 3));
-  const boundsMaterial = new THREE.LineBasicMaterial({ color: brass, transparent: true, opacity: 0, toneMapped: false });
-  materials.add(boundsMaterial);
+  const boundsMaterial = keepMaterial(new THREE.LineBasicMaterial({ color: brass, transparent: true, opacity: 0, toneMapped: false }));
   signalRoot.add(new THREE.LineSegments(boundsGeometry, boundsMaterial));
-
   const labelCanvas = document.createElement('canvas');
-  labelCanvas.width = 512;
-  labelCanvas.height = 192;
+  labelCanvas.width = 512; labelCanvas.height = 192;
   const labelContext = labelCanvas.getContext('2d');
   if (!labelContext) throw new Error('A 2D canvas is required for the interval label.');
   labelContext.textAlign = 'center';
@@ -271,20 +170,27 @@ export function createScene(host) {
   const labelTexture = new THREE.CanvasTexture(labelCanvas);
   labelTexture.colorSpace = THREE.SRGBColorSpace;
   textures.add(labelTexture);
-  const labelMaterial = new THREE.MeshBasicMaterial({ map: labelTexture, transparent: true, opacity: 0, depthWrite: false, toneMapped: false });
-  materials.add(labelMaterial);
+  const labelMaterial = keepMaterial(new THREE.MeshBasicMaterial({ map: labelTexture, transparent: true, opacity: 0, depthWrite: false, toneMapped: false }));
   const label = new THREE.Mesh(keepGeometry(new THREE.PlaneGeometry(2.8, 1.05)), labelMaterial);
-  label.position.set((leftBound + rightBound) / 2, .03, .08);
+  label.position.set((leftBound + rightBound) / 2, .04, .08);
   signalRoot.add(label);
 
+  const translation = new THREE.Vector3(), follow = new THREE.Vector3();
+  const bonePosition = new THREE.Vector3();
   let disposed = false, lastProgress = 0;
   function frameScene(p) {
-    // Give the footwear a close product view. Retreat continuously as the
-    // recordings spread, retaining the full portrait framing for the output.
-    const close = Math.max(6.8, 4.6 / camera.aspect);
+    const portrait = 1 - ease(.95, 1.15, camera.aspect);
+    const close = Math.max(5.8, mix(5.0, 4.1, portrait) / camera.aspect);
     const wide = Math.max(8.1, 8.2 / camera.aspect);
-    const distance = mix(close, wide, ease(.25, .51, p));
-    camera.position.copy(viewingDirection).multiplyScalar(distance);
+    const distance = mix(close, wide, ease(.38, .64, p));
+    follow.copy(actor.position).sub(origin).multiplyScalar(.65);
+    // Portrait follows the actual person from the first frame, including the
+    // initial path offset. Desktop retains its more spacious partial follow.
+    follow.lerp(actor.position, portrait).multiplyScalar(1 - ease(.40, .64, p));
+    follow.y = 0;
+    camera.position.copy(view).multiplyScalar(distance).add(follow);
+    // View direction is constant; this small follow keeps genuine root travel in frame.
+    signalRoot.position.copy(follow);
   }
   function resize() {
     if (disposed) return;
@@ -300,101 +206,77 @@ export function createScene(host) {
     if (disposed) return;
     const p = clamp(Number.isFinite(progress) ? progress : 0);
     lastProgress = p;
+    const seconds = Math.min(1, p / .57) * motion.duration;
+    // The same pose() and root trajectory were used by the 60 Hz sampler.
+    motion.pose(seconds);
+    motion.readVector(motion.root, seconds, translation).applyQuaternion(direction);
+    actor.position.copy(origin).add(translation);
+    actor.updateMatrixWorld(true);
+    const bodyOpacity = 1 - ease(.48, .64, p);
+    actor.visible = bodyOpacity > .001;
+    bodyMaterials.forEach((opacity, material) => { material.opacity = opacity * bodyOpacity; material.depthWrite = bodyOpacity > .999; });
     frameScene(p);
-    const hesitation = ease(.16, .22, p) * (1 - ease(.30, .37, p));
-    const clock = p - (easedTime(.16, .22, p) - easedTime(.30, .37, p));
-    const footwearOpacity = 1 - ease(.29, .48, p);
-    shoeRoot.visible = footwearOpacity > .001;
-    footwearMaterials.forEach((opacity, material) => {
-      material.opacity = opacity * footwearOpacity;
-      material.depthWrite = footwearOpacity > .999;
+    signalRoot.updateMatrixWorld(true);
+    bones.forEach((bone, index) => {
+      bone.getWorldPosition(bonePosition);
+      markers[index].position.copy(bonePosition);
+      markers[index].material.opacity = ease(.29, .37, p) * bodyOpacity;
+      if (index < 2) {
+        const height = Math.max(0, bonePosition.y - origin.y - contactHeight);
+        shadows[index].position.set(bonePosition.x, origin.y + .008, bonePosition.z);
+        shadows[index].material.opacity = bodyOpacity * Math.max(.25, 1 - height * 1.6);
+        shadows[index].scale.setScalar(1 + height * .25);
+      }
     });
-    shoes.forEach((shoe, index) => {
-      const cycle = clock * 6.5 + index * .5 + .12;
-      const step = Math.floor(cycle);
-      const phase = cycle - step;
-      const stance = phase < .62;
-      const swing = clamp((phase - .62) / .38);
-      const stanceTime = clamp(phase / .62);
-      let roll = stance
-        ? -.15 * (1 - ease(0, .23, stanceTime)) + .32 * ease(.64, 1, stanceTime)
-        : mix(.32, -.15, ease(0, 1, swing));
-      const lift = stance ? 0 : Math.pow(Math.sin(Math.PI * swing), 2) * .32 * (1 - hesitation * .9);
-      // Small residual movement during the illustrative hesitation: FoG is not
-      // represented as universal total immobility or as a measured gait trace.
-      roll *= 1 - hesitation * .75;
-      roll += Math.sin(p * 290 + index * 1.8) * .016 * hesitation;
-      // A planted contact does not slide backwards. Only swing advances the
-      // next contact; toe/heel compensation keeps the active pivot stationary.
-      const contact = step * 1.1 - index * .55 + (stance ? 0 : 1.1 * ease(0, 1, swing));
-      const pivot = roll >= 0 ? 1.08 : -1.08;
-      shoe.position.set(index ? .58 : -.58, lift + Math.abs(Math.sin(roll)) * 1.08,
-        contact + pivot * (1 - Math.cos(roll)));
-      shoe.rotation.set(roll, (index ? -.045 : .045) + Math.sin(phase * Math.PI * 2) * .025, 0);
-      const shadow = shadows[index];
-      shadow.position.x = shoe.position.x;
-      shadow.position.z = shoe.position.z;
-      shadow.scale.setScalar(1 + lift * .3);
-      shadow.material.opacity = footwearOpacity * (1 - lift * 1.3);
-    });
-
-    const emergence = ease(.24, .45, p);
-    const models = ease(.50, .75, p);
-    const output = ease(.76, .97, p);
-    boundsMaterial.opacity = ease(.86, .98, p) * .55;
-    labelMaterial.opacity = ease(.86, .97, p);
+    const emergence = ease(.32, .48, p), release = ease(.38, .64, p);
+    const models = ease(.64, .84, p), output = ease(.84, 1, p);
+    const history = seconds / motion.duration;
+    boundsMaterial.opacity = ease(.90, 1, p) * .55;
+    labelMaterial.opacity = ease(.90, 1, p);
     ribbons.forEach(ribbon => {
       const { sensor, branch, centers, positions, colors } = ribbon;
-      ribbon.material.opacity = emergence * (branch ? models : 1) * mix(.88, .56, output);
+      bones[sensor].getWorldPosition(ribbon.port);
+      signalRoot.worldToLocal(ribbon.port);
+      ribbon.material.opacity = emergence * (branch ? models : 1) * mix(.92, .60, output);
       ribbon.mesh.visible = ribbon.material.opacity > .001;
       const sensorColor = sensorColors[sensor];
       for (let i = 0; i <= count; i++) {
-        const u = i / count;
-        const envelope = Math.sin(Math.PI * u);
-        // Explanatory oscillation only: no participant data or model logits.
-        const wave = Math.sin(u * 35 + sensor * 1.4) * .085 + Math.sin(u * 71 + sensor) * .023;
-        const spread = ease(.25, .48, p);
-        let x = mix((sensor - 1.5) * .38 + (u - .5) * .55, -2.35 + 4.7 * u, spread);
-        let y = mix(-.45 + envelope * .5, (1.5 - sensor) * .46 + wave * envelope, spread);
-        let z = .12 * Math.sin(u * Math.PI + sensor * .3) * (1 - spread);
-        const angle = u * Math.PI * 3 + sensor * .35;
-        const modelY = (branch ? -.57 : .57) + Math.sin(angle) * .15 * envelope + (sensor - 1.5) * .045;
-        const modelZ = Math.cos(angle) * .20 * envelope;
-        x = mix(x, -2.22 + 4.44 * u, models);
+        const u = i / count, sample = u * history;
+        const value = motion.signalAt(sensor, sample);
+        const plotX = -2.35 + 4.7 * sample;
+        const plotY = (1.5 - sensor) * .48 + (value - .35) * .24;
+        const attached = ease(0, .25, u) * ease(.32, .55, p);
+        let x = mix(ribbon.port.x, plotX, u * emergence);
+        let y = mix(ribbon.port.y, plotY, attached);
+        let z = mix(ribbon.port.z, .08, attached);
+        x = mix(x, plotX, release); y = mix(y, plotY, release); z = mix(z, 0, release);
+        // Both model lanes retain all four sampled histories. Only their layout
+        // and visual scale change: no new synthetic waveform replaces them.
+        const modelY = (branch ? -.56 : .56) + (sensor - 1.5) * .065 + (value - .35) * .13;
+        x = mix(x, -2.22 + 4.44 * sample, models);
         y = mix(y, modelY, models);
-        z = mix(z, modelZ, models);
-        const interval = ease(.425, .445, u) * (1 - ease(.675, .695, u));
-        x = mix(x, -2.35 + 4.7 * u, output);
-        y = mix(y, -.70 + (sensor - 1.5) * .025 + (branch ? .009 : -.009), output);
+        z = mix(z, (sensor - 1.5) * .035, models);
+        x = mix(x, plotX, output);
+        y = mix(y, -.67 + (sensor - 1.5) * .026 + (branch ? .008 : -.008) + value * .028, output);
         z = mix(z, .02, output);
         const at = i * 3;
         centers[at] = x; centers[at + 1] = y; centers[at + 2] = z;
-        const finalColor = interval > .5 ? brass : quiet;
-        const colorMix = output * (interval > .5 ? 1 : .75);
-        const r = mix(sensorColor.r, finalColor.r, colorMix);
-        const g = mix(sensorColor.g, finalColor.g, colorMix);
-        const b = mix(sensorColor.b, finalColor.b, colorMix);
+        const selected = sample >= windowStart && sample <= windowEnd;
+        const finalColor = selected ? brass : quiet, colorMix = output * (selected ? 1 : .75);
         const colorAt = i * 6;
-        colors[colorAt] = colors[colorAt + 3] = r;
-        colors[colorAt + 1] = colors[colorAt + 4] = g;
-        colors[colorAt + 2] = colors[colorAt + 5] = b;
+        colors[colorAt] = colors[colorAt + 3] = mix(sensorColor.r, finalColor.r, colorMix);
+        colors[colorAt + 1] = colors[colorAt + 4] = mix(sensorColor.g, finalColor.g, colorMix);
+        colors[colorAt + 2] = colors[colorAt + 5] = mix(sensorColor.b, finalColor.b, colorMix);
       }
-      // Orient width across the path, avoiding disappearing vertical segments.
       for (let i = 0; i <= count; i++) {
         const before = Math.max(0, i - 1) * 3, after = Math.min(count, i + 1) * 3;
         const dx = centers[after] - centers[before], dy = centers[after + 1] - centers[before + 1];
         const length = Math.hypot(dx, dy) || 1;
-        const u = i / count;
-        const taper = .35 + .65 * Math.sin(Math.PI * u);
-        const thickness = mix(.014, .020, output) * taper;
+        const thickness = mix(.012, .019, output);
         const nx = -dy / length * thickness, ny = dx / length * thickness;
         const from = i * 3, to = i * 6;
-        positions[to] = centers[from] + nx;
-        positions[to + 1] = centers[from + 1] + ny;
-        positions[to + 2] = centers[from + 2];
-        positions[to + 3] = centers[from] - nx;
-        positions[to + 4] = centers[from + 1] - ny;
-        positions[to + 5] = centers[from + 2];
+        positions[to] = centers[from] + nx; positions[to + 1] = centers[from + 1] + ny; positions[to + 2] = centers[from + 2];
+        positions[to + 3] = centers[from] - nx; positions[to + 4] = centers[from + 1] - ny; positions[to + 5] = centers[from + 2];
       }
       ribbon.geometry.attributes.position.needsUpdate = true;
       ribbon.geometry.attributes.color.needsUpdate = true;
@@ -404,6 +286,9 @@ export function createScene(host) {
   function dispose() {
     if (disposed) return;
     disposed = true;
+    mixer.stopAllAction();
+    mixer.uncacheRoot(model);
+    skeletons.forEach(skeleton => skeleton.dispose());
     geometries.forEach(geometry => geometry.dispose());
     materials.forEach(material => material.dispose());
     textures.forEach(texture => texture.dispose());

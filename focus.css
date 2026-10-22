@@ -1,4 +1,8 @@
 /* Reading hierarchy for the academic homepage. The SHL film owns its layout. */
+.focus-research-copy .hero-eyebrow{justify-content:flex-start;font-size:13px;margin-bottom:26px;color:#526149}
+.focus-research-copy .hero-intro{font-size:20px;line-height:1.65;letter-spacing:0;max-width:660px;margin:0;color:#46513f}
+.focus-research-copy .hero-bottom-line{margin-top:48px;gap:30px;max-width:900px}
+@media(max-width:699px){.focus-research-copy .hero-intro{font-size:17px}.focus-research-copy .hero-bottom-line{flex-direction:column;align-items:flex-start;gap:16px;margin-top:30px}.focus-research-copy .hero-bottom-line>span{max-width:none}.focus-research-copy .hero-bottom-line>div{justify-content:flex-start}}
 .journey-copy[data-reading-copy]{display:grid!important;grid-template-columns:minmax(0,1fr);gap:0}
 .journey-copy[data-reading-copy]>article{grid-area:1/1;min-width:0;will-change:opacity,transform}
 .hero .hero-intro{font-size:18px;line-height:1.7;color:#46513f}

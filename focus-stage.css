@@ -1,0 +1,47 @@
+/* Native scroll sections. Without enhancement, every panel remains in document flow. */
+[data-focus-intro]{position:relative;isolation:isolate}
+[data-focus-intro] .focus-intro-track,[data-focus-intro] .focus-intro-sticky{position:relative}
+[data-focus-intro] .focus-intro-panel{position:relative;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding-block:112px 84px;box-sizing:border-box}
+[data-focus-intro] [data-focus-panel="identity"]{align-items:center;text-align:center;padding-inline:20px}
+[data-focus-intro] .focus-name{font-family:inherit;font-size:clamp(48px,12.5vw,184px);font-weight:550;line-height:1.05;letter-spacing:-.065em;margin:0;white-space:nowrap;color:inherit}
+[data-focus-intro] .focus-scroll{position:absolute;bottom:max(38px,8svh);left:50%;transform:translateX(-50%);display:inline-flex;align-items:center;justify-content:center;gap:20px;min-height:44px;padding:8px 2px;font:inherit;font-size:12px;line-height:1.5;letter-spacing:.015em;white-space:nowrap;color:inherit;opacity:.67}
+[data-focus-intro] .focus-scroll:hover,[data-focus-intro] .focus-scroll:focus-visible{opacity:1}
+[data-focus-intro] .focus-scroll:focus-visible{outline:2px solid currentColor;outline-offset:7px}
+[data-focus-intro] .focus-intro-content{scroll-margin-top:0}
+[data-focus-intro] .focus-intro-content:focus{outline:none}
+[data-focus-intro] .focus-work-title{font-size:clamp(50px,6.7vw,94px);font-weight:470;line-height:1.04;letter-spacing:-.065em;margin:0 0 40px}
+[data-focus-intro] .focus-work-title em{font-style:normal;color:#9eb3a4}
+[data-focus-intro] .hero-caption{margin-top:50px}
+.focus-intro-ready .focus-intro-track{height:280vh;height:280svh}
+.focus-intro-ready .focus-intro-sticky{position:sticky!important;top:0;height:100vh;height:100svh;display:grid;isolation:isolate}
+.focus-intro-ready .focus-intro-panel{grid-area:1/1;align-self:stretch;min-width:0}
+.focus-intro-ready .focus-intro-panel[inert]{pointer-events:none}
+.focus-intro-ready .focus-intro-sticky:focus{outline:none}
+/* Optional overlay header keeps the identity at the top of the first viewport. */
+[data-focus-header]{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10}
+/* Apply to intro wrappers only; scene controls, evidence and reading links keep their own layout. */
+[data-focus-chapter]{min-height:100vh;min-height:100svh;display:grid;align-content:center;padding-block:clamp(70px,10svh,140px);box-sizing:border-box}
+[data-focus-chapter]>[data-focus-chapter-inner]{min-width:0;margin-block:0}
+.focus-chapter-ready>[data-focus-chapter-inner]{transition:opacity .36s ease,transform .45s cubic-bezier(.2,.65,.3,1)}
+.focus-chapter-ready:not(.focus-chapter-present)>[data-focus-chapter-inner]{opacity:0;transform:translateY(16px)}
+.focus-chapter-ready.focus-chapter-present>[data-focus-chapter-inner],.focus-chapter-ready:focus-within>[data-focus-chapter-inner]{opacity:1;transform:none}
+.focus-chapter-ready:focus-within>[data-focus-chapter-inner]{transition:none}
+@media(max-width:699px){
+  [data-focus-intro] .focus-intro-panel{padding-block:100px 64px}
+  [data-focus-intro] .focus-name{font-size:clamp(48px,12.5vw,86px)}
+  [data-focus-intro] .focus-work-title{font-size:clamp(40px,9.5vw,62px);line-height:1.08;letter-spacing:-.055em;margin-bottom:28px}
+  [data-focus-intro] .hero-caption{margin-top:38px}
+  [data-focus-chapter]{padding-block:70px}
+}
+@media(prefers-reduced-motion:reduce){
+  [data-focus-intro]{scroll-behavior:auto}
+  .focus-chapter-ready>[data-focus-chapter-inner]{opacity:1!important;transform:none!important;transition:none!important}
+}
+@media print{
+  [data-focus-intro] .focus-intro-track{height:auto!important}
+  [data-focus-intro] .focus-intro-sticky{position:static!important;display:block!important;height:auto!important}
+  [data-focus-intro] .focus-intro-panel{min-height:0!important;opacity:1!important;visibility:visible!important;transform:none!important;padding-block:25px!important}
+  [data-focus-intro] .focus-scroll{display:none}
+  [data-focus-chapter]{min-height:0;padding-block:30px}
+  [data-focus-chapter-inner]{opacity:1!important;transform:none!important}
+}
