@@ -4,67 +4,92 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Amir Basuti | Machine Learning & Wearable Sensing</title>
-  <meta name="description" content="Amir Basuti, MSc student in Computer Science at the University of Tehran. Research in time-series learning, wearable sensing, activity recognition and health.">
-  <meta name="theme-color" content="#f5f3ed">
-  <meta property="og:title" content="Amir Basuti — Machine Learning & Wearable Sensing">
-  <meta property="og:description" content="Research, papers and professional profiles. University of Tehran.">
+  <meta name="description" content="Amir Basuti — software engineer and MSc student in Computer Science at the University of Tehran. Machine learning, wearable sensing and human movement.">
+  <meta name="theme-color" content="#f5f5f7">
+  <meta property="og:title" content="Amir Basuti — From motion to meaning">
+  <meta property="og:description" content="Software, sensing and machine learning. Research and selected work at the University of Tehran.">
   <meta property="og:type" content="profile">
+  <meta property="og:url" content="https://amirbasuti.github.io/">
+  <link rel="canonical" href="https://amirbasuti.github.io/">
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" type="image/svg+xml" href="mark.svg">
   <script defer src="site.js"></script>
+  <script defer src="motion.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
-  <header class="site-header wrap">
-    <a class="wordmark" href="#about" aria-label="Amir Basuti, home">AB<span class="mark-dot">.</span></a>
-    <nav aria-label="Main navigation">
-      <a href="#research">Research</a>
-      <a href="#papers">Papers</a>
-      <a href="#contact">Contact <span aria-hidden="true">↗</span></a>
-    </nav>
+  <header class="site-header">
+    <div class="nav-inner">
+      <a class="wordmark" href="#about" aria-label="Amir Basuti, home">Amir Basuti<span>.</span></a>
+      <nav aria-label="Main navigation"><a href="#research">Research</a><a href="#papers">Papers</a><a href="#contact">Contact</a></nav>
+      <button class="motion-toggle" type="button" aria-label="Motion" aria-pressed="false" hidden><span class="motion-icon" aria-hidden="true">Ⅱ</span><span class="motion-label">Motion</span></button>
+    </div>
   </header>
-
   <main id="main">
     <section class="hero wrap" id="about" aria-labelledby="name">
-      <div class="hero-copy">
-        <p class="eyebrow"><span class="signal-dot" aria-hidden="true"></span> University of Tehran · Computer Science</p>
-        <h1 id="name">Amir Basuti<span class="name-dot">.</span></h1>
-        <p class="hero-focus">Machine learning<br>for wearable sensing.</p>
-        <p class="intro">I’m an MSc student in Computer Science at the University of Tehran. I work with time-series and wearable sensor data to study human activity, gait and movement-related health.</p>
-        <div class="profile-links" aria-label="Professional profiles">
-          <a href="https://www.linkedin.com/in/amirbasuti/">LinkedIn <span aria-hidden="true">↗</span></a>
-          <a href="https://orcid.org/0009-0003-6180-2031">ORCID <span aria-hidden="true">↗</span></a>
-          <a href="https://github.com/AmirBasuti">GitHub <span aria-hidden="true">↗</span></a>
+      <div class="hero-eyebrow"><span class="live-dot" aria-hidden="true"></span> Research × Software</div>
+      <h1 id="name">Amir Basuti.</h1>
+      <p class="hero-title">From signals.<br><span>To real life.</span></p>
+      <p class="hero-intro">I build software and study how machines<br class="desktop-break"> can understand human movement.</p>
+      <p class="hero-affiliation">MSc Computer Science · University of Tehran</p>
+      <div class="hero-actions"><a class="pill primary" href="#papers">Explore my work <span aria-hidden="true">↓</span></a><a class="pill secondary" href="https://github.com/AmirBasuti">GitHub <span aria-hidden="true">↗</span></a></div>
+      <figure class="hero-art" aria-label="A smartphone connecting movement to inertial sensor signals">
+        <div class="sensor-halo" aria-hidden="true"></div>
+        <img class="hero-phone" src="images/shl-phone-hero.svg" alt="An illustrative smartphone showing accelerometer, gyroscope and magnetometer signals." width="680" height="480">
+        <figcaption>SHL 2026 · From the phone to the way we move</figcaption>
+      </figure>
+      <a class="scroll-cue" href="#research">Follow the signal <span aria-hidden="true">↓</span></a>
+    </section>
+
+    <section class="signal-story" id="research" aria-labelledby="research-heading">
+      <div class="story-sticky">
+        <div class="story-heading wrap"><p class="eyebrow">Inside our SHL work</p><h2 id="research-heading">One phone.<br>A world in motion.</h2></div>
+        <div class="story-layout wrap">
+          <div class="signal-stage" aria-hidden="true">
+            <img class="pipeline-scene" data-scene="0" src="images/shl-phone.svg" alt="" width="680" height="480">
+            <img class="pipeline-scene" data-scene="1" src="images/shl-signals.svg" alt="" width="680" height="480">
+            <img class="pipeline-scene" data-scene="2" src="images/shl-models.svg" alt="" width="680" height="480">
+            <img class="pipeline-scene" data-scene="3" src="images/shl-activities.svg" alt="" width="680" height="480">
+            <div class="stage-legend"><span class="legend-dot"></span><span id="visual-label">Smartphone sensing</span><span class="legend-code">01 / 04</span></div>
+          </div>
+          <div class="story-narrative">
+            <div class="stage-controls" role="group" aria-label="Explore the SHL pipeline">
+              <button type="button" data-stage-target="0" aria-controls="stage-0" aria-pressed="true" disabled><span>01</span> Phone</button>
+              <button type="button" data-stage-target="1" aria-controls="stage-1" aria-pressed="false" disabled><span>02</span> Signals</button>
+              <button type="button" data-stage-target="2" aria-controls="stage-2" aria-pressed="false" disabled><span>03</span> Models</button>
+              <button type="button" data-stage-target="3" aria-controls="stage-3" aria-pressed="false" disabled><span>04</span> Movement</button>
+            </div>
+            <div class="stage-details">
+              <article class="stage-detail" id="stage-0"><p class="stage-kicker">01 / The phone</p><h3>Everyday device.<br>Remarkable signals.</h3><p>In SHL, a smartphone records motion as people go about their day. The task is to recognize how they are moving from those sensor signals.</p></article>
+              <article class="stage-detail" id="stage-1"><p class="stage-kicker">02 / The sensors</p><h3>Three sensors.<br>Nine channels.</h3><p>Accelerometer, gyroscope and magnetometer, with three axes each. Every five-second window contains 500 samples per channel at 100 Hz, prepared with filtering and normalization.</p></article>
+              <article class="stage-detail" id="stage-2"><p class="stage-kicker">03 / The models</p><h3>Frozen models.<br>Combined strengths.</h3><p>We studied five frozen models with model-specific classifiers. The final system combines probabilities from NuTime, Mantis and TiRex using weighted linear late fusion.</p><p class="model-note">Final fusion weights: NuTime 54% · Mantis 29% · TiRex 17%. UniShape and TSPulse: 0%.</p></article>
+              <article class="stage-detail" id="stage-3"><p class="stage-kicker">04 / The movement</p><h3>From a signal<br>to a way of moving.</h3><p>Still, Walk, Run, Bike, Car, Bus, Train or Subway. Eight modes connecting the phone’s measurements to a person’s journey.</p></article>
+            </div>
+            <p class="scene-disclaimer">Method illustration · signal traces are schematic</p><a class="scene-link" id="scene-link" href="images/shl-phone.svg">Open full-size illustration ↗</a>
+          </div>
         </div>
-      </div>
-      <div class="hero-side" aria-hidden="true">
-        <div class="signal-sheet">
-          <div class="sheet-top"><span>TIME SERIES / HUMAN MOVEMENT</span><span>01</span></div>
-          <svg viewBox="0 0 360 260" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="grid-line" d="M20 50H340M20 100H340M20 150H340M20 200H340M60 25V235M120 25V235M180 25V235M240 25V235M300 25V235"/>
-            <path class="wave faint" d="M20 160L40 158L52 169L66 143L78 173L92 146L104 177L118 144L132 166L148 152L162 166L176 139L190 175L204 145L218 175L234 145L250 164L268 155L286 166L304 149L322 159L340 156"/>
-            <path class="wave" d="M20 119L41 120L55 110L69 135L83 94L98 141L112 88L127 138L142 107L158 122L174 116L188 101L203 144L218 87L233 141L248 98L263 129L279 112L296 121L314 112L329 123L340 118"/>
-            <path class="wave bottom" d="M20 193L42 193L56 185L70 199L86 175L102 205L117 172L132 200L149 188L164 195L181 189L198 203L213 174L229 203L244 179L260 195L278 186L295 196L313 188L329 194L340 190"/>
-            <circle cx="218" cy="87" r="6" fill="var(--accent)" stroke="var(--paper)" stroke-width="3"/>
-          </svg>
-          <div class="sheet-bottom"><span>Signals → representations → understanding</span><span>↗</span></div>
-        </div>
-        <p class="side-note">Learning useful representations<br>from the way we move.</p>
+        <div class="story-progress wrap" aria-hidden="true"><span></span></div>
       </div>
     </section>
 
-    <section class="research-section section wrap" id="research" aria-labelledby="research-heading">
-      <div class="section-label"><span>01 / RESEARCH</span><h2 id="research-heading">From sensor data<br>to useful evidence.</h2></div>
-      <div class="research-list">
-        <article><span class="topic-number">01</span><div><h3>Time-series representations</h3><p>Learning and adapting representations for sensor data, with a particular interest in foundation models and generalization across participants and sensor settings.</p></div></article>
-        <article><span class="topic-number">02</span><div><h3>Wearable activity recognition</h3><p>Recognizing human activity and transportation modes from IMU signals, including the fusion of complementary pretrained models.</p></div></article>
-        <article><span class="topic-number">03</span><div><h3>Machine learning for health</h3><p>Studying clinical gait and freezing of gait through wearable sensing, with careful attention to participant-level evaluation.</p></div></article>
+    <section class="research-section section wrap" aria-labelledby="interests-heading">
+      <p class="eyebrow reveal">Research interests</p><h2 class="section-title reveal" id="interests-heading">The questions<br>that keep me building.</h2>
+      <div class="interest-grid">
+        <article class="interest reveal"><div class="interest-symbol" aria-hidden="true">∿</div><h3>Time-series<br>representation learning.</h3><p>Learning useful representations from sensor data, with a particular interest in foundation models and generalization.</p></article>
+        <article class="interest reveal"><div class="interest-symbol dots-symbol" aria-hidden="true">⠿</div><h3>Human activity.<br>Real-world signals.</h3><p>Recognizing activity and transportation modes from IMU signals and complementary pretrained models.</p></article>
+        <article class="interest reveal"><div class="interest-symbol" aria-hidden="true">↗</div><h3>Machine learning.<br>Human health.</h3><p>Studying clinical gait and freezing of gait, with careful attention to participant-level evaluation.</p></article>
       </div>
     </section>
 
-    <section class="papers-section section" id="papers" aria-labelledby="papers-heading">
-      <div class="wrap">
-        <div class="papers-header"><div><p class="eyebrow">02 / PAPERS</p><h2 id="papers-heading">Selected work</h2></div><p class="section-aside">Publications & accepted papers<br><span>2026</span></p></div>
+    <section class="highlight" aria-labelledby="highlight-heading"><div class="wrap highlight-grid">
+      <div class="rank-art reveal" aria-hidden="true"><span class="rank-orbit"></span><span class="rank-number">1<span>st.</span></span><span class="rank-caption">SHL CHALLENGE · 2026</span></div>
+      <div class="highlight-copy reveal"><p class="eyebrow">A shared achievement</p><h2 id="highlight-heading">Small sensors.<br>A world-stage result.</h2><p>First place in the Sussex–Huawei Locomotion Challenge 2026, as a member of <strong>team UT-IR</strong> at the University of Tehran.</p><p class="highlight-detail">Our work explored early and late fusion of frozen time-series foundation models for human activity recognition.</p><a class="text-link" href="https://news.ut.ac.ir/fa/news/56078/">University of Tehran announcement <span aria-hidden="true">↗</span></a></div>
+    </div></section>
+
+    <section class="paper-evidence" aria-label="Figure from our SHL paper"><div class="wrap"><details class="paper-figure"><summary>The research, on paper. <span aria-hidden="true">＋</span></summary><figure><a href="images/shl-paper-overview.png"><img src="images/shl-paper-overview.png" width="2880" height="864" loading="lazy" alt="Figure 1 from our SHL paper: nine input channels, five-second preprocessing, five frozen models, classifier and fusion alternatives, and activity-mode outputs."></a><figcaption>Original overview figure from <a href="papers/shl-2026-frozen-model-fusion.pdf">Mohebbi et al. (2026)</a>, <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. It shows the study’s alternatives; the interactive story above follows the selected late-fusion system. Open the image for the full-size figure.</figcaption></figure></details></div></section>
+
+    <section class="papers-section section" id="papers" aria-labelledby="papers-heading"><div class="wrap">
+      <div class="papers-header reveal"><div><p class="eyebrow">Selected research · 2026</p><h2 id="papers-heading">Ideas.<br>Put to paper.</h2></div><p class="section-aside">Full titles. Clear status.<br>Work you can explore.</p></div>
         <div class="paper-list">
           <article class="paper" data-paper-id="basuti-shl2026">
             <div class="paper-index">01</div>
@@ -98,18 +123,24 @@
           </article>
         </div>
         <p class="papers-note">Accepted papers are listed with their current status; proceedings publication details are added when confirmed.</p>
+    </div></section>
+
+    <section class="craft-section section" id="experience" aria-labelledby="experience-heading"><div class="wrap">
+      <p class="eyebrow reveal">Experience</p><h2 class="section-title reveal" id="experience-heading">Research.<br>And real software.</h2>
+      <div class="experience-list">
+        <article class="experience-row reveal"><p class="experience-date">Feb 2026 — present</p><div><p class="experience-place">Milli</p><h3>Software Engineer</h3><p>Building services, real-time data integrations and web interfaces with Python, FastAPI, Redis and React/TypeScript. Attention to caching, reconnection, tests and deployment.</p></div><span class="experience-mark" aria-hidden="true">↗</span></article>
+        <article class="experience-row reveal"><p class="experience-date">Jan 2025 — Mar 2026</p><div><p class="experience-place">Kharazmi University</p><h3>Research Assistant</h3><p>Implemented Python genetic-algorithm methods for graphical unequal-probability sampling research.</p><a class="text-link" href="https://github.com/mehdimhb/graphical-sampling">Explore the project ↗</a></div><span class="experience-mark" aria-hidden="true">∿</span></article>
+        <article class="experience-row reveal"><p class="experience-date">2024 — 2025</p><div><p class="experience-place">Kharazmi University</p><h3>Teaching Assistant</h3><p>Supported Artificial Intelligence, BP Code and Advanced Programming through Python/PyTorch assignments, Git instruction and autograding.</p></div><span class="experience-mark" aria-hidden="true">＋</span></article>
       </div>
-    </section>
+      <div class="education-row reveal"><div><span class="education-label">University of Tehran · 2025 — present</span><h3>MSc Computer Science</h3><p>Algorithm and Computability Theory</p></div><div><span class="education-label">Kharazmi University · 2021 — 2025</span><h3>BSc Computer Science</h3><p>Where the path began.</p></div></div>
+    </div></section>
 
-    <section class="highlight wrap" aria-labelledby="highlight-heading">
-      <div class="highlight-label"><span class="eyebrow">03 / HIGHLIGHT</span><span class="highlight-year">2026</span></div>
-      <div><h2 id="highlight-heading">First place at the<br>SHL Challenge.</h2><p>As a member of team UT-IR at the University of Tehran, I contributed to our first-place result in the Sussex–Huawei Locomotion Challenge 2026.</p><a class="text-link" href="https://news.ut.ac.ir/fa/news/56078/">University of Tehran announcement <span aria-hidden="true">↗</span></a></div>
-    </section>
-
-    <section class="contact-section" id="contact" aria-labelledby="contact-heading">
-      <div class="wrap contact-grid"><div><p class="eyebrow">04 / CONTACT</p><h2 id="contact-heading">Let’s talk research.</h2><p>For research conversations and collaboration:</p><a class="email" href="mailto:amirbasuti@ut.ac.ir">amirbasuti@ut.ac.ir <span aria-hidden="true">↗</span></a></div><div class="contact-profiles"><p>Find me online</p><a href="https://www.linkedin.com/in/amirbasuti/">LinkedIn <span aria-hidden="true">↗</span></a><a href="https://orcid.org/0009-0003-6180-2031">ORCID <span aria-hidden="true">↗</span></a><a href="https://github.com/AmirBasuti">GitHub <span aria-hidden="true">↗</span></a></div></div>
-      <footer class="wrap"><span>© 2026 Amir Basuti</span><span>University of Tehran</span><a href="#about">Back to top ↑</a></footer>
-    </section>
+    <section class="contact-section" id="contact" aria-labelledby="contact-heading"><div class="wrap">
+      <p class="eyebrow reveal">Keep the conversation moving</p><h2 id="contact-heading" class="reveal">Let’s build<br>what’s next.</h2>
+      <p class="contact-intro reveal">Research, software and thoughtful collaboration.</p><a class="email" href="mailto:amirbasuti@ut.ac.ir">amirbasuti@ut.ac.ir <span aria-hidden="true">↗</span></a>
+      <div class="contact-profiles" aria-label="Professional profiles"><a href="https://www.linkedin.com/in/amirbasuti/">LinkedIn ↗</a><a href="https://orcid.org/0009-0003-6180-2031">ORCID ↗</a><a href="https://github.com/AmirBasuti">GitHub ↗</a><a href="https://www.researchgate.net/profile/Amirmohammad-Basuti">ResearchGate ↗</a></div>
+      <footer><span>© 2026 Amir Basuti</span><span>University of Tehran</span><a href="#about">Back to top ↑</a></footer>
+    </div></section>
   </main>
   <p class="copy-feedback" role="status" aria-live="polite" hidden></p>
   <dialog id="citation-dialog" aria-labelledby="citation-heading"><div class="citation-dialog-header"><h2 id="citation-heading">Citation</h2><button type="button" id="close-citation">Close ×</button></div><p>Copy the citation below.</p><textarea aria-label="Citation text" readonly></textarea></dialog>
