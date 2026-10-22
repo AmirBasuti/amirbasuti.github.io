@@ -1,6 +1,22 @@
 # Character assets
 
-## Current FoG person
+## Current simple FoG figure
+
+`fog-simple-person.glb` restores the earlier **Quaternius Man**, under CC0 1.0,
+with the original connected body and skinned limb motion. The derivative keeps
+only the authored walking and idle clips and removes unused data. The page uses
+muted material colors and no image textures. No new runtime dependency is added.
+
+- Size: 438,484 bytes (original 493,196 bytes).
+- SHA-256: `5cf00b7ff1f4efa66e4044bd7ac2dc8fc9e8a7b22eadf321c687a935d04168a9`
+- Source: https://poly.pizza/m/HMnuH5geEG
+- License: https://creativecommons.org/publicdomain/zero/1.0/
+
+The same walk-to-idle blend and grounding generate the four illustrative
+movement traces. They are not recorded IMU data or clinical performance evidence.
+The more detailed Innerscene figure below is retained but is no longer loaded.
+
+## Retained detailed figure
 
 `fog-person.glb` is an optimized adaptation of **Relaxed walk — Maya** by
 Innerscene, built from MakeHuman/MPFB CC0 body, rig and skin assets. The source
@@ -16,8 +32,8 @@ The web adaptation retains 19,817 triangles, the rig and the original two-second
 `Walk_Relaxed` animation. Body color texture is 512 px; other textures are
 256 px, with alpha retained for hair, lashes and eyebrows. Geometry is simplified
 and quantized; neutral ivory/slate materials replace the source outfit colors.
-No Draco or Meshopt runtime decoder is needed. The model loads only near the FoG
-scene; no external asset service is contacted by the page.
+No Draco or Meshopt runtime decoder is needed. This model was used in the prior detailed revision and is no longer loaded by
+the current scene.
 
 This is an authored animation, **not motion capture**. Its timing is adapted to
 settle at a support pose for one illustrative interruption. The same pose and
@@ -26,7 +42,7 @@ at virtual 60 Hz. The curves are illustrative kinematics, not measured IMU units
 patient data, a clinical reconstruction, or predictions. The generic person is
 not a portrait of the site owner.
 
-## Retained earlier character
+## Original simple character
 
 `quaternius-man.glb` is **Man by Quaternius**, released under **CC0 1.0**.
 
@@ -38,7 +54,7 @@ not a portrait of the site owner.
 
 The previous revision used the authored `HumanArmature|Man_Walk` and
 `HumanArmature|Man_Idle` clips. This earlier asset is retained for provenance;
-the current FoG scene does not request or render it.
+the current scene loads the smaller derivative described above.
 
 The FoG illustration samples ankle, lower-back and wrist joint movement at
 60 Hz from the same animation blend and contact correction that it displays.

@@ -1,35 +1,32 @@
 import * as THREE from '../vendor/three-r180/three.module.min.js';
 import { GLTFLoader } from '../vendor/three-r180/addons/loaders/GLTFLoader.js';
-import { createMotionData } from './fog-motion-data.js?v=20261022k';
+import { createMotionData } from './fog-motion-data.js?v=20261022l';
 
 const clamp = n => Math.max(0, Math.min(1, n));
 const mix = (a, b, t) => a + (b - a) * t;
 const ease = (a, b, p) => { const t = clamp((p - a) / (b - a)); return t * t * (3 - 2 * t); };
 
 /**
- * MakeHuman / Innerscene CC0 character; see assets/models/README.md.
- * One authored walk settles onto its own support pose. Four bone trajectories
- * sampled at 60 Hz from this exact pose and contact correction drive the curves.
+ * Simple Quaternius CC0 full-body character; see assets/models/README.md.
+ * Authored walking and idle clips keep the limbs connected. Four trajectories
+ * sampled at 60 Hz from this exact blend and contact correction drive the curves.
  * They are illustrative kinematics, not clinical IMUs or model predictions.
  * Four placements feed both representation streams. The selected 2 s window
  * illustrates offline detection; no forecasting or real-time claim is made.
  * The caller owns frame scheduling, reduced motion and context recovery.
  */
 export async function createScene(host) {
-  const asset = await new GLTFLoader().loadAsync(new URL('../assets/models/fog-person.glb', import.meta.url).href);
+  const asset = await new GLTFLoader().loadAsync(new URL('../assets/models/fog-simple-person.glb', import.meta.url).href);
   const model = asset.scene;
-  // The source includes a phone; it is unrelated to this four-IMU illustration.
-  const accessory = model.getObjectByName('Phone');
-  if (accessory) accessory.visible = false;
-  const walkClip = asset.animations.find(clip => clip.name === 'Walk_Relaxed');
-  if (!walkClip) throw new Error('The character requires its authored walking clip.');
+  const walkClip = asset.animations.find(clip => clip.name === 'HumanArmature|Man_Walk');
+  const idleClip = asset.animations.find(clip => clip.name === 'HumanArmature|Man_Idle');
+  if (!walkClip || !idleClip) throw new Error('The character requires its walking and idle clips.');
   const namedBones = new Map();
   model.traverse(object => {
     if (object.isBone) namedBones.set(object.name.replace(/[^a-z0-9]/gi, '').toLowerCase(), object);
   });
-  const bones = ['footl', 'footr', 'spine01', 'handr'].map(name => namedBones.get(name));
-  const contactBones = ['balll', 'ballr'].map(name => namedBones.get(name));
-  if ([...bones, ...contactBones].some(bone => !bone)) throw new Error('The movement and contact attachments are missing.');
+  const bones = ['footl', 'footr', 'abdomen', 'palmr'].map(name => namedBones.get(name));
+  if (bones.some(bone => !bone)) throw new Error('The movement attachments are missing.');
 
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
   renderer.setClearColor(0xf3f1eb, 0);
@@ -55,6 +52,7 @@ export async function createScene(host) {
   const bodyMaterials = new Map();
   const keepGeometry = geometry => { geometries.add(geometry); return geometry; };
   const keepMaterial = material => { materials.add(material); return material; };
+  const palette = { Shirt: 0x788476, Pants: 0x3d4944, Skin: 0xc9baa4, Eyes: 0x3b403c, Socks: 0xc9c6ba, Hair: 0x57544d };
   model.traverse(object => {
     if (!object.isMesh) return;
     geometries.add(object.geometry);
@@ -64,7 +62,9 @@ export async function createScene(host) {
     object.receiveShadow = false;
     const surfaces = Array.isArray(object.material) ? object.material : [object.material];
     surfaces.forEach(material => {
+      if (palette[material.name] !== undefined) material.color.setHex(palette[material.name]);
       material.metalness = 0;
+      material.roughness = .9;
       material.transparent = true;
       material.forceSinglePass = true;
       Object.values(material).forEach(value => { if (value?.isTexture) textures.add(value); });
@@ -74,6 +74,8 @@ export async function createScene(host) {
   });
   const mixer = new THREE.AnimationMixer(model);
   const walk = mixer.clipAction(walkClip).play();
+  const idle = mixer.clipAction(idleClip).play();
+  idle.setEffectiveWeight(0);
   mixer.setTime(0);
   model.updateMatrixWorld(true);
   const bounds = new THREE.Box3().setFromObject(model);
@@ -89,7 +91,7 @@ export async function createScene(host) {
   actor.add(normalized);
   scene.add(actor);
   actor.updateMatrixWorld(true);
-  const motion = createMotionData(normalized, mixer, walk, bones, contactBones);
+  const motion = createMotionData(normalized, mixer, walk, idle, bones);
   const end = motion.readVector(motion.root, motion.duration, new THREE.Vector3());
   const heading = Math.hypot(end.x, end.z) > .05 ? Math.atan2(end.x, end.z) : 0;
   actor.rotation.y = Math.atan2(.80, .60) - heading;
@@ -123,7 +125,7 @@ export async function createScene(host) {
   );
   groundShadow.rotation.x = -Math.PI / 2;
   scene.add(groundShadow);
-  const contactHeight = motion.contactHeight;
+  const contactHeight = Math.min(motion.positions[0][1], motion.positions[1][1]);
   const sensorColors = [0x405f49, 0x6c8877, 0x9a8558, 0x637158].map(value => new THREE.Color(value));
   const markerGeometry = keepGeometry(new THREE.SphereGeometry(.043, 12, 8));
   const markers = sensorColors.map(color => {
@@ -234,7 +236,6 @@ export async function createScene(host) {
       markers[index].position.copy(bonePosition);
       markers[index].material.opacity = ease(.29, .37, p) * bodyOpacity;
       if (index < 2) {
-        contactBones[index].getWorldPosition(bonePosition);
         const height = Math.max(0, bonePosition.y - origin.y - contactHeight);
         shadows[index].position.set(bonePosition.x, origin.y + .008, bonePosition.z);
         shadows[index].material.opacity = bodyOpacity * Math.exp(-height * 14);

@@ -84,7 +84,7 @@ for (const film of document.querySelectorAll('[data-shl-film], [data-film="fog"]
     if (scene || loading) return;
     loading = true;
     try {
-      const { createScene } = kind === 'fog' ? await import('./fog-scene.js?v=20261022k') : await import('./shl-scene.js?v=20261022f');
+      const { createScene } = kind === 'fog' ? await import('./fog-scene.js?v=20261022l') : await import('./shl-scene.js?v=20261022f');
       scene = await createScene(host);
       film.classList.add('is-ready');
       lastRendered = -1;
