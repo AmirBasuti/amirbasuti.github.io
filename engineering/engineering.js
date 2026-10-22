@@ -73,11 +73,13 @@
     const points = active.points, start = points[0].time, end = points[points.length - 1].time;
     const compact = window.matchMedia('(max-width: 650px)').matches;
     // On small screens one SVG unit is one CSS pixel, keeping labels legible.
-    const width = compact ? Math.max(240, chart.getBoundingClientRect().width) : 1000;
-    const height = compact ? 255 : 350;
+    const scene = document.getElementById('pipeline-story');
+    const inScene = scene && scene.classList.contains('pipeline-enhanced');
+    const width = compact || inScene ? Math.max(240, chart.clientWidth) : 1000;
+    const height = compact ? 255 : inScene ? Math.max(130, chart.clientHeight) : 350;
     Object.assign(bounds, compact
       ? { left: 60, right: width - 18, top: 24, bottom: 212 }
-      : { left: 72, right: 965, top: 24, bottom: 300 });
+      : { left: 72, right: width - 35, top: 20, bottom: height - 40 });
     chart.setAttribute('viewBox', `0 0 ${width} ${height}`);
     $('cursor-line').setAttribute('y1', compact ? bounds.top : 20);
     $('cursor-line').setAttribute('y2', bounds.bottom);
@@ -99,7 +101,7 @@
     const dateTicks = compact ? 3 : 4;
     for (let i = 0; i < dateTicks; i++) {
       const time = start + (end - start) * i / (dateTicks - 1);
-      grid.append(svgNode('text', { x: x(time), y: compact ? 242 : 332, 'text-anchor': i === 0 ? 'start' : i === dateTicks - 1 ? 'end' : 'middle' }, shortDate.format(new Date(time))));
+      grid.append(svgNode('text', { x: x(time), y: compact ? 242 : height - 10, 'text-anchor': i === 0 ? 'start' : i === dateTicks - 1 ? 'end' : 'middle' }, shortDate.format(new Date(time))));
     }
     $('chart-title').textContent = `${active.name} — historical values`;
     $('chart-description').textContent = `${points.length} observations, ${dates.format(new Date(start))} to ${dates.format(new Date(end))}. Unit: ${active.unit}. Lines connect recorded observations across calendar gaps. Use the observation slider to inspect dates and values.`;
@@ -110,6 +112,7 @@
   }
   slider.addEventListener('input', () => inspect(Number(slider.value)));
   select.addEventListener('change', () => render());
+  window.addEventListener('engineering:layout', () => { if (active && !content.hidden) render(Number(slider.value)); });
   let resizeTimer;
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer);
