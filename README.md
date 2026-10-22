@@ -37,3 +37,10 @@ Research and engineering retain separate content. Larger HTML text, fewer decora
 The identity and introduction use distinct viewport-sized views. Native scrolling changes the active view with a completed temporal fade, and each project introduction has its own reading space. On smaller or shorter screens, with reduced motion, or when content will not fit, the same panels remain stacked in normal document flow. The hidden panel is inert in the enhanced layout; keyboard focus and direct anchors reveal the intended content.
 
 This visual revision was reviewed in the browser and by reading the source. Automated tests and lint suites were not run for this change, as requested by the site owner.
+
+
+## Focused chapter transitions
+
+Primary reading views share a short temporal handoff: the outgoing view reaches zero opacity before the next view enters, and the transition finishes after scrolling stops. The first identity/intro pair retains its discrete presentation, including separate full-height panels on mobile. Project grounds distinguish SHL (paper), FoG (pale sage) and clinical gait (dark green), with matching readable text. The scene position number and slim progress line come from the existing animation controllers. Native scroll tracks are shorter (identity230svh, research scenes260svh desktop/240svh mobile, engineering data210svh where pinned). No scroll interception or snapping is used.
+
+Explicit initial anchors are resolved after startup track layout, unless the reader already interacted. Keyboard focus can reveal its reading view; reduced-motion and paused motion preserve ordinary visible content and automatic track heights. Short reading blocks keep normal document flow. The shared module runs only for scroll, layout, focus or the brief fade; there is no permanent frame loop or new asset/runtime dependency. The approved simple FoG figure and all evidence/statuses are preserved.

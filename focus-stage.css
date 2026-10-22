@@ -12,7 +12,7 @@
 [data-focus-intro] .focus-work-title{font-size:clamp(50px,6.7vw,94px);font-weight:470;line-height:1.04;letter-spacing:-.065em;margin:0 0 40px}
 [data-focus-intro] .focus-work-title em{font-style:normal;color:#9eb3a4}
 [data-focus-intro] .hero-caption{margin-top:50px}
-.focus-intro-ready .focus-intro-track{height:280vh;height:280svh}
+.focus-intro-ready .focus-intro-track{height:230vh;height:230svh}
 .focus-intro-ready .focus-intro-sticky{position:sticky!important;top:0;height:100vh;height:100svh;display:grid;isolation:isolate}
 .focus-intro-ready .focus-intro-panel{grid-area:1/1;align-self:stretch;min-width:0}
 .focus-intro-ready .focus-intro-panel[inert]{pointer-events:none}

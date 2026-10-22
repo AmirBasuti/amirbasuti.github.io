@@ -112,6 +112,9 @@ function stage(item) {
 }
 function render(item, now, immediate = false) {
   item.scene?.render(item.progress);
+  item.element.style.setProperty('--sequence-progress', String(item.progress));
+  const position = item.element.querySelector('[data-chapter-step]');
+  if (position) position.textContent = `${String(stage(item) + 1).padStart(2, '0')} / 03`;
   item.copy.set(stage(item), { immediate });
   item.scrub.value = String(Math.round(item.progress * 1000));
   item.scrub.setAttribute('aria-valuetext', `${Math.round(item.progress * 100)} percent, stage ${stage(item) + 1} of 3`);

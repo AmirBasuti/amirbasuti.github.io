@@ -41,6 +41,9 @@ for (const film of document.querySelectorAll('[data-shl-film], [data-film="fog"]
   function updateCopy(p, immediate = false) {
     const active = kind === 'fog' ? (p < .18 ? 0 : p < .38 ? 1 : p < .64 ? 2 : p < .84 ? 3 : 4) : (p < .23 ? 0 : p < .56 ? 1 : p < .84 ? 2 : 3);
     copyTransition.set(active, { immediate });
+    film.style.setProperty('--sequence-progress', String(p));
+    const position = film.querySelector('[data-chapter-step]');
+    if (position) position.textContent = `${String(active + 1).padStart(2, '0')} / ${String(copies.length).padStart(2, '0')}`;
     const reveal = smooth((p - .88) / .10);
     if (result) {
       result.style.opacity = reveal;

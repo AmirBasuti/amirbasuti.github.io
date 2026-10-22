@@ -1,0 +1,41 @@
+/* Clear project boundaries, with one primary reading view at a time. */
+body{overflow-x:clip}
+.project-story{scroll-margin-top:0}
+[data-chapter-visual].chapter-visual-ready{opacity:var(--chapter-opacity,1)!important;transition:none!important}
+[data-chapter-visual].chapter-visual-ready.chapter-visual-hidden{pointer-events:none}
+#project-shl{--chapter-paper:#f3f1eb;background:var(--chapter-paper)}
+#project-fog{--chapter-paper:#e2eae0;background:var(--chapter-paper)}
+#project-shl .shl-film,#project-fog .shl-film{background:var(--chapter-paper)}
+#project-clinical{background:#142019;color:#edf0e7}
+#project-clinical.project-story .project-intro .project-meta,#project-clinical.project-story .project-description>p{color:#b1c0ae}
+#project-clinical .project-intro .project-links a{color:#d8e3d0}
+#project-clinical .project-notes{color:#d8e3d0;border-color:#394b3d}
+#project-clinical .project-notes summary{color:#d8e3d0}
+#project-clinical .stage-note h3{color:#edf0e7}
+#project-clinical .stage-note p,#project-clinical .stage-number{color:#b1c0ae}
+.chapter-position{display:flex;align-items:center;justify-content:center;gap:12px;font-size:11px;line-height:1.5;font-variant-numeric:tabular-nums;letter-spacing:.04em;color:inherit;opacity:.65;min-height:18px;margin:0 24px 4px;flex:none}
+.chapter-meter{display:block;width:100px;height:2px;background:currentColor;position:relative;isolation:isolate}
+.chapter-meter::before{content:"";position:absolute;inset:0;background:var(--chapter-paper,#f3f1eb);opacity:.8}
+.chapter-meter i{position:absolute;inset:0;background:currentColor;transform:scaleX(var(--sequence-progress,0));transform-origin:left center}
+.shl-film:not(.is-enhanced) .chapter-position,.shl-film.is-fallback .chapter-position{display:none}
+.data-film .chapter-position{color:#b4c7b8;margin-top:20px}
+.data-film .chapter-meter::before{background:#0d1513}
+#selected-work{position:relative;isolation:isolate}
+#selected-work::before{content:"";position:absolute;inset:0;background:#182820;box-shadow:0 0 0 100vmax #182820;clip-path:inset(0 -100vmax);z-index:-1;pointer-events:none}
+@media(min-height:681px){
+  .shl-film.is-enhanced .shl-film-track{height:260svh}
+}
+@media(min-width:960px) and (min-height:760px){
+  .data-film.sequence-ready .data-film-track{height:210svh;min-height:0}
+}
+@media(max-width:760px) and (min-height:681px){
+  .shl-film.is-enhanced .shl-film-track{height:240svh}
+}
+.shl-film.is-enhanced.is-static .shl-film-track,.shl-film.is-enhanced.is-fallback .shl-film-track{height:auto}
+@media(prefers-reduced-motion:reduce){
+  [data-chapter-visual]{opacity:1!important}
+}
+@media print{
+  [data-chapter-visual]{opacity:1!important}
+  .chapter-position{display:none!important}
+}
