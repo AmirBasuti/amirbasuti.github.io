@@ -1,0 +1,128 @@
+/* Readable copy and controls; data, chart geometry and interaction stay owned by their existing code. */
+.hero-bottom p{font-size:19px;line-height:1.7;color:#c2cec2}
+.eyebrow,.hero-caption{font-size:13px;line-height:1.6;letter-spacing:.04em;color:#b8c7b4}
+.text-link{font-size:15px;min-height:44px}
+.pipeline-heading>p,.pipeline-enhanced .pipeline-heading>p,
+.section-intro{font-size:16px;line-height:1.7;color:#c3cec0;max-width:38ch}
+.pipeline-panel-label,.pipeline-stage-label,
+.pipeline-chapters button>span,.ingress-caption,
+.record-card-head span:last-child{display:none!important}
+.ingress-copy h3{font-size:clamp(34px,4vw,52px);line-height:1.14;letter-spacing:-.035em}
+.ingress-copy>p:last-child{font-size:17px;line-height:1.65;color:#d0d8c8;max-width:32ch}
+.records-top h3{font-size:34px;line-height:1.15;letter-spacing:-.035em}
+.records-panel{overflow:auto}
+.record-card-head{font-size:14px;color:#43543b}
+.record-card dl{font-size:14px;line-height:1.55}
+.record-card dt{color:#4a5a40}
+.record-card dd{color:#243d20;overflow-wrap:anywhere}
+.record-card dl>div{gap:12px}
+.service-layer strong{font-size:16px;line-height:1.35;color:#253a20}
+.service-layer small{font-size:13px;line-height:1.5;color:#43583a}
+.service-layer .layer-number{display:none}
+.service-layer{grid-template-columns:minmax(0,1fr) auto}
+.pipeline-record-note{font-size:13px;line-height:1.6;color:#4b5c42}
+.layer-control{font-size:14px;min-height:44px;padding:10px 16px}
+.pipeline-controls,.pipeline-enhanced .pipeline-controls{grid-template-columns:minmax(0,1fr) auto;gap:24px}
+.pipeline-scrub{display:none}
+.pipeline-chapters{gap:12px;flex-wrap:wrap}
+.pipeline-chapters button{font-size:15px;min-height:44px;padding:10px 14px;line-height:1.4;color:#becab5;border-radius:8px}
+.pipeline-chapters button[aria-pressed=true]{background:#30402b;color:#f3f5ed}
+.pipeline-follow{font-size:14px;min-height:44px;color:#d4dfca}
+.pipeline-bottom,.pipeline-enhanced .pipeline-bottom{font-size:14px;line-height:1.65;color:#b9c7af;gap:28px}
+.pipeline-bottom p{max-width:78ch}
+.pipeline-bottom a{font-size:14px;min-height:44px;white-space:normal}
+
+/* Keep current values, units and provenance visible and easy to read. */
+.market-controls{gap:20px}
+.series-control label,.market-reading span{font-size:14px;color:#c6d3c4;line-height:1.5}
+.series-control select{font-size:17px;min-height:44px;line-height:1.4}
+.market-reading output,.pipeline-enhanced .plot-panel .market-reading output{font-size:34px;color:#f2f5ed;line-height:1.15}
+.panel-label,.snapshot-label{font-size:13px;line-height:1.5;color:#c4d1be;letter-spacing:.02em}
+.chart-frame text{font-size:14px;fill:#c7d4c3}
+.chart-frame,.case-visual svg{touch-action:pan-y pinch-zoom}
+.inspection{font-size:14px;line-height:1.5;color:#c6d3c4;grid-template-columns:auto minmax(60px,1fr);gap:16px}
+.inspection input{min-height:44px}
+.inspection #inspect-help{display:none}
+.data-caption,.calendar-note,.source-line{font-size:13px;line-height:1.6;color:#bfcdb9}
+.data-caption{flex-wrap:wrap;gap:8px 24px}
+.data-caption #data-unit{color:#e1ead9}
+.source-line a{color:#e4eddb}
+.snapshot-fallback p{font-size:16px;line-height:1.7;color:#c6d3c4}
+.snapshot-fallback text{font-size:14px;fill:#c7d4c3}
+.plot-panel .market-panel{overflow:auto}
+.plot-panel .market-top,.plot-panel .market-controls,.plot-panel .inspection,
+.plot-panel .data-caption,.plot-panel .calendar-note,.plot-panel .source-line{flex-shrink:0}
+.pipeline-enhanced .plot-panel .chart-frame{min-height:200px}
+/* Override the old short-screen 185px SVG so it cannot spill into the slider. */
+.pipeline-enhanced .plot-panel .chart-frame svg{height:100%}
+
+/* Contribution copy carries the explanation; diagrams carry the mechanism. */
+.work-row .case-copy>p,.work-row>div>p{font-size:16px;line-height:1.75;color:#c5d1bf}
+.work-row .case-copy h3{font-size:clamp(28px,2.6vw,36px);line-height:1.2;letter-spacing:-.03em}
+.work-row .case-copy .case-index{font-size:13px;line-height:1.6;letter-spacing:.035em;color:#d7c797}
+.work-row .case-copy .case-detail{font-size:14px;line-height:1.65;color:#b4c5a9}
+.case-visual{--diagram-ink:#e4ecd9;--diagram-muted:#b9c9ac}
+.case-history{--diagram-ink:#263b20;--diagram-muted:#465b3b}
+.case-migration{--diagram-ink:#ecebd8;--diagram-muted:#c5c9ae}
+.case-visual-heading{justify-content:flex-end;padding:20px 24px 0}
+.case-visual-heading>span:first-child,.case-visual .case-svg-tiny{display:none}
+.case-visual-heading .case-state{font-size:14px;line-height:1.5;color:var(--diagram-ink);max-width:none}
+.case-visual figcaption{font-size:13px;line-height:1.65;color:var(--diagram-muted)}
+.case-visual svg text{font-size:15px;fill:var(--diagram-ink)}
+.case-visual svg .case-svg-small{font-size:13px;fill:var(--diagram-muted)}
+.case-visual .migration-db{font-size:16px}
+.case-visual .migration-value{font-size:14px}
+.case-visual .migration-gates text{font-size:13px;fill:#d4dfc2}
+.case-controls{gap:18px;padding-top:8px}
+.case-controls label{font-size:13px;gap:12px}
+.case-controls input{min-height:44px}
+.case-controls button{font-size:13px;min-height:44px;min-width:110px;color:var(--diagram-ink)}
+.role-top span,.role-company{font-size:14px;line-height:1.6}
+.role>p:last-child{font-size:16px;line-height:1.75;color:#c3cec0}
+.contact-links{font-size:15px;line-height:1.6}
+
+@media(max-width:1100px){
+  .pipeline-controls,.pipeline-enhanced .pipeline-controls{gap:16px}
+  .pipeline-chapters{gap:6px}
+  .record-system{gap:22px}
+  .record-card dl{font-size:13px;padding:14px}
+  .service-layer{padding:14px;gap:8px}
+  .service-layer strong{font-size:15px}
+  .service-layer small{font-size:13px}
+  .case-controls{flex-wrap:wrap;gap:10px}
+  .case-controls label{flex-basis:100%}
+}
+@media(max-width:899px){
+  .pipeline-heading>p{font-size:16px;max-width:48ch}
+  .pipeline-bottom{display:block}
+  .pipeline-bottom a{display:inline-flex;align-items:center;margin-top:12px}
+  .records-panel{min-height:0}
+  .case-visual-heading .case-state{font-size:14px}
+  .case-visual figcaption{font-size:13px}
+}
+@media(max-width:600px){
+  .hero-bottom p{font-size:17px;line-height:1.7}
+  .eyebrow,.hero-caption{font-size:12px;line-height:1.6}
+  .ingress-copy>p:last-child{font-size:16px;line-height:1.7}
+  .ingress-copy h3{font-size:34px}
+  .records-top h3{font-size:30px}
+  .record-card dl{font-size:14px}
+  .pipeline-record-note{font-size:13px}
+  .market-controls{padding:22px 18px 0}
+  .market-reading output{font-size:32px}
+  .market-reading span,.series-control label{font-size:14px}
+  .series-control select{font-size:16px}
+  .inspection{font-size:14px;grid-template-columns:1fr;gap:4px}
+  .inspection input{grid-row:2}
+  .data-caption,.calendar-note,.source-line{font-size:13px}
+  .work-row .case-copy>p,.work-row>div>p{font-size:16px;line-height:1.75}
+  .work-row .case-copy .case-detail{font-size:14px}
+  .work-row .case-copy .case-index{font-size:12px}
+  .case-visual-heading{padding:18px 16px 0}
+  .case-visual-heading .case-state{font-size:13px;max-width:none}
+  .case-visual figcaption{font-size:13px;padding:15px 16px}
+  .case-visual svg .case-svg-small{font-size:14px}
+  .role-top span,.role-company{font-size:14px}
+  .role>p:last-child{font-size:16px}
+  .contact-links{font-size:15px}
+}

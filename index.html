@@ -14,10 +14,13 @@
   <link rel="stylesheet" href="styles.css?v=20261022e">
   <link rel="stylesheet" href="portfolio.css?v=20261022e">
   <link rel="stylesheet" href="project-stories.css?v=20261022e">
+  <link rel="stylesheet" href="focus.css?v=20261022f">
+  <link rel="stylesheet" href="research/shl-film.css?v=20261022f">
   <link rel="icon" type="image/svg+xml" href="mark.svg">
   <script defer src="site.js?v=20261022e"></script>
   <script defer src="motion.js?v=20261022e"></script>
   <script defer src="research/cases.js?v=20261022e"></script>
+  <script type="module" src="research/shl-film.js?v=20261022f"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -39,64 +42,71 @@
 
 <section class="project-story" id="project-shl" aria-labelledby="project-shl-title">
       <div class="project-intro wrap"><div><p class="project-meta">01 / SHL 2026 · TEAM UT-IR · 1ST PLACE</p><h2 id="project-shl-title">Activity recognition.<br>From a phone.</h2></div><div class="project-description"><p>We compared five frozen time-series models. The selected system combines three classifiers to recognize eight activities and transport modes.</p><div class="project-links"><a href="research/shl/">Method &amp; paper ↗</a><a href="https://github.com/AmirBasuti/shl2026-frozen-model-fusion">Fusion code ↗</a></div></div></div>
-      <div class="lab" data-case-story="shl" data-sticky-offset="66">
-        <div class="lab-heading"><h2 id="shl-lab-title">Nine channels.<br>Five-second activity windows.</h2><div class="lab-label"><i aria-hidden="true"></i>Selected late-fusion method<br> Schematic / not recorded data</div></div>
-        <div class="story-controls" role="group" aria-label="Explore the SHL method">
-          <button class="stage-button" type="button" data-stage="0" data-title="Nine sensor traces" aria-pressed="true" aria-controls="shl-stage-0"><span>01</span>Sensor traces</button>
-          <button class="stage-button" type="button" data-stage="1" data-title="Five-second window" aria-pressed="false" aria-controls="shl-stage-1"><span>02</span>A five-second window</button>
-          <button class="stage-button" type="button" data-stage="2" data-title="Weighted probability fusion" aria-pressed="false" aria-controls="shl-stage-2"><span>03</span>Frozen models &amp; fusion</button>
-          <button class="stage-button" type="button" data-stage="3" data-title="Eight activity modes" aria-pressed="false" aria-controls="shl-stage-3"><span>04</span>Eight modes</button>
+      <div class="shl-film" data-shl-film aria-labelledby="shl-film-movement">
+        <div class="shl-film-track">
+          <div class="shl-film-sticky">
+            <div class="shl-film-grid">
+              <div class="shl-film-copy">
+                <article data-film-copy="0" aria-hidden="false"><h3 id="shl-film-movement">Movement, recorded.</h3><p>A phone measures acceleration, rotation and the magnetic field across nine channels.</p></article>
+                <article data-film-copy="1" aria-hidden="true"><h3>Five seconds at a time.</h3><p>We group the signals into five-second windows.</p></article>
+                <article data-film-copy="2" aria-hidden="true"><h3>Three models, combined.</h3><p>We combine probabilities from classifiers using frozen NuTime, MantisV2 and TiRex representations.</p></article>
+                <article data-film-copy="3" aria-hidden="true"><h3>Eight activity modes.</h3><p>Still, Walk, Run, Bike, Car, Bus, Train and Subway.</p></article>
+              </div>
+              <div class="shl-film-art">
+                <div class="shl-film-canvas" data-film-canvas aria-hidden="true"></div>
+                <svg class="shl-film-fallback" viewBox="0 0 600 620" aria-hidden="true" focusable="false">
+                  <defs>
+                    <linearGradient id="shl-phone-metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#9ba58c"/><stop offset=".23" stop-color="#525f50"/><stop offset=".6" stop-color="#263b2c"/><stop offset="1" stop-color="#89947d"/></linearGradient>
+                    <linearGradient id="shl-phone-screen" x1="0" y1="0" x2=".8" y2="1"><stop stop-color="#2a4031"/><stop offset="1" stop-color="#101e18"/></linearGradient>
+                    <radialGradient id="shl-phone-shadow"><stop stop-color="#243425" stop-opacity=".16"/><stop offset="1" stop-color="#243425" stop-opacity="0"/></radialGradient>
+                    <linearGradient id="shl-phone-glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#eef0dc" stop-opacity=".13"/><stop offset=".45" stop-color="#eef0dc" stop-opacity="0"/></linearGradient>
+                  </defs>
+                  <ellipse cx="305" cy="535" rx="181" ry="43" fill="url(#shl-phone-shadow)"/>
+                  <g transform="translate(192 76) rotate(-12 108 220)">
+                    <rect x="0" y="0" width="216" height="442" rx="33" fill="url(#shl-phone-metal)" stroke="#bac3aa" stroke-width="1"/>
+                    <rect x="5" y="5" width="206" height="432" rx="29" fill="#090f0b"/>
+                    <rect x="12" y="12" width="192" height="418" rx="24" fill="url(#shl-phone-screen)"/>
+                    <rect x="215" y="112" width="4" height="47" rx="2" fill="#6b7961"/>
+                    <rect x="-3" y="92" width="4" height="31" rx="2" fill="#7a886b"/><rect x="-3" y="134" width="4" height="31" rx="2" fill="#7a886b"/>
+                    <circle cx="108" cy="27" r="4" fill="#0b110e"/>
+                    <path d="M77 91C87 59 103 107 119 80S141 91 150 74" fill="none" stroke="#c8d4b6" stroke-width="1.4"/>
+                    <circle cx="150" cy="74" r="2" fill="#dac89c"/>
+                    <g fill="none" stroke-width="1.3" stroke-linecap="round">
+                      <path d="M31 158C47 151 56 173 72 158S91 141 108 158S127 173 143 158S164 149 185 158" stroke="#d9e1cb"/>
+                      <path d="M31 180C50 187 56 164 74 180S98 197 111 180S136 167 150 180S169 188 185 180" stroke="#c6d4b9"/>
+                      <path d="M31 202C48 194 61 214 77 202S97 188 113 202S132 215 149 202S171 196 185 202" stroke="#afc39f"/>
+                      <path d="M31 224C45 229 65 211 79 224S95 243 113 224S128 207 145 224S165 232 185 224" stroke="#d7c79e"/>
+                      <path d="M31 246C46 237 59 259 75 246S94 229 109 246S130 264 145 246S170 237 185 246" stroke="#c5b68e"/>
+                      <path d="M31 268C51 275 56 254 77 268S98 285 113 268S136 253 152 268S171 275 185 268" stroke="#b6ae8c"/>
+                      <path d="M31 290C49 282 59 305 78 290S96 274 113 290S132 308 148 290S170 281 185 290" stroke="#b6cdb5"/>
+                      <path d="M31 312C50 320 58 296 78 312S98 329 111 312S132 296 149 312S173 317 185 312" stroke="#9fbea4"/>
+                      <path d="M31 334C47 327 60 349 76 334S97 319 111 334S136 351 150 334S173 328 185 334" stroke="#8caf96"/>
+                    </g>
+                    <path d="M31 367H185" stroke="#a2b996" stroke-opacity=".15"/><path d="M31 380H62M31 387H84" stroke="#a2b996" stroke-opacity=".3" stroke-width="2"/>
+                    <path d="M86 416H130" stroke="#c9d4bc" stroke-opacity=".6" stroke-width="2.5" stroke-linecap="round"/>
+                    <rect x="12" y="12" width="192" height="418" rx="24" fill="url(#shl-phone-glass)"/>
+                  </g>
+                </svg>
+                <div class="shl-film-result" data-film-result>
+                  <svg viewBox="0 0 80 100" aria-hidden="true" focusable="false"><circle cx="45" cy="15" r="8" fill="currentColor"/><path d="M42 31L36 55L52 69L57 91M36 55L24 77L12 88M42 32L56 47L70 49M40 34L27 45L19 59" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <strong>Walking</strong><small>Illustrative output</small>
+                </div>
+              </div>
+            </div>
+            <div class="shl-film-controls">
+              <button type="button" data-film-play>Play the sequence</button>
+              <details><summary>Explore manually</summary><label>Sequence position<input type="range" data-film-scrub min="0" max="1000" value="0" aria-label="SHL animation position"></label></details>
+              <button type="button" data-film-follow hidden>Follow scroll</button>
+            </div>
+          </div>
         </div>
-        <div class="scene">
-          <svg viewBox="0 0 960 555" role="img" aria-labelledby="shl-svg-title shl-svg-desc">
-            <title id="shl-svg-title">Schematic of the selected SHL late-fusion method</title>
-            <desc id="shl-svg-desc">Nine smartphone traces form a five-second window. Frozen NuTime, MantisV2 and TiRex classifiers contribute weights of 54, 29 and 17 percent to probability fusion. The eight possible outputs are Still, Walk, Run, Bike, Car, Bus, Train and Subway. Waveforms and output bars are illustrative.</desc>
-            <defs><clipPath id="shl-signal-clip"><rect x="56" y="100" width="358" height="220"/></clipPath><linearGradient id="shl-window-fill" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#c4cda9" stop-opacity=".02"/><stop offset="1" stop-color="#c4cda9" stop-opacity=".12"/></linearGradient></defs>
-            <rect class="diagram-panel" data-focus="0" x="25" y="44" width="430" height="307" rx="5"/>
-            <text class="svg-title" x="49" y="78">Nine sensor traces</text><text class="svg-small mobile-optional" x="432" y="76" text-anchor="end">ACC · GYRO · MAG / XYZ</text>
-            <g class="grid-line"><path d="M58 100V319 M129 100V319 M200 100V319 M271 100V319 M342 100V319 M413 100V319"/><path d="M58 152H414 M58 221H414 M58 290H414"/></g>
-            <g clip-path="url(#shl-signal-clip)">
-              <path class="trace" data-signal="0" d="M59 118l18-4 18 8 18-9 18 1 18 7 18-8 18 7 18-6 18 5 18-9 18 4 18 5 18-7 18 8 18-6 18 4 18-5 28 5"/>
-              <path class="trace" data-signal="1" d="M59 141l18 5 18-9 18 4 18 5 18-8 18 4 18 5 18-8 18 4 18 4 18-8 18 5 18 1 18-7 18 8 18-2 18-6 28 5"/>
-              <path class="trace" data-signal="2" d="M59 164l18-5 18 8 18-4 18-5 18 9 18-6 18 5 18-4 18-2 18 7 18-9 18 4 18 4 18-7 18 6 18-6 18 7 28-4"/>
-              <path class="trace trace-alt" data-signal="3" d="M59 187l18 6 18-9 18 6 18-5 18 4 18-7 18 8 18-3 18-4 18 8 18-6 18 3 18-5 18 7 18-5 18 6 18-8 28 5"/>
-              <path class="trace trace-alt" data-signal="4" d="M59 210l18-6 18 9 18-3 18-7 18 8 18-5 18 2 18 5 18-8 18 4 18 5 18-9 18 7 18-4 18 4 18-6 18 3 28 2"/>
-              <path class="trace trace-alt" data-signal="5" d="M59 233l18 3 18-7 18 9 18-5 18 3 18-6 18 6 18-7 18 9 18-5 18 2 18-6 18 5 18-4 18 7 18-6 18 4 28-3"/>
-              <path class="trace trace-warm" data-signal="6" d="M59 256l18 5 18-8 18 4 18-4 18 7 18-6 18 2 18 5 18-8 18 5 18-3 18 6 18-7 18 5 18-4 18 6 18-8 28 4"/>
-              <path class="trace trace-warm" data-signal="7" d="M59 279l18-4 18 9 18-7 18 2 18-5 18 8 18-6 18 4 18-7 18 8 18-5 18 4 18-6 18 7 18-4 18 4 18-5 28 2"/>
-              <path class="trace trace-warm" data-signal="8" d="M59 302l18 3 18-7 18 8 18-6 18 5 18-7 18 9 18-5 18 2 18-5 18 6 18-8 18 7 18-3 18 5 18-8 18 4 28-1"/>
-              <g data-window><rect class="window-area" x="220" y="100" width="146" height="219" fill="url(#shl-window-fill)"/><path class="window-top" d="M220 108V100H366V108"/></g>
-              <g data-cursor transform="translate(104 0)"><path d="M0 100V319" stroke="#d0b37b" stroke-width="1" opacity=".65"/></g>
-            </g>
-            <path d="M47 106H42V174H47 M47 177H42V243H47 M47 246H42V313H47" stroke="#7b9e85" fill="none"/>
-            <text class="svg-small" x="59" y="336">Selected window: 5 s / 500 samples</text>
-            <path class="flow-line" d="M455 200H490V115H540 M490 200H540 M490 200V285H540"/>
-            <path class="flow-active" data-flow d="M455 200H490V115H540"/><path class="flow-active" data-flow d="M455 200H540"/><path class="flow-active" data-flow d="M455 200H490V285H540"/>
-            <g><rect class="node" data-focus="2" x="540" y="80" width="176" height="70" rx="4"/><text class="node-label" x="558" y="109">NuTime</text><text class="node-sub" x="558" y="133">Frozen representation</text><text class="node-sub" x="696" y="110" text-anchor="end">.54</text></g>
-            <g><rect class="node" data-focus="2" x="540" y="165" width="176" height="70" rx="4"/><text class="node-label" x="558" y="194">MantisV2</text><text class="node-sub" x="558" y="218">Frozen representation</text><text class="node-sub" x="696" y="195" text-anchor="end">.29</text></g>
-            <g><rect class="node" data-focus="2" x="540" y="250" width="176" height="70" rx="4"/><text class="node-label" x="558" y="279">TiRex</text><text class="node-sub" x="558" y="303">Frozen representation</text><text class="node-sub" x="696" y="280" text-anchor="end">.17</text></g>
-            <path class="flow-line" d="M716 115H755V200H789 M716 200H789 M716 285H755V200 M852 237V375"/>
-            <path class="flow-active" data-flow d="M716 115H755V200H789 M716 200H789 M716 285H755V200"/>
-            <rect class="node" data-focus="2" x="789" y="164" width="126" height="73" rx="4"/><text class="node-label" x="852" y="193" text-anchor="middle">Weighted</text><text class="node-sub" x="852" y="216" text-anchor="middle">probabilities</text>
-            <path class="flow-active" data-flow d="M852 237V375"/>
-            <text class="svg-small mobile-optional" x="541" y="345">Final fusion weights · sum = 1</text>
-            <rect class="diagram-panel" data-focus="3" x="25" y="375" width="890" height="158" rx="5"/>
-            <text class="svg-title" x="49" y="407">Eight possible modes</text><text class="svg-small mobile-optional" x="892" y="405" text-anchor="end">SCHEMATIC OUTPUT EXAMPLE / WALK</text>
-            <path class="fine-line" d="M60 484H882"/>
-            <g><rect class="probability" data-bar="15" x="69" y="469" width="45" height="15" rx="2"/><rect class="probability-focus" data-bar="57" x="177" y="427" width="45" height="57" rx="2"/><rect class="probability" data-bar="21" x="285" y="463" width="45" height="21" rx="2"/><rect class="probability" data-bar="11" x="393" y="473" width="45" height="11" rx="2"/><rect class="probability" data-bar="9" x="501" y="475" width="45" height="9" rx="2"/><rect class="probability" data-bar="6" x="609" y="478" width="45" height="6" rx="2"/><rect class="probability" data-bar="7" x="717" y="477" width="45" height="7" rx="2"/><rect class="probability" data-bar="5" x="825" y="479" width="45" height="5" rx="2"/></g>
-            <g text-anchor="middle"><text class="class-label" x="92" y="513">Still</text><text class="class-label class-active" x="200" y="513">Walk</text><text class="class-label" x="308" y="513">Run</text><text class="class-label" x="416" y="513">Bike</text><text class="class-label" x="524" y="513">Car</text><text class="class-label" x="632" y="513">Bus</text><text class="class-label" x="740" y="513">Train</text><text class="class-label" x="848" y="513">Subway</text></g>
-          </svg>
-        </div>
-        <div class="scrub-row"><label for="shl-progress">Explore the flow</label><input id="shl-progress" data-scrub type="range" min="0" max="1000" value="120" aria-describedby="shl-control-help"><output data-progress for="shl-progress">01 / 04</output></div>
-        <p id="shl-control-help" class="visually-hidden control-help">Scroll to travel through the scene, or use the slider and stage buttons. Arrow keys move the slider; left and right arrows move between stage buttons. Manual controls hold your chosen view. Select Follow scroll to reconnect it to the page. With reduced motion, use the controls to choose each scene.</p>
-        <p class="visually-hidden" data-announcement role="status" aria-live="polite" aria-atomic="true"></p>
-        <div class="lab-caption"><p>Phone, traces and output bars illustrate the method; they are not recorded data or model predictions.</p><p class="js-instruction">Scroll or select a stage</p></div>
+        <p class="shl-film-caption">Illustrative motion of the selected method; signals and output are not recorded predictions.</p>
       </div>
       <details class="project-notes"><summary>Read the method <span>＋</span></summary><div class="stage-notes">
         <article class="stage-note is-current" id="shl-stage-0" data-stage-note><span class="stage-number">01 / MEASURE</span><h3>Nine sensor channels.</h3><p>Acceleration, rotation and the magnetic field, each along three axes: nine channels describing the phone’s movement.</p></article>
         <article class="stage-note" id="shl-stage-1" data-stage-note><span class="stage-number">02 / GROUP</span><h3>Five-second windows.</h3><p>At 100 Hz, a five-second window holds 500 samples per channel. The same physical interval goes to each model.</p></article>
         <article class="stage-note" id="shl-stage-2" data-stage-note><span class="stage-number">03 / COMBINE</span><h3>Weighted probability fusion.</h3><p>Classifiers using frozen NuTime, MantisV2 and TiRex representations contribute probabilities with weights 0.54, 0.29 and 0.17.</p></article>
-        <article class="stage-note" id="shl-stage-3" data-stage-note><span class="stage-number">04 / INTERPRET</span><h3>Eight activity classes.</h3><p>Still, Walk, Run, Bike, Car, Bus, Train and Subway. The highlighted example above illustrates the output format.</p></article>
+        <article class="stage-note" id="shl-stage-3" data-stage-note><span class="stage-number">04 / INTERPRET</span><h3>Eight activity classes.</h3><p>Still, Walk, Run, Bike, Car, Bus, Train and Subway. Walking is shown as an illustrative output, not a recorded prediction.</p></article>
       </div></details>
     </section>
 

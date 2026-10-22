@@ -1,0 +1,201 @@
+/* Reading hierarchy for the academic homepage. The SHL film owns its layout. */
+.hero .hero-intro{font-size:18px;line-height:1.7;color:#46513f}
+.hero .hero-eyebrow{font-size:12px;line-height:1.6;letter-spacing:.04em;color:#526149}
+.hero-bottom-line{font-size:14px;line-height:1.6;color:#4d5b45}
+.hero-bottom-line a{display:inline-flex;align-items:center;min-height:44px}
+.projects-heading{font-size:12px;letter-spacing:.03em}
+.projects-heading nav{font-size:14px;gap:22px}
+.projects-heading nav a{display:inline-flex;align-items:center;min-height:44px;color:#3f5638}
+.project-story:not(#project-shl) .project-intro .project-meta{font-size:12px;line-height:1.6;letter-spacing:.035em;color:#526149}
+.project-story:not(#project-shl) .project-description>p{font-size:18px;line-height:1.65;color:#46513f}
+.project-story:not(#project-shl) .project-intro .project-links{font-size:15px;gap:22px}
+.project-story:not(#project-shl) .project-links a{min-height:44px;display:inline-flex;align-items:center}
+
+/* One reading block, one illustration, and one row of chapter controls. */
+.project-story:not(#project-shl) .lab-heading,
+.project-story:not(#project-shl) .lab-label,
+.project-story:not(#project-shl) .journey-copy>span,
+.project-story:not(#project-shl) .stage-button>span{display:none!important}
+/* Remove the scrubber row while preserving its conditional resume button. */
+.project-story:not(#project-shl) .scrub-row{display:contents!important}
+.project-story:not(#project-shl) .scrub-row>label,
+.project-story:not(#project-shl) .scrub-row>input,
+.project-story:not(#project-shl) .scrub-row>output{display:none!important}
+.project-story:not(#project-shl) .resume-scroll{order:2;align-self:center;min-height:44px;margin:0 0 16px;font-size:14px;line-height:1.4;padding:10px 18px;color:#e0e8d6}
+.project-story:not(#project-shl).cinematic-case .lab{
+  height:calc(100svh - var(--story-header) - 84px);
+  min-height:520px;
+  overflow:visible;
+}
+.project-story:not(#project-shl) .journey-track{margin-bottom:84px}
+.project-story:not(#project-shl).cinematic-case .scene{
+  order:0;
+  min-height:0;
+  border-radius:0;
+}
+.project-story:not(#project-shl) .journey-copy{
+  left:clamp(28px,5vw,88px);
+  width:min(35%,440px);
+  top:50%;
+  transform:translateY(-50%);
+}
+.project-story:not(#project-shl) .journey-copy h3{
+  font-size:clamp(34px,3.3vw,49px);
+  line-height:1.12;
+  letter-spacing:-.035em;
+  font-weight:500;
+  color:#f4f5ef;
+  margin:0 0 22px;
+}
+.project-story:not(#project-shl) .journey-copy p{
+  font-size:18px;
+  line-height:1.6;
+  color:#cbd4c4;
+  max-width:38ch;
+}
+.project-story:not(#project-shl).cinematic-case .scene::after{
+  width:calc(clamp(28px,5vw,88px) + min(35%,440px) + 60px);
+  background:linear-gradient(90deg,#111a14 0%,#111a14 calc(100% - 60px),transparent);
+}
+.project-story:not(#project-shl) .journey-copy::before{display:none}
+.project-story:not(#project-shl) .enhanced .story-controls{
+  order:1;
+  width:calc(100% - 64px);
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  padding:12px 0 16px;
+  border-top:1px solid #637059;
+}
+.project-story:not(#project-shl) .stage-button{
+  min-height:48px;
+  padding:10px 12px;
+  border:1px solid transparent;
+  border-radius:8px;
+  font-size:14px;
+  line-height:1.35;
+  color:#c6d0be;
+  text-align:center;
+  white-space:normal;
+}
+.project-story:not(#project-shl) .stage-button[aria-pressed=true]{
+  color:#f6f7f0;
+  background:#30402b;
+  border-color:#839174;
+}
+.project-story:not(#project-shl) .stage-button[aria-pressed=true]::after{display:none}
+.project-story:not(#project-shl) .stage-button:hover{background:#293723;color:#fff}
+.project-story:not(#project-shl) .stage-button:focus-visible{outline:2px solid #e2c58c;outline-offset:2px}
+.project-story:not(#project-shl) .lab-caption{
+  display:block;
+  padding:18px 32px;
+  color:#526149;
+  font-size:14px;
+  line-height:1.6;
+  background:var(--paper,#f4f1eb);
+  border:0;
+}
+.project-story:not(#project-shl).cinematic-case .lab-caption{
+  position:absolute;
+  left:0;
+  right:0;
+  top:100%;
+}
+.project-story:not(#project-shl) .lab-caption p{max-width:1000px;margin:0 auto;text-align:left}
+.project-story:not(#project-shl) .lab-caption p+p{display:none!important}
+.project-story:not(#project-shl) .project-notes summary{font-size:16px;min-height:60px;color:#3f5638}
+.project-story:not(#project-shl) .project-notes .stage-notes{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 42px}
+.project-story:not(#project-shl) .stage-note h3{font-size:19px;line-height:1.35}
+.project-story:not(#project-shl) .stage-note p{font-size:16px;line-height:1.7;color:#4b5844}
+.project-story:not(#project-shl) .stage-number{font-size:12px;letter-spacing:.04em;color:#4f6841}
+
+/* Research content stays readable without turning metadata into headlines. */
+.research-section>.eyebrow,.papers-header .eyebrow,.craft-section .eyebrow{font-size:13px;color:#526149}
+.interest p{font-size:17px;line-height:1.7;color:#4b5844}
+.interest-number{font-size:12px;color:#526149}
+.recognition p{font-size:16px;color:#46583c}
+.recognition a{font-size:14px;line-height:1.6}
+.paper-meta>span:first-child,.paper .status{font-size:12px;line-height:1.5}
+.paper-meta{flex-wrap:wrap}
+.paper .status{white-space:normal;max-width:100%;color:#315332}
+.paper .authors{font-size:15px;line-height:1.75;color:#4e5849}
+.paper .paper-description{font-size:17px;line-height:1.65;color:#4b5546}
+.paper-actions a,.paper-actions .cite-button{font-size:15px;min-height:44px;display:inline-flex;align-items:center}
+.papers-note,.paper-figure figcaption{font-size:14px;line-height:1.7;color:#526149}
+.paper-figure summary{font-size:17px;min-height:60px}
+.experience-date,.experience-place,.education-label{font-size:13px;line-height:1.6;color:#526149}
+.experience-row>div>p:last-of-type,.education-row p{font-size:16px;line-height:1.7;color:#4b5546}
+.experience-row .text-link{font-size:15px;display:inline-flex;align-items:center;min-height:44px}
+.contact-intro{font-size:18px;color:#cbd4c4}
+.contact-profiles{font-size:15px;line-height:1.6;color:#d4ddcd}
+
+/* Smaller screens use natural text height and a separate art row. */
+@media(max-width:760px){
+  .hero .hero-intro{font-size:17px}
+  .hero .hero-eyebrow{font-size:12px;line-height:1.6}
+  .hero-bottom-line{font-size:13px;gap:16px}
+  .hero-bottom-line>span{max-width:180px}
+  .hero-bottom-line>div{gap:12px}
+  .projects-heading{display:block;font-size:12px}
+  .projects-heading>span{max-width:none}
+  .projects-heading nav{margin:10px 0 0;justify-content:flex-start;font-size:14px;gap:6px 20px}
+  .project-story:not(#project-shl) .project-description>p{font-size:17px}
+  .project-story:not(#project-shl) .project-intro .project-links{font-size:15px}
+  .project-story:not(#project-shl) .journey-track{height:auto;margin-bottom:100px}
+  .project-story:not(#project-shl).cinematic-case .lab{position:relative;top:auto;height:auto;min-height:0}
+  .project-story:not(#project-shl).cinematic-case .scene{display:flex;flex-direction:column;flex:none;height:auto;min-height:0}
+  .project-story:not(#project-shl) .journey-copy{
+    position:relative;
+    display:block;
+    flex:none;
+    inset:auto;
+    width:auto;
+    transform:none;
+    padding:30px 24px 8px;
+  }
+  .project-story:not(#project-shl) .journey-copy h3{font-size:32px;line-height:1.15;margin-bottom:16px}
+  .project-story:not(#project-shl) .journey-copy p{font-size:16px;line-height:1.65;max-width:46ch;padding:0}
+  .project-story:not(#project-shl).cinematic-case .scene::after{display:none}
+  .project-story:not(#project-shl) .cinema-svg{
+    position:relative;
+    flex:none;
+    inset:auto;
+    transform:none;
+    width:100%!important;
+    height:clamp(250px,42svh,360px)!important;
+    margin:0;
+  }
+  .project-story:not(#project-shl) .enhanced .story-controls{width:calc(100% - 40px);grid-template-columns:repeat(2,minmax(0,1fr));padding:12px 0 20px;gap:8px}
+  .project-story:not(#project-shl) .stage-button{font-size:14px;min-height:48px;padding:10px 12px}
+  .project-story:not(#project-shl) .lab-caption{font-size:13px;padding:16px 24px}
+  .project-story:not(#project-shl) .project-notes .stage-notes{grid-template-columns:1fr;gap:24px}
+  .interest{display:block}
+  .interest-number{margin-bottom:16px}
+  .interest p{font-size:16px}
+  .recognition p{min-width:0;flex-basis:70%;font-size:15px}
+  .recognition a{font-size:14px;margin-left:0}
+  .paper .authors{font-size:14px}
+  .paper .paper-description{font-size:16px}
+  .paper-meta>span:first-child,.paper .status{font-size:12px}
+  .paper-actions a,.paper-actions .cite-button{font-size:14px}
+  .papers-note,.paper-figure figcaption{font-size:14px}
+}
+@media(min-width:761px) and (max-height:710px){
+  .project-story:not(#project-shl) .journey-track{height:auto}
+  .project-story:not(#project-shl).cinematic-case .lab{position:relative;top:auto;height:auto;min-height:0}
+  .project-story:not(#project-shl).cinematic-case .scene{height:510px;flex:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .project-story:not(#project-shl) .journey-track{height:auto}
+  .project-story:not(#project-shl).cinematic-case .lab{position:relative;top:auto;height:auto;min-height:0}
+  .project-story:not(#project-shl).cinematic-case .scene{min-height:510px}
+}
+html[data-motion=off] .project-story:not(#project-shl) .journey-track{height:auto}
+html[data-motion=off] .project-story:not(#project-shl).cinematic-case .lab{position:relative;top:auto;height:auto;min-height:0}
+html[data-motion=off] .project-story:not(#project-shl).cinematic-case .scene{min-height:510px}
+@media print{
+  .project-story:not(#project-shl).cinematic-case .lab-caption{position:static}
+  .project-story:not(#project-shl) .journey-track{margin-bottom:0}
+  .project-story:not(#project-shl) .story-controls{display:none!important}
+  .project-story:not(#project-shl) .resume-scroll{display:none!important}
+}

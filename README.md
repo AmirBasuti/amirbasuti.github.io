@@ -4,11 +4,12 @@ Separate academic and professional portfolios: [amirbasuti.github.io](https://am
 
 - **Research:** selected papers, case studies, education and research interests.
 - **Engineering:** backend/data/interface work and an interactive, sourced public-data example.
-- **SHL and FoG case studies:** continuous scroll-driven schematic journeys, manual chapter/scrub controls and readable static content.
-- **Homepage:** an academic profile with SHL, FoG and clinical-gait research. A layered interactive object accompanies these research descriptions.
+- **SHL:** an original 3D handset and persistent signal ribbons, driven by native scrolling, with optional playback and manual exploration.
+- **FoG and clinical gait:** schematic method journeys, chapter controls and readable method notes.
+- **Homepage:** an academic profile with selected research and papers; technical detail sits beneath the main reading path.
 - The academic and engineering sections have separate introductions, content and motion. Only navigation links connect them; employer work is absent from the research profile, and research is absent from the engineering portfolio.
 
-The site uses static HTML, CSS, JavaScript and local assets. No build step, WebGL renderer, runtime framework, external fonts or analytics is required. Motion is event-driven, stops when it has no work, and respects reduced-motion preferences. Publish `main` from the repository root with GitHub Pages.
+The site uses static HTML, CSS, JavaScript and local assets. No build step, runtime framework, external fonts or analytics is required. The SHL illustration lazily loads a locally vendored Three.js r180 renderer; readable content and an original static phone remain available without WebGL. Motion is event-driven, stops when it has no work, and respects reduced-motion preferences. Publish `main` from the repository root with GitHub Pages.
 
 Accepted work is distinguished from confirmed publication. Only the SHL author manuscript is included; other selected papers have metadata and accurate acceptance status. Research illustrations and interface sketches are labeled and are not patient recordings or live model outputs.
 
@@ -22,6 +23,10 @@ University marks identify the listed education affiliations. Unmodified source a
 
 ## Motion and content revision — October 2026
 
-The homepage, engineering demonstration and research cases use original SVG/CSS artwork and scroll-linked transformations. Layer separation, direct chapter selection and sliders offer manual exploration. Animation work is scheduled on demand and stops offscreen or when idle. Reduced-motion and compact layouts retain readable content and direct controls. Each section describes its own subject explicitly: research methods on the academic pages, professional contributions on the engineering page. Schematic graphics are not inference or benchmark results.
+The SHL film keeps one phone and nine ribbons in one camera view. Ribbons emerge from screen coordinates, spread into a five-second window, gather into three illustrative model streams and converge around a Walking example. Geometry is updated in place, the render resolution is capped, and the animation stops after settling or leaving view. The phone, studio environment, screen texture and all other illustrations are original. The example describes the method; it is not recorded sensor data or a model prediction.
+
+The composition takes inspiration from the restrained product presentation on [Apple's AirPods page](https://www.apple.com/airpods-pro/). [Drei ScrollControls](https://github.com/pmndrs/drei/blob/master/src/web/ScrollControls.tsx) and [14islands scroll rig](https://github.com/14islands/r3f-scroll-rig) informed overlapping progress ranges, damping and DOM-aligned visuals. No Apple assets or clone code are included. Three.js is the only new dependency; its [MIT license and pinned source](vendor/three-r180/README.md) are included.
+
+Research and engineering retain separate content. Larger HTML text, fewer decorative labels and expandable technical notes keep the main reading path clear. Reduced motion uses direct manual views. The other research and engineering scenes use original SVG/CSS artwork.
 
 This visual revision was reviewed in the browser and by reading the source. Automated tests and lint suites were not run for this change, as requested by the site owner.
