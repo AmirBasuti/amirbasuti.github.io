@@ -46,7 +46,7 @@
       active=index;
       articles.forEach((a,i)=>{a.classList.toggle('is-current',i===index);a.inert=i!==index;a.setAttribute('aria-hidden',String(i!==index));});
       buttons.forEach((b,i)=>b.setAttribute('aria-pressed',String(i===index)));
-      const labels=[['SHL / LATE FUSION','NuTime .54 · MantisV2 .29 · TiRex .17'],['FoG / REPRESENTATIONS','UniShape + MantisV2 · 4 IMUs'],['SOFTWARE / DATA SERVICES','APIs · storage · chart interfaces']];
+      const labels=[['SHL / LATE FUSION','NuTime .54 · MantisV2 .29 · TiRex .17'],['FoG / REPRESENTATIONS','UniShape + MantisV2 · 4 IMUs'],['CLINICAL GAIT / SPMB','Phase-aware · participant-level']];
       stage.querySelector('.analysis-label b').textContent=labels[index][0];
       stage.querySelector('.analysis-label span').textContent=labels[index][1];
     }
@@ -55,7 +55,7 @@
     planes[0].style.transform=`translate3d(${-16-spread*14}px,${23+spread*14}px,${-depth}px)`;
     planes[1].style.transform='translate3d(0,0,0)';
     planes[2].style.transform=`translate3d(${18*(1-build)+spread*14}px,${-25*(1-build)-spread*14}px,${depth}px)`;
-    // The same object opens to expose its representation, then assembles into an interface.
+    // The schematic opens into representations, then assembles into an analysis view.
     planes[2].style.opacity=String(build);
     planes[1].style.opacity=String(1-build*(1-spread*.8));
     planes[0].style.opacity=String(lerp(.8,.96,build));

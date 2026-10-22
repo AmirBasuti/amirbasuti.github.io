@@ -1,11 +1,12 @@
-# Amir Basuti — Research & Software
+# Amir Basuti — Research / Engineering
 
-Personal portfolio: [amirbasuti.github.io](https://amirbasuti.github.io/).
+Separate academic and professional portfolios: [amirbasuti.github.io](https://amirbasuti.github.io/).
 
 - **Research:** selected papers, case studies, education and research interests.
 - **Engineering:** backend/data/interface work and an interactive, sourced public-data example.
 - **SHL and FoG case studies:** continuous scroll-driven schematic journeys, manual chapter/scrub controls and readable static content.
-- **Homepage:** a layered interactive object accompanies concrete SHL, FoG and engineering descriptions. The artwork spans separate projects; it does not imply research models were deployed into employer software.
+- **Homepage:** an academic profile with SHL, FoG and clinical-gait research. A layered interactive object accompanies these research descriptions.
+- The academic and engineering sections have separate introductions, content and motion. Only navigation links connect them; employer work is absent from the research profile, and research is absent from the engineering portfolio.
 
 The site uses static HTML, CSS, JavaScript and local assets. No build step, WebGL renderer, runtime framework, external fonts or analytics is required. Motion is event-driven, stops when it has no work, and respects reduced-motion preferences. Publish `main` from the repository root with GitHub Pages.
 
@@ -21,6 +22,6 @@ University marks identify the listed education affiliations. Unmodified source a
 
 ## Motion and content revision — October 2026
 
-The homepage, engineering demonstration and research cases use original SVG/CSS artwork and scroll-linked transformations. Layer separation, direct chapter selection and sliders offer manual exploration. Animation work is scheduled on demand and stops offscreen or when idle. Reduced-motion and compact layouts retain readable content and direct controls. Public research methods and team contributions are described explicitly; schematic graphics are not inference or benchmark results.
+The homepage, engineering demonstration and research cases use original SVG/CSS artwork and scroll-linked transformations. Layer separation, direct chapter selection and sliders offer manual exploration. Animation work is scheduled on demand and stops offscreen or when idle. Reduced-motion and compact layouts retain readable content and direct controls. Each section describes its own subject explicitly: research methods on the academic pages, professional contributions on the engineering page. Schematic graphics are not inference or benchmark results.
 
 This visual revision was reviewed in the browser and by reading the source. Automated tests and lint suites were not run for this change, as requested by the site owner.

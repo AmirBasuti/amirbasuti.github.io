@@ -51,6 +51,8 @@
 .atelier-ready .atelier-copy article{position:relative;inset:auto;grid-area:1/1}
 .atelier-facts{display:flex;flex-wrap:wrap;gap:7px 13px;font-size:10px;color:#c9bc99;margin-top:18px;line-height:1.7}
 .analysis-label{position:absolute;left:24px;right:24px;top:20px;display:flex;justify-content:space-between;gap:18px;color:#dee6d1;font-size:9px;z-index:1}.analysis-label b{font-size:8px;letter-spacing:.08em;font-weight:500}.analysis-label span{color:#d4bd89;text-align:right}.plane-analysis svg{height:78%;margin-top:20px}
+.interface-flow{display:flex;flex-direction:column;align-items:stretch;gap:4px;max-width:340px}.interface-flow span{border:1px solid #a6b59b;background:#b8c9a82e;padding:8px 12px;border-radius:6px;font-size:11px}.interface-flow b{text-align:center;font-size:10px;font-weight:400;color:#7c906e}.plane-interface .interface-title{margin-top:18px;font-size:27px}.plane-interface .interface-bottom{font-size:7px}
 .atelier-ready .atelier-copy h2{font-size:clamp(42px,4.3vw,65px)}
 @media(max-width:720px){.atelier-ready .atelier-copy h2{font-size:43px}.atelier-ready .atelier-object{margin-top:30px}.atelier-facts{font-size:9px}.hero-title{font-size:clamp(39px,9.8vw,65px)}}
 @media(max-width:720px){.analysis-label{top:14px;left:15px;right:15px;font-size:6px;gap:8px}.analysis-label b{font-size:6px}}
+@media(max-width:720px){.plane-interface .interface-title{font-size:22px;margin-block:12px 10px}.interface-flow{gap:2px}.interface-flow span{font-size:7px;padding:5px 8px}.interface-flow b{font-size:6px}.plane-interface .interface-bottom{font-size:5px;padding-top:8px}}
