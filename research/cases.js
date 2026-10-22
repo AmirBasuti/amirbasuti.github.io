@@ -76,7 +76,7 @@
       const x = 475 + i * 57, y = i % 2 ? 370 : 260;
       return `<g data-step="${i}" transform="translate(${x} ${y})"><use href="#journey-foot" transform="rotate(${i%2?88:80})" class="${i>3&&i<8?'journey-foot interruption':'journey-foot'}"/></g>`;
     }).join('');
-    const sensors = [['LEFT ANKLE',1700,173],['RIGHT ANKLE',2025,173],['LOWER BACK',1700,413],['AFFECTED-SIDE WRIST',2025,413]].map(([name,x,y],i)=>`<g data-imu="${i}">${plate(x,y,115,94,'imu-case',17)}${plate(x+9,y+9,97,76,'imu-face',11)}<circle cx="${x+57}" cy="${y+47}" r="21" fill="none" stroke="#9daf91"/>${line(`M${x+44} ${y+47}H${x+70} M${x+57} ${y+34}V${y+60}`,'plane-chip')}${text(x+57,y+121,name,'imu-label','text-anchor="middle"')}${line(`M${x+57} ${y+(i<2?94:0)}L1933 340`,'journey-route')}</g>`).join('');
+    const sensors = [['LEFT ANKLE',1700,173],['RIGHT ANKLE',2025,173],['LOWER BACK',1700,413],['AFFECTED-SIDE WRIST',2025,413]].map(([name,x,y],i)=>`<g data-imu="${i}">${plate(x,y,115,94,'imu-case',17)}${plate(x+9,y+9,97,76,'imu-face',11)}<circle cx="${x+57}" cy="${y+47}" r="21" fill="none" stroke="#9daf91"/>${line(`M${x+44} ${y+47}H${x+70} M${x+57} ${y+34}V${y+60}`,'plane-chip')}${text(x+57,y+(i<2?-20:121),name,'imu-label','text-anchor="middle"')}${line(`M${x+57} ${y+(i<2?94:0)}L1933 340`,'journey-route')}</g>`).join('');
     const traces = Array.from({length:4},(_,i)=>signal(i,1810,289+i*34,245,true)).join('');
     const modelNames=['UniShape','MantisV2'];
     const models=modelNames.map((name,i)=>`<g data-model="${i}">${plate(2920,135+i*210,330,169)}${text(2945,176+i*210,name,'model-title')}${tokenGrid(2945,198+i*210,10,3,i)}${line(`M3250 ${219+i*210}C3330 ${219+i*210} 3330 326 3395 326`,'journey-route')}</g>`).join('');
