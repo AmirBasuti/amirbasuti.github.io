@@ -7,10 +7,24 @@
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   const compact = window.matchMedia('(max-width: 760px)');
   const shallow = window.matchMedia('(max-height: 619px) and (max-width: 760px), (max-height: 559px) and (min-width: 761px)');
+  const motionOff = () => document.documentElement.dataset.motion === 'off' || document.body?.dataset.motion === 'off';
   const stories = [];
   const line = (d, cls = 'journey-line', extra = '') => `<path class="${cls}" d="${d}" ${extra}/>`;
   const text = (x, y, value, cls = 'journey-label', extra = '') => `<text x="${x}" y="${y}" class="${cls}" ${extra}>${value}</text>`;
   const plate = (x, y, w, h, cls = 'journey-plate', rx = 18) => `<rect class="${cls}" x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}"/>`;
+  const namespaceSvg = (svg, prefix) => {
+    const ids = new Map();
+    const nodes = [svg,...svg.querySelectorAll('*')];
+    nodes.filter(node=>node.hasAttribute('id')).forEach((node) => { const id = node.id; ids.set(id, `${prefix}-${id}`); node.id = ids.get(id); });
+    nodes.forEach((node) => {
+      [...node.attributes].forEach((attribute) => {
+        let value = attribute.value.replace(/url\(\s*['"]?#([^\s)'"#]+)['"]?\s*\)/g, (match, id) => ids.has(id) ? `url(#${ids.get(id)})` : match);
+        if (['href','xlink:href'].includes(attribute.name) && value.startsWith('#') && ids.has(value.slice(1))) value = `#${ids.get(value.slice(1))}`;
+        if (['aria-labelledby','aria-describedby'].includes(attribute.name)) value = value.split(/\s+/).map(id => ids.get(id) || id).join(' ');
+        if (value !== attribute.value) node.setAttribute(attribute.name, value);
+      });
+    });
+  };
   const signal = (channel, x, y, width, fog = false) => {
     let d = '';
     for (let i = 0; i <= 110; i++) {
@@ -92,15 +106,49 @@
       ${plate(4075,130,530,402)}${text(4108,178,'A DECISION FOR EACH WINDOW','journey-kicker')}${blocks}${line('M4108 400H4547','gait-guide')}${text(4108,435,'non-FoG','journey-label')}${text(4350,435,'FoG','window-label')}${text(4108,494,'ILLUSTRATIVE LABELS / OFFLINE ANALYSIS','journey-kicker')}`;
   }
 
-  document.querySelectorAll('[data-case-story]').forEach((lab) => {
+  // Clinical method: current P072 supervisor manuscript, 12 October 2026,
+  // Methods lines 70–88. NuTime is frozen; the participant classifier is supervised.
+  // Source: projects/clinical_gait/papers/spmb2026/
+  // submission_candidate_20261012_supervisor/P072_revised_manuscript.tex.
+  function clinicalWorld() {
+    const placements = ['HEAD','LOWER BACK','LEFT FOOT','RIGHT FOOT'].map((name,i)=>`<g transform="translate(1040 ${173+i*78})">${plate(-16,-18,32,36,'imu-case',7)}<circle r="5" fill="#c9b582"/>${text(-32,5,name,'imu-label','text-anchor="end"')}</g>`).join('');
+    const phaseBands = [
+      `<g data-clinical-phase="0">${text(490,508,'FULL','journey-kicker')}${plate(590,493,465,20,'output-bar',3)}</g>`,
+      `<g data-clinical-phase="1">${text(490,548,'STRAIGHT','journey-kicker')}${plate(590,533,175,20,'output-bar',3)}${plate(880,533,175,20,'output-bar',3)}</g>`,
+      `<g data-clinical-phase="2">${text(490,588,'TURN','journey-kicker')}${plate(765,573,115,20,'output-selected',3)}</g>`
+    ].join('');
+    const channelTraces=Array.from({length:6},(_,i)=>signal(i,1665,231+i*35,205)).join('');
+    const windows=Array.from({length:3},(_,i)=>`<g data-clinical-window="${i}" transform="translate(${i*36} ${i*112})">${plate(2895,145,219,95)}${text(2913,172,`WINDOW ${i+1}`,'journey-kicker')}${tokenGrid(2913,189,7,1,i)}</g>`).join('');
+    const summaries=['MEAN','MAXIMUM','MINIMUM','STD. DEVIATION'].map((name,i)=>`<g data-summary="${i}">${plate(3225,141+i*100,220,73,'attention-plate',12)}${text(3245,170+i*100,name,'journey-kicker')}${line(`M3245 ${189+i*100}H3424`,'plane-chip')}${line(`M3190 326C3208 326 3208 ${178+i*100} 3225 ${178+i*100}`,'journey-route')}${line(`M3445 ${178+i*100}C3490 ${178+i*100} 3490 326 3530 326`,'journey-route')}</g>`).join('');
+    const targets=[['2 CLASSES','Healthy / pathological'],['3 CLASSES','Healthy / orthopedic / neurological'],['8 COHORTS','Source cohort labels']].map(([name,detail],i)=>`<g data-clinical-target="${i}">${plate(4350,140+i*155,290,114)}${text(4372,180+i*155,name,'model-title')}${text(4372,215+i*155,detail,'imu-label')}${line(`M4300 350H4320V${197+i*155}H4350`,'journey-route')}${line(`M4300 350H4320V${197+i*155}H4350`,'journey-draw',`pathLength="1" data-clinical-branch="${i}"`)}</g>`).join('');
+    return `${text(490,100,'COMPARE THREE VIEWS OF A TRIAL','journey-kicker')}
+      ${line('M560 425V235C560 128 805 128 805 235V425','journey-route','data-clinical-track')}
+      ${line('M560 425V235C560 128 805 128 805 235V425','journey-draw','pathLength="1" data-clinical-route')}
+      ${line('M552 300L560 286 568 300 M797 348L805 362 813 348','plane-chip')}
+      <g data-clinical-marker><circle r="11" class="fusion-point"/><circle r="4" fill="#d5c28e"/></g>
+      ${text(490,452,'PRE-TURN','journey-kicker')}${text(725,452,'POST-TURN','journey-kicker')}${text(682,138,'U-TURN','journey-kicker','text-anchor="middle"')}${placements}${phaseBands}
+      ${line('M1090 330C1270 330 1450 330 1620 330','journey-route')}${line('M1090 330C1270 330 1450 330 1620 330','journey-draw','pathLength="1" data-draw="0"')}
+      ${text(1665,164,'24 CHANNELS / ENCODED INDEPENDENTLY','journey-kicker')}${channelTraces}
+      ${line('M1870 330H1910','journey-route')}${plate(1910,190,320,290)}${text(1940,239,'NuTime Base','model-title')}${text(1940,269,'FROZEN ENCODER','journey-kicker')}${tokenGrid(1940,301,10,4,3)}${text(1940,448,'128-D CLS / channel','journey-label')}
+      ${text(1665,532,'200 samples → 208 with padding','journey-label')}${text(1665,564,'Two-second windows / one-second stride','journey-kicker')}
+      ${line('M2230 330C2440 330 2680 326 2860 326','journey-route')}${line('M2230 330C2440 330 2680 326 2860 326','journey-draw','pathLength="1" data-draw="1"')}
+      ${text(2895,105,'POOL WITHIN EACH PARTICIPANT','journey-kicker')}${windows}${line('M3170 193H3190V417 M3170 305H3190 M3170 417H3190','journey-route')}${summaries}<circle cx="3530" cy="326" r="21" class="fusion-point"/>${text(3530,333,'1','fusion-symbol','text-anchor="middle"')}${text(2895,555,'Windows across eligible trials','journey-label')}${text(2895,585,'Mean, maximum, minimum and standard deviation','journey-kicker')}
+      ${line('M3551 326C3720 326 3890 350 4070 350','journey-route')}${line('M3551 326C3720 326 3890 350 4070 350','journey-draw','pathLength="1" data-draw="2"')}
+      ${text(4080,104,'ONE PREDICTION PER PARTICIPANT / TARGET','journey-kicker')}${plate(4080,240,220,218,'attention-plate',18)}${text(4110,290,'Logistic','model-title')}${text(4110,323,'regression','model-title')}${text(4110,374,'SUPERVISED HEAD','journey-kicker')}${text(4110,407,'Balanced L2','journey-label')}${targets}${text(4080,608,'SCHEMATIC / INTERNAL PARTICIPANT-GROUPED ANALYSIS','journey-kicker')}`;
+  }
+
+  const worlds = {shl:shlWorld, fog:fogWorld, clinical:clinicalWorld};
+  document.querySelectorAll('[data-case-story]').forEach((lab, storyIndex) => {
     const type = lab.dataset.caseStory;
-    const section = lab.parentElement;
+    if (!worlds[type]) return;
+    const section = lab.closest('.project-story') || lab.parentElement;
     const notes = [...section.querySelectorAll('[data-stage-note]')];
     const buttons = [...lab.querySelectorAll('[data-stage]')];
     const range = lab.querySelector('[data-scrub]');
     const output = lab.querySelector('[data-progress]');
     const live = lab.querySelector('[data-announcement]');
     const scene = lab.querySelector('.scene');
+    if (!scene || !range || !output || !live || notes.length !== 4 || buttons.length !== 4) return;
     const oldSvg = scene.querySelector('svg');
     const track = document.createElement('div');
     track.className = 'journey-track';
@@ -108,16 +156,19 @@
     track.append(lab);
     const copy = document.createElement('div');
     copy.className = 'journey-copy';
-    copy.setAttribute('aria-hidden','true');
+    copy.setAttribute('aria-hidden',String(!lab.closest('.project-story')));
     copy.innerHTML = '<span class="journey-chapter"></span><h3></h3><p></p>';
     scene.prepend(copy);
     const svg = document.createElementNS('http://www.w3.org/2000/svg','svg');
     svg.setAttribute('viewBox','0 0 1200 680');
     svg.setAttribute('class','cinema-svg');
     svg.setAttribute('aria-hidden','true');
-    svg.innerHTML = `${commonDefs}<ellipse cx="820" cy="345" rx="430" ry="330" fill="url(#scene-aura)"/><g data-camera>${type==='shl'?shlWorld():fogWorld()}<g data-packet>${plate(-61,-43,122,86,'sample-packet',12)}${line('M-44-21L-29-27-18-12-2-24 13-17 28-28 44-20 M-44 0L-29 9-18-5-2 7 13-4 28 6 44 0 M-44 21L-29 15-18 27-2 17 13 25 28 16 44 21','packet-trace')}</g></g>`;
+    svg.innerHTML = `${commonDefs}<ellipse cx="820" cy="345" rx="430" ry="330" fill="url(#scene-aura)"/><g data-camera>${worlds[type]()}<g data-packet>${plate(-61,-43,122,86,'sample-packet',12)}${line('M-44-21L-29-27-18-12-2-24 13-17 28-28 44-20 M-44 0L-29 9-18-5-2 7 13-4 28 6 44 0 M-44 21L-29 15-18 27-2 17 13 25 28 16 44 21','packet-trace')}</g></g>`;
+    // Inline paint wins over the legacy stylesheet's unscoped url(#device-metal).
+    svg.querySelectorAll('.imu-case').forEach(node => {node.style.fill='url(#device-metal)';});
+    namespaceSvg(svg, `case-${type}-${storyIndex}`);
     scene.append(svg);
-    oldSvg.classList.add('static-overview');
+    if(oldSvg){namespaceSvg(oldSvg,`case-fallback-${type}-${storyIndex}`);oldSvg.classList.add('static-overview');}
     const resume = document.createElement('button');
     resume.type='button';resume.className='resume-scroll';resume.textContent='Follow scroll';
     resume.setAttribute('aria-label','Resume the scene at the current scroll position');
@@ -130,6 +181,16 @@
     const steps=[...svg.querySelectorAll('[data-step]')];
     const bars=[...svg.querySelectorAll('[data-output-bar]')];
     const frames=[...svg.querySelectorAll('[data-window-frame]')];
+    const tokens=[...svg.querySelectorAll('[data-token]')];
+    const clinicalTrack=svg.querySelector('[data-clinical-track]');
+    const clinicalLength=clinicalTrack?.getTotalLength() || 0;
+    const clinicalRoute=svg.querySelector('[data-clinical-route]');
+    const clinicalMarker=svg.querySelector('[data-clinical-marker]');
+    const clinicalPhases=[...svg.querySelectorAll('[data-clinical-phase]')];
+    const clinicalWindows=[...svg.querySelectorAll('[data-clinical-window]')];
+    const clinicalSummaries=[...svg.querySelectorAll('[data-summary]')];
+    const clinicalBranches=[...svg.querySelectorAll('[data-clinical-branch]')];
+    const clinicalTargets=[...svg.querySelectorAll('[data-clinical-target]')];
     let previous=-1, progress=0, manual=false, visible=true;
     const copyParts=[copy.querySelector('span'),copy.querySelector('h3'),copy.querySelector('p')];
     const render = (p, announce=false) => {
@@ -140,10 +201,10 @@
       const offset=mix(segment*1200,(segment+1)*1200,local);
       const scale=compact.matches ? .95 : mix([1.04,1,1,.99][segment],[1.04,1,1,.99][segment+1],local);
       const pivot=compact.matches?785:770;
-      svg.setAttribute('viewBox',compact.matches?'380 40 800 570':'0 0 1200 680');
+      svg.setAttribute('viewBox',compact.matches?'440 65 690 550':'0 0 1200 680');
       camera.setAttribute('transform',`translate(${pivot*(1-scale)-offset*scale} ${340*(1-scale)}) scale(${scale})`);
-      const packetStarts=type==='shl'?[1000,2255,3474]:[1130,2081,3546];
-      const packetEnds=type==='shl'?[1620,2880,4060]:[1660,2870,4060];
+      const packetStarts=type==='shl'?[1000,2255,3474]:type==='clinical'?[1090,2230,3551]:[1130,2081,3546];
+      const packetEnds=type==='shl'?[1620,2880,4060]:type==='clinical'?[1620,2860,4070]:[1660,2870,4060];
       packet.setAttribute('transform',`translate(${mix(packetStarts[segment],packetEnds[segment],local)} ${type==='shl'?345:330})`);
       packet.style.opacity=String(Math.sin(local*Math.PI)*.95);
       range.value=String(Math.round(progress*1000));
@@ -165,8 +226,8 @@
       draws.forEach((path,i)=>{path.style.strokeDashoffset=String(1-ease((progress-i/3)*3));});
       traces.forEach((path,i)=>{path.style.strokeDashoffset=String(1-ease((progress-.08)*4-i*.008));});
       frames.forEach(frame=>frame.setAttribute('transform',`translate(${mix(-55,55,ease((progress-.14)*3))} 0)`));
-      svg.querySelectorAll('[data-token]').forEach((token,i)=>{
-        const t=ease((progress-.36)*4-(i%30)*.006);
+      tokens.forEach((token,i)=>{
+        const t=ease((progress-(type==='clinical' ? .12 : .36))*4-(i%30)*.006);
         token.style.transform=`translate(${(1-t)*-30}px,${(1-t)*(i%2?12:-12)}px)`;
       });
       bars.forEach(bar=>bar.setAttribute('width',Number(bar.dataset.outputBar)*(.15+.85*ease((progress-.72)*4))));
@@ -180,9 +241,29 @@
         svg.querySelector('[data-gait-focus]').style.opacity=String(cluster);
         svg.querySelectorAll('[data-imu]').forEach((imu,i)=>imu.setAttribute('transform',`translate(${(1-ease(progress*3))*(i%2?40:-40)} ${(1-ease(progress*3))*(i<2?-25:25)})`));
       }
+      if(type==='clinical'){
+        const phase=ease(progress*5);
+        const point=clinicalTrack.getPointAtLength(clinicalLength*phase);
+        clinicalMarker.setAttribute('transform',`translate(${point.x} ${point.y})`);
+        clinicalRoute.style.strokeDashoffset=String(1-phase);
+        clinicalPhases.forEach((row,i)=>{row.style.opacity=String(.55+.45*ease(phase*3-i));});
+        const pooling=ease((progress-.43)*4);
+        clinicalWindows.forEach((window,i)=>window.setAttribute('transform',`translate(${i*36-(1-pooling)*35} ${i*112+(1-pooling)*(1-i)*35})`));
+        clinicalSummaries.forEach((summary,i)=>{summary.style.opacity=String(.35+.65*ease((progress-.45)*5-i*.07));});
+        clinicalBranches.forEach((branch,i)=>{branch.style.strokeDashoffset=String(1-ease((progress-.77)*5-i*.1));});
+        clinicalTargets.forEach((target,i)=>{target.style.opacity=String(.45+.55*ease((progress-.75)*5-i*.1));});
+      }
       if(announce)live.textContent=`${buttons[index].dataset.title}. ${notes[index].querySelector('p').textContent}`;
     };
-    const manualRender=(p,announce=false)=>{manual=true;lab.classList.add('is-manual');render(p,announce);};
+    const staticMode=()=>motionOff()||reduced.matches||shallow.matches||getComputedStyle(lab).position!=='sticky';
+    const manualRender=(p,announce=false)=>{
+      manual=true;lab.classList.add('is-manual');render(p,announce);
+      // A stage selected near the end of its track should remain a complete view.
+      if(announce && !staticMode()){
+        const delta=lab.getBoundingClientRect().top-stickyOffset();
+        if(Math.abs(delta)>2)window.scrollBy({top:delta,behavior:'smooth'});
+      }
+    };
     buttons.forEach((button,index)=>{
       button.addEventListener('click',()=>manualRender(index/3,true));
       button.addEventListener('keydown',event=>{
@@ -193,28 +274,52 @@
       });
     });
     range.addEventListener('input',()=>manualRender(Number(range.value)/1000));
-    range.addEventListener('change',()=>render(Number(range.value)/1000,true));
+    range.addEventListener('change',()=>manualRender(Number(range.value)/1000,true));
+    const stickyOffset=()=>{
+      const styles=getComputedStyle(lab);
+      const actualTop=Number.parseFloat(styles.top);
+      if(Number.isFinite(actualTop))return Math.max(0,actualTop);
+      const declared=lab.dataset.stickyOffset ?? (styles.getPropertyValue('--story-sticky-offset').trim() || styles.getPropertyValue('--sticky-offset').trim() || styles.top);
+      return Math.max(0,Number.parseFloat(declared)||0);
+    };
     const update=()=>{
-      if(manual||reduced.matches||shallow.matches||!visible)return;
+      if(manual||staticMode()||!visible)return;
       const box=track.getBoundingClientRect();
       const travel=track.offsetHeight-lab.offsetHeight;
-      render(travel>0?-box.top/travel:0);
+      render(travel>0?(stickyOffset()-box.top)/travel:0);
     };
-    resume.addEventListener('click',()=>{manual=false;lab.classList.remove('is-manual');if(reduced.matches||shallow.matches)render(0,true);else update();});
+    const syncMotion=()=>{
+      // Remove our state class before reading base layout, so paused CSS cannot
+      // keep the scene locked after motion is enabled or the viewport grows.
+      lab.classList.remove('is-motion-paused');
+      const paused=staticMode();
+      lab.classList.toggle('is-motion-paused',paused);
+      resume.style.display=paused?'none':'';
+      if(paused)render(Math.round(progress*3)/3);else update();
+    };
+    resume.addEventListener('click',()=>{manual=false;lab.classList.remove('is-manual');if(staticMode())render(Math.round(progress*3)/3,true);else update();});
     lab.classList.add('enhanced');section.classList.add('cinematic-case');
     render(0);
+    syncMotion();
     if('IntersectionObserver' in window){
       new IntersectionObserver(([entry])=>{visible=entry.isIntersecting;if(visible)update();},{rootMargin:'120px'}).observe(track);
     }
-    stories.push({update,refresh:()=>{render(progress);update();}});
+    stories.push({update,syncMotion,refresh:()=>{render(progress);syncMotion();}});
   });
 
   // At most one frame for a scroll/resize event. There is no idle animation loop.
   let pending=false;
+  let refreshPending=false;
   const requestUpdate=(refresh=false)=>{
+    if(motionOff()&&!refresh)return;
+    refreshPending=refreshPending||refresh;
     if(pending)return;pending=true;
-    requestAnimationFrame(()=>{pending=false;stories.forEach(story=>refresh?story.refresh():story.update());});
+    requestAnimationFrame(()=>{pending=false;const shouldRefresh=refreshPending;refreshPending=false;stories.forEach(story=>shouldRefresh?story.refresh():story.update());});
   };
+  const motionObserver=new MutationObserver(()=>stories.forEach(story=>story.syncMotion()));
+  const motionAttributes={attributes:true,attributeFilter:['data-motion']};
+  motionObserver.observe(document.documentElement,motionAttributes);
+  if(document.body)motionObserver.observe(document.body,motionAttributes);
   window.addEventListener('scroll',()=>requestUpdate(),{passive:true});
   window.addEventListener('resize',()=>requestUpdate(true),{passive:true});
   reduced.addEventListener?.('change',()=>requestUpdate(true));

@@ -138,3 +138,129 @@
   configure();
   window.addEventListener('load', () => { if (enabled) { measure(); requestPaint(); } }, { once: true });
 })();
+
+// These diagrams explain individual contributions; all records are illustrative.
+// A single scheduled frame serves visible cards, and nothing runs while idle.
+(() => {
+  'use strict';
+  const figures = [...document.querySelectorAll('[data-engineering-case]')];
+  if (!figures.length) return;
+  const motion = window.matchMedia('(min-width: 900px) and (prefers-reduced-motion: no-preference)');
+  const clamp = value => Math.max(0, Math.min(1, value));
+  const smooth = (a, b, value) => { const t = clamp((value - a) / (b - a)); return t * t * (3 - 2 * t); };
+  let frame = 0;
+  const cases = figures.map(figure => ({
+    figure,
+    type: figure.dataset.engineeringCase,
+    slider: figure.querySelector('[data-case-progress]'),
+    pause: figure.querySelector('[data-case-pause]'),
+    status: figure.querySelector('[data-case-status]'),
+    visible: false,
+    manual: false,
+    progress: 1,
+    lastLabel: '',
+    nodes: Object.fromEntries([...figure.querySelectorAll('[data-reconnect-route],[data-reconnect-fault],[data-reconnect-packet],[data-history-older],[data-history-window],[data-history-lens],[data-history-coarse],[data-history-fine],[data-migration-transfer],[data-migration-check]')].map(node => {
+      const attribute = [...node.attributes].find(attr => attr.name.startsWith('data-'));
+      return [attribute.name.replace('data-', ''), node];
+    }))
+  }));
+
+  function paint(item, value) {
+    const p = clamp(value), n = item.nodes;
+    let label = '';
+    item.progress = p;
+    if (item.type === 'reconnect') {
+      const recovering = p >= .28 && p < .78;
+      const route = smooth(.42, .78, p);
+      n['reconnect-route'].style.strokeDashoffset = String(1 - route);
+      n['reconnect-fault'].setAttribute('opacity', String(smooth(.23, .32, p) * (1 - smooth(.52, .66, p))));
+      let x, y;
+      if (p < .28) { x = 148 + 65 * (p / .28); y = 130; }
+      else if (p < .42) { x = 280; y = 179; }
+      else if (p < .78) {
+        const t = (p - .42) / .36;
+        if (t < .2) { x = 280; y = 179 + 68 * t / .2; }
+        else if (t < .8) { x = 280 - 195 * (t - .2) / .6; y = 247; }
+        else { x = 85; y = 247 - 68 * (t - .8) / .2; }
+      } else { x = 345 + 62 * (p - .78) / .22; y = 130; }
+      n['reconnect-packet'].setAttribute('cx', x.toFixed(2));
+      n['reconnect-packet'].setAttribute('cy', y.toFixed(2));
+      n['reconnect-packet'].setAttribute('opacity', recovering && p < .42 ? '.35' : '1');
+      label = p < .28 ? 'Read responses' : p < .42 ? 'Timeout detected' : p < .78 ? 'Clean up & reconnect' : 'Resume reading';
+    } else if (item.type === 'history') {
+      const zoom = smooth(.06, .48, p), pan = smooth(.50, .96, p);
+      const width = 345 - 195 * zoom;
+      const x = 162 + 106 * zoom - 227 * pan;
+      n['history-window'].setAttribute('x', x.toFixed(2));
+      n['history-window'].setAttribute('width', width.toFixed(2));
+      n['history-lens'].setAttribute('d', `M${x.toFixed(2)} 143L65 197M${(x + width).toFixed(2)} 143L495 197`);
+      n['history-fine'].setAttribute('opacity', zoom.toFixed(3));
+      n['history-coarse'].setAttribute('opacity', (1 - zoom).toFixed(3));
+      n['history-older'].setAttribute('opacity', smooth(.57, .89, p).toFixed(3));
+      label = p < .18 ? 'Broad time range' : p < .50 ? 'Request finer detail' : p < .9 ? 'Retrieve older history' : 'Earlier history loaded';
+    } else if (item.type === 'migration') {
+      const transfer = smooth(.12, .78, p);
+      const x = 148 + 264 * transfer;
+      const y = 75 - 40 * Math.sin(transfer * Math.PI);
+      n['migration-transfer'].setAttribute('transform', `translate(${x.toFixed(2)} ${y.toFixed(2)})`);
+      n['migration-check'].style.strokeDashoffset = String(1 - smooth(.78, .98, p));
+      label = p < .25 ? 'Read decimal value' : p < .68 ? 'Apply schema change' : p < .88 ? 'Keep a typed contract' : 'Value preserved';
+    }
+    item.slider.value = String(Math.round(p * 100));
+    item.slider.setAttribute('aria-valuetext', `${Math.round(p * 100)} percent. ${label}`);
+    if (label !== item.lastLabel) { item.status.textContent = label; item.lastLabel = label; }
+  }
+  function setManual(item, manual) {
+    item.manual = manual;
+    item.pause.textContent = manual ? 'Follow scroll' : 'Pause scroll';
+    item.pause.setAttribute('aria-pressed', String(manual));
+  }
+  function schedule() {
+    if (frame || !motion.matches || document.hidden || !cases.some(item => item.visible && !item.manual)) return;
+    frame = requestAnimationFrame(() => {
+      frame = 0;
+      if (!motion.matches || document.hidden) return;
+      cases.forEach(item => {
+        if (!item.visible || item.manual) return;
+        const top = item.figure.getBoundingClientRect().top;
+        paint(item, (window.innerHeight * .87 - top) / (window.innerHeight * .7));
+      });
+    });
+  }
+  function configure() {
+    if (frame) cancelAnimationFrame(frame);
+    frame = 0;
+    cases.forEach(item => {
+      item.figure.classList.toggle('case-motion-ready', motion.matches);
+      if (!motion.matches) { setManual(item, false); paint(item, 1); }
+    });
+    schedule();
+  }
+  cases.forEach(item => {
+    item.slider.addEventListener('input', () => {
+      setManual(item, true);
+      paint(item, Number(item.slider.value) / 100);
+    });
+    item.pause.addEventListener('click', () => { setManual(item, !item.manual); schedule(); });
+  });
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        const item = cases.find(candidate => candidate.figure === entry.target);
+        if (item) item.visible = entry.isIntersecting;
+      });
+      schedule();
+    }, { rootMargin: '40px 0px' });
+    cases.forEach(item => observer.observe(item.figure));
+  } else {
+    cases.forEach(item => { item.visible = true; });
+  }
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', schedule, { passive: true });
+  motion.addEventListener('change', configure);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && frame) { cancelAnimationFrame(frame); frame = 0; }
+    else schedule();
+  });
+  configure();
+})();

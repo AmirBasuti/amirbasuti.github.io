@@ -10,8 +10,8 @@
   <meta name="description" content="A research case study in frozen time-series models, smartphone IMU signals and weighted probability fusion. SHL 2026, team UT-IR.">
   <link rel="canonical" href="https://amirbasuti.github.io/research/shl/">
   <link rel="icon" type="image/svg+xml" href="../../mark.svg">
-  <link rel="stylesheet" href="../cases.css?v=20261022b">
-  <script defer src="../cases.js?v=20261022b"></script>
+  <link rel="stylesheet" href="../cases.css?v=20261022e">
+  <script defer src="../cases.js?v=20261022e"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -69,9 +69,9 @@
             <text class="svg-small" x="59" y="336">Selected window: 5 s / 500 samples</text>
             <path class="flow-line" d="M455 200H490V115H540 M490 200H540 M490 200V285H540"/>
             <path class="flow-active" data-flow d="M455 200H490V115H540"/><path class="flow-active" data-flow d="M455 200H540"/><path class="flow-active" data-flow d="M455 200H490V285H540"/>
-            <g><rect class="node" data-focus="2" x="540" y="80" width="176" height="70" rx="4"/><text class="node-label" x="558" y="109">NuTime</text><text class="node-sub" x="558" y="133">Frozen classifier</text><text class="node-sub" x="696" y="110" text-anchor="end">.54</text></g>
-            <g><rect class="node" data-focus="2" x="540" y="165" width="176" height="70" rx="4"/><text class="node-label" x="558" y="194">MantisV2</text><text class="node-sub" x="558" y="218">Frozen classifier</text><text class="node-sub" x="696" y="195" text-anchor="end">.29</text></g>
-            <g><rect class="node" data-focus="2" x="540" y="250" width="176" height="70" rx="4"/><text class="node-label" x="558" y="279">TiRex</text><text class="node-sub" x="558" y="303">Frozen classifier</text><text class="node-sub" x="696" y="280" text-anchor="end">.17</text></g>
+            <g><rect class="node" data-focus="2" x="540" y="80" width="176" height="70" rx="4"/><text class="node-label" x="558" y="109">NuTime</text><text class="node-sub" x="558" y="133">Frozen representation</text><text class="node-sub" x="696" y="110" text-anchor="end">.54</text></g>
+            <g><rect class="node" data-focus="2" x="540" y="165" width="176" height="70" rx="4"/><text class="node-label" x="558" y="194">MantisV2</text><text class="node-sub" x="558" y="218">Frozen representation</text><text class="node-sub" x="696" y="195" text-anchor="end">.29</text></g>
+            <g><rect class="node" data-focus="2" x="540" y="250" width="176" height="70" rx="4"/><text class="node-label" x="558" y="279">TiRex</text><text class="node-sub" x="558" y="303">Frozen representation</text><text class="node-sub" x="696" y="280" text-anchor="end">.17</text></g>
             <path class="flow-line" d="M716 115H755V200H789 M716 200H789 M716 285H755V200 M852 237V375"/>
             <path class="flow-active" data-flow d="M716 115H755V200H789 M716 200H789 M716 285H755V200"/>
             <rect class="node" data-focus="2" x="789" y="164" width="126" height="73" rx="4"/><text class="node-label" x="852" y="193" text-anchor="middle">Weighted</text><text class="node-sub" x="852" y="216" text-anchor="middle">probabilities</text>
@@ -87,7 +87,7 @@
         <div class="scrub-row"><label for="shl-progress">Explore the flow</label><input id="shl-progress" data-scrub type="range" min="0" max="1000" value="120" aria-describedby="shl-control-help"><output data-progress for="shl-progress">01 / 04</output></div>
         <p id="shl-control-help" class="visually-hidden control-help">Scroll to travel through the scene, or use the slider and stage buttons. Arrow keys move the slider; left and right arrows move between stage buttons. Manual controls hold your chosen view. Select Follow scroll to reconnect it to the page. With reduced motion, use the controls to choose each scene.</p>
         <p class="visually-hidden" data-announcement role="status" aria-live="polite" aria-atomic="true"></p>
-        <div class="lab-caption"><p>Phone, traces and output bars illustrate the method; they are not recorded data or model predictions.</p><p class="js-instruction">Scroll or use the stages · no model runs in this page</p></div>
+        <div class="lab-caption"><p>Phone, traces and output bars illustrate the method; they are not recorded data or model predictions.</p><p class="js-instruction">Scroll or select a stage</p></div>
       </div>
       <div class="stage-notes">
         <article class="stage-note is-current" id="shl-stage-0" data-stage-note><span class="stage-number">01 / MEASURE</span><h3>Nine sensor channels.</h3><p>Acceleration, rotation and the magnetic field, each along three axes: nine channels describing the phone’s movement.</p></article>
