@@ -56,7 +56,9 @@ function paint(now) {
     item.visual.classList.toggle('chapter-visual-ready', enhanced);
     if (!enhanced) show(item, 1);
     else {
-      if (rect.top <= height * .5 && rect.bottom > height * .5) candidate = item;
+      // Reveal an arriving view while it is already readable, rather than
+      // leaving half a viewport empty waiting for its track's midpoint.
+      if (rect.top <= height * .82 && rect.bottom > height * .18) candidate = item;
       if (item !== active) show(item, 0);
     }
   });

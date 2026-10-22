@@ -54,6 +54,12 @@ function layout() {
   intros.forEach(item => {
     const fits = item.panels.every(panel => panel.scrollHeight <= innerHeight + 3);
     setEnhanced(item, motionAllowed() && roomy.matches && fits);
+    // Let the next section occupy only the unused tail below the intro's
+    // last line. Keep the name/intro timing and all visible copy untouched.
+    const bounds = item.content.getBoundingClientRect();
+    const bottom = Math.max(0, ...[...item.content.children].map(child => child.getBoundingClientRect().bottom - bounds.top));
+    const trim = item.copy ? Math.min(innerHeight * .28, Math.max(0, bounds.height - bottom - 48)) : 0;
+    item.element.style.setProperty('--focus-exit-trim', `${Math.round(trim)}px`);
   });
   chapters.forEach(chapter => {
     chapter.classList.toggle('focus-chapter-ready', motionAllowed());

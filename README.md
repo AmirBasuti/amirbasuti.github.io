@@ -47,3 +47,9 @@ Explicit initial anchors are resolved after startup track layout, unless the rea
 
 
 Mobile review covers browser viewports320×740,390×844,430×932,844×390 and667×375. The manual research-scene panel anchors to the entire controls row so it stays within narrow screens. Scene counters initialize from the selected article before any scrolling. Homepage navigation has44px touch targets. Short landscape scenes use a compact two-column composition with the full figure and controls visible; research-case scene anchors cancel the30px reading offset so viewport controls are not cropped. Visual/browser review also covered papers/contact, chapter handoff, paused motion and the engineering observation slider. This is viewport verification, not physical-device or Safari certification.
+
+## Scroll spacing correction — October 22, 2026
+
+Project and engineering introductions now use their content height with one spacing owner, rather than reserving an entire viewport plus nested intro padding. Incoming chapter scenes reveal when entering the readable viewport instead of waiting until the track midpoint. The identity-to-introduction sequence retains its timing; only the measured unused tail beneath the introduction's last line is reclaimed, capped at28% of viewport height with48px clearance. Non-pinned introductions use natural content height.
+
+Browser visual review covered desktop1536×950 and1600×1100, plus390×844 mobile. The previously empty clinical intro now leads directly into its visible visualization (302px intro at1100px viewport height), and the mobile FoG intro occupies441px rather than a full viewport. The approved character, phone, signal geometry, model assets, research claims and motion track durations are unchanged. No automated tests/build/lint were run, as requested.

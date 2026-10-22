@@ -12,7 +12,7 @@
 [data-focus-intro] .focus-work-title{font-size:clamp(50px,6.7vw,94px);font-weight:470;line-height:1.04;letter-spacing:-.065em;margin:0 0 40px}
 [data-focus-intro] .focus-work-title em{font-style:normal;color:#9eb3a4}
 [data-focus-intro] .hero-caption{margin-top:50px}
-.focus-intro-ready .focus-intro-track{height:230vh;height:230svh}
+.focus-intro-ready .focus-intro-track{height:230vh;height:230svh;margin-bottom:calc(-1 * var(--focus-exit-trim,0px))}
 .focus-intro-ready .focus-intro-sticky{position:sticky!important;top:0;height:100vh;height:100svh;display:grid;isolation:isolate}
 .focus-intro-ready .focus-intro-panel{grid-area:1/1;align-self:stretch;min-width:0}
 .focus-intro-ready .focus-intro-panel[inert]{pointer-events:none}
@@ -20,8 +20,11 @@
 /* Optional overlay header keeps the identity at the top of the first viewport. */
 [data-focus-header]{position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:10}
 /* Apply to intro wrappers only; scene controls, evidence and reading links keep their own layout. */
-[data-focus-chapter]{min-height:100vh;min-height:100svh;display:grid;align-content:center;padding-block:clamp(70px,10svh,140px);box-sizing:border-box}
+[data-focus-chapter]{display:grid;align-content:center;padding-block:clamp(48px,6svh,80px);box-sizing:border-box}
 [data-focus-chapter]>[data-focus-chapter-inner]{min-width:0;margin-block:0}
+/* One spacing owner: the old nested intro padding doubled the empty handoff. */
+.project-story [data-focus-chapter]>.project-intro{padding-block:0}
+[data-focus-intro]:not(.focus-intro-ready) [data-focus-panel="content"]{min-height:0}
 .focus-chapter-ready>[data-focus-chapter-inner]{transition:opacity .36s ease,transform .45s cubic-bezier(.2,.65,.3,1)}
 .focus-chapter-ready:not(.focus-chapter-present)>[data-focus-chapter-inner]{opacity:0;transform:translateY(16px)}
 .focus-chapter-ready.focus-chapter-present>[data-focus-chapter-inner],.focus-chapter-ready:focus-within>[data-focus-chapter-inner]{opacity:1;transform:none}
