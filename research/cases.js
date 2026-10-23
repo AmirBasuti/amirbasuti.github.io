@@ -1,4 +1,5 @@
 import { createFilmCopy } from '../film-copy.js?v=20261022h';
+import { createClinicalScene } from './clinical-scene.js?v=20261023b';
 /* A continuous schematic journey. Geometry is illustrative, never a model result. */
 (() => {
   'use strict';
@@ -178,6 +179,9 @@ import { createFilmCopy } from '../film-copy.js?v=20261022h';
     svg.querySelectorAll('.imu-case').forEach(node => {node.style.fill='url(#device-metal)';});
     namespaceSvg(svg, `case-${type}-${storyIndex}`);
     scene.append(svg);
+    // Clinical gait uses a continuous canvas scene; the SVG world stays as a fallback.
+    const canvasScene = type === 'clinical' ? createClinicalScene(scene) : null;
+    if (canvasScene) svg.style.display = 'none';
     if(oldSvg){namespaceSvg(oldSvg,`case-fallback-${type}-${storyIndex}`);oldSvg.classList.add('static-overview');}
     const resume = document.createElement('button');
     resume.type='button';resume.className='resume-scroll';resume.textContent='Follow scroll';
@@ -229,6 +233,8 @@ import { createFilmCopy } from '../film-copy.js?v=20261022h';
       range.setAttribute('aria-valuetext',`${buttons[index].dataset.title}, ${Math.round(progress*100)} percent`);
       output.textContent=`${String(index+1).padStart(2,'0')} / 04`;
       lab.style.setProperty('--journey-progress',progress);
+      // A chosen stage (button, phone layout, paused motion) shows that stage complete.
+      if(canvasScene){const step=progress*3,chosen=(manual||staticMode())&&Math.abs(step-Math.round(step))<1e-6;canvasScene.render(chosen?[.15,.47,.7,1][Math.round(step)]:progress);}
       if(previous!==index){
         buttons.forEach((button,i)=>button.setAttribute('aria-pressed',String(index===i)));
         notes.forEach((note,i)=>note.classList.toggle('is-current',index===i));

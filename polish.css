@@ -1,0 +1,74 @@
+/* October 23 refinements: header tone, opening facts, clinical framing and
+   reading-section details. Loaded last; motion geometry is unchanged. */
+
+/* Typography: balanced headings, no single-word last lines in paragraphs. */
+h1,h2,h3{text-wrap:balance}
+p{text-wrap:pretty}
+
+/* Header follows the ground beneath it. */
+.site-header{transition:background-color .35s ease,border-color .35s ease}
+.site-header .wordmark,.site-header nav a,.site-header .motion-toggle{transition:color .35s ease,background-color .35s ease}
+.site-header.is-dark{background:rgba(17,26,21,.78);border-bottom-color:rgba(237,240,231,.08)}
+.site-header.is-dark .wordmark{color:#edf0e7}
+.site-header.is-dark .wordmark span{color:#9fc4ae}
+.site-header.is-dark .wordmark .wordmark-full,.site-header.is-dark .wordmark .wordmark-short{color:#edf0e7!important}
+.site-header.is-dark nav a{color:#c3cec0}
+.site-header.is-dark nav a:hover{color:#fff}
+.site-header.is-dark .motion-toggle{background:rgba(237,240,231,.1);color:#d8e3d0}
+
+/* Opening facts: three verifiable highlights under the research introduction. */
+.hero-facts{list-style:none;margin:44px 0 0;padding:22px 0 0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px;max-width:900px;border-top:1px solid rgba(32,39,34,.13)}
+.hero-facts li{display:flex;flex-direction:column;gap:4px;min-width:0}
+.hero-facts strong{font-size:36px;line-height:1.05;font-weight:600;letter-spacing:-.04em;color:#202722;font-variant-numeric:lining-nums}
+.hero-facts span{font-size:14px;line-height:1.45;color:#3f4b3a;font-weight:500}
+.hero-facts small{font-size:12.5px;line-height:1.5;color:#6a7564}
+.focus-research-copy .hero-facts + .hero-bottom-line{margin-top:26px}
+@media(max-width:699px){
+  .hero-facts{gap:14px;margin-top:30px;padding-top:16px}
+  .hero-facts strong{font-size:26px}
+  .hero-facts span{font-size:12.5px}
+  .hero-facts small{display:none}
+}
+
+/* Clinical chapter: one continuous dark ground, softer frame edge. */
+#project-clinical .project-story .lab-caption,#project-clinical.project-story .lab-caption{background:transparent;color:#93a68f;border-top:1px solid rgba(237,240,231,.08)}
+#project-clinical .cinema-svg{-webkit-mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 160px),transparent);mask-image:linear-gradient(90deg,#000 0,#000 calc(100% - 160px),transparent)}
+#project-clinical.project-story .project-notes summary{color:#d8e3d0}
+#project-clinical.project-story .project-notes{border-color:rgba(237,240,231,.14)}
+
+/* Reading sections. */
+.experience-mark{display:none}
+
+/* Chapter stages: each research project (and the interests) opens like the
+   name: a title alone, a timed fade, then its statement, then — in place —
+   its animation. Uses the existing focus-stage controller and timing. */
+.research-section.project-stage{padding-block:0}
+.project-stage .focus-intro-panel{padding-block:96px 72px}
+.project-stage .stage-title-panel{align-items:center;text-align:center;padding-inline:24px}
+.stage-meta{font-size:13px;line-height:1.5;letter-spacing:.08em;text-transform:uppercase;margin:0 0 26px;opacity:.7}
+.stage-title{font-size:clamp(52px,7.4vw,120px);font-weight:550;line-height:1.02;letter-spacing:-.06em;margin:0;color:inherit}
+.stage-lede{font-size:clamp(28px,3.1vw,46px);line-height:1.2;letter-spacing:-.03em;font-weight:500;max-width:21em;margin:0;color:inherit}
+.stage-links{display:flex;flex-wrap:wrap;gap:4px 32px;margin-top:36px;font-size:18px}
+.stage-links a{color:#316a55;min-height:44px;display:inline-flex;align-items:center}
+.stage-links a:hover{text-decoration:underline;text-underline-offset:4px}
+#project-clinical .stage-meta{color:#b1c0ae;opacity:1}
+#project-clinical .stage-links a{color:#d8e3d0}
+.interests-stage .interest-grid{margin-top:8px}
+.project-stage.focus-intro-ready .focus-intro-track{height:200vh;height:200svh}
+/* Stacked (small, short or reduced-motion) layout: ordinary headed sections. */
+.project-stage:not(.focus-intro-ready) .focus-intro-panel{min-height:0;padding-block:72px 0}
+.project-stage:not(.focus-intro-ready) .stage-title-panel{align-items:flex-start;text-align:left;width:min(1120px,calc(100% - 40px));margin-inline:auto;padding-inline:0}
+.project-stage:not(.focus-intro-ready) .stage-statement{padding-block:22px 56px}
+.project-stage:not(.focus-intro-ready) .stage-statement>.stage-meta{display:none}
+.project-stage:not(.focus-intro-ready) .stage-title{font-size:clamp(38px,9vw,64px)}
+.project-stage:not(.focus-intro-ready) .stage-lede{font-size:clamp(21px,5.2vw,28px)}
+/* The scene after a stage is pulled up beneath it, so the stage's statement
+   fades out and the animation fades in at the same place. */
+@media(min-width:761px) and (min-height:711px){
+  .project-stage.focus-intro-ready+.shl-film.is-enhanced:not(.is-static):not(.is-fallback){margin-top:-100vh;margin-top:-100svh;background:transparent!important;pointer-events:none}
+  .project-stage.focus-intro-ready+.shl-film .shl-film-sticky:not(.chapter-visual-hidden),.project-stage.focus-intro-ready+.shl-film .shl-film-caption{pointer-events:auto}
+  .project-stage.focus-intro-ready+.journey-track{margin-top:-100vh;margin-top:-100svh;pointer-events:none}
+  .project-stage.focus-intro-ready+.journey-track .lab:not(.chapter-visual-hidden){pointer-events:auto}
+}
+/* The clinical canvas draws inside its own frame; no edge mask needed. */
+#project-clinical .clinical-canvas{-webkit-mask-image:none;mask-image:none}

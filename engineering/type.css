@@ -1,0 +1,119 @@
+/* Engineering design system — October 23, 2026. The same typeface, type ramp,
+   container and 13px floor as the academic page, in the graphite palette. */
+@font-face{font-family:"Inter";src:url("../assets/fonts/inter-latin-var.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+:root{
+  --gutter:clamp(20px,5.5vw,80px);--container:min(1200px,calc(100% - 2 * var(--gutter)));
+  --t-display:clamp(56px,11vw,168px);--t-card:clamp(44px,6.6vw,104px);--t-section:clamp(40px,4.8vw,72px);
+  --t-scene:clamp(32px,3.6vw,52px);--t-h3:clamp(21px,1.75vw,26px);--t-label:13px;
+  font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+}
+body{font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;font-feature-settings:"cv11","ss03";letter-spacing:-.006em}
+button,input,select,textarea{font-family:inherit}
+@media(min-width:651px){.wrap{width:var(--container)}}
+
+/* Labels and titles. */
+.eyebrow,.stage-meta,.case-index,.work-number{font-size:var(--t-label)!important;font-weight:600;letter-spacing:.075em;text-transform:uppercase}
+[data-focus-intro] .focus-name{font-size:var(--t-display);font-weight:650;letter-spacing:-.055em;line-height:1}
+[data-focus-intro] .focus-work-title{font-size:clamp(50px,6.6vw,100px)!important;font-weight:620!important;letter-spacing:-.05em!important;line-height:1.02}
+h2,.contact h2{font-weight:640;letter-spacing:-.045em}
+.experience h2,.projects h2,.contact h2{font-size:var(--t-section)!important;line-height:1.03}
+.sequence-copy h3{font-size:var(--t-scene)!important;font-weight:620!important;letter-spacing:-.04em!important;line-height:1.06!important}
+.work-row .case-copy h3,.work-row h3,.project-card h3{font-size:var(--t-h3)!important;font-weight:600!important;letter-spacing:-.022em!important;line-height:1.22!important}
+.mechanism-copy h4{font-size:19px;font-weight:600;letter-spacing:-.015em}
+.hero-bottom p,.sequence-copy p{font-size:18px!important;line-height:1.6!important}
+.work-row .case-copy>p,.work-row>div>p,.role>p:last-child{font-size:16.5px!important;line-height:1.65!important}
+
+/* Nothing readable below 13px. */
+footer,.work-type,.snapshot-label,.panel-label,.sequence-controls label,.trace-mechanism figcaption,.data-film-caption,.contact-links,.hero-caption{font-size:13px!important}
+.sequence-controls button,.sequence-controls summary{font-size:14px!important}
+
+/* Chapter stages, as on the academic page: title alone, then statement, then content. */
+.project-stage .focus-intro-panel{padding-block:96px 72px}
+.project-stage .stage-title-panel{align-items:center;text-align:center;padding-inline:24px}
+.stage-meta{color:#8cc4ff;margin:0 0 26px}
+.stage-title{font-size:var(--t-card);font-weight:650;letter-spacing:-.052em;line-height:1;margin:0;color:inherit}
+.stage-lede{font-size:clamp(25px,2.6vw,38px);font-weight:520;letter-spacing:-.028em;line-height:1.22;max-width:22em;margin:0;color:#e3e5ea}
+#selected-work .stage-meta{color:#0a66d8}
+#selected-work .stage-lede{color:#2b2b2e}
+.project-stage.focus-intro-ready .focus-intro-track{height:200vh;height:200svh}
+.project-stage:not(.focus-intro-ready) .focus-intro-panel{min-height:0;padding-block:64px 0}
+.project-stage:not(.focus-intro-ready) .stage-title-panel{align-items:flex-start;text-align:left;padding-inline:0}
+.project-stage:not(.focus-intro-ready) .stage-statement{padding-block:20px 48px}
+.project-stage:not(.focus-intro-ready) .stage-statement>.stage-meta{display:none}
+.project-stage:not(.focus-intro-ready) .stage-title{font-size:clamp(36px,8.5vw,60px)}
+.project-stage:not(.focus-intro-ready) .stage-lede{font-size:clamp(20px,5vw,26px)}
+.data-film{border-top:0;padding-top:0}
+/* The chart is pulled up beneath its stage and takes over in place. */
+@media(min-width:960px) and (min-height:760px){
+  .data-film.sequence-ready .project-stage.focus-intro-ready+.data-film-track{margin-top:-100vh;margin-top:-100svh;pointer-events:none}
+  .data-film.sequence-ready .project-stage.focus-intro-ready+.data-film-track .data-film-sticky:not(.chapter-visual-hidden){pointer-events:auto}
+}
+
+/* Independent projects: three honest repository cards on graphite. */
+.projects{padding-top:120px}
+.projects .section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:48px;margin-bottom:44px}
+.projects .section-intro{max-width:36ch;margin:0;font-size:16.5px;line-height:1.6;color:#c9ccd3}
+.project-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.project-card{display:flex;flex-direction:column;gap:12px;padding:26px 26px 22px;border-radius:22px;background:linear-gradient(180deg,#1a1d23,#131519);border:1px solid rgba(255,255,255,.08);transition:transform .35s cubic-bezier(.2,.7,.2,1),border-color .35s}
+.project-card:hover{transform:translateY(-3px);border-color:rgba(77,163,255,.35)}
+.project-top{display:flex;flex-wrap:wrap;gap:6px}
+.project-lang{font-size:12.5px;font-weight:550;color:#8cc4ff;padding:4px 10px;border-radius:999px;background:rgba(77,163,255,.1)}
+.project-card h3{margin:6px 0 0;color:#f5f5f7}
+.project-card p{margin:0;font-size:15.5px;line-height:1.6;color:#c9ccd3}
+.project-card .project-state{font-size:14px;color:#a1a6b0;padding-top:10px;border-top:1px solid rgba(255,255,255,.08);margin-top:auto}
+.project-link{font-size:15px;font-weight:550;color:#8cc4ff;min-height:40px;display:inline-flex;align-items:center}
+.project-link:hover{color:#fff}
+.role-honor h3{font-size:17px!important}
+@media(max-width:959px){.project-grid{grid-template-columns:1fr}.projects .section-heading{display:block}.projects .section-intro{margin-top:18px}}
+@media(max-width:650px){.projects{padding-top:80px}}
+.experience h2{font-size:clamp(34px,3.8vw,54px)!important}
+
+/* Chart card: the series name is never clipped; provenance reads as quiet print. */
+.data-film .market-controls{flex-wrap:wrap}
+.data-film .series-control select,.series-control select{max-width:none!important;width:auto;min-width:0;padding-right:28px}
+.data-film .calendar-note{font-size:13px!important;color:#8b919b}
+.data-film .data-caption{font-size:14px!important}
+
+/* Stack: tools grouped by the work they served, never a bare list. */
+.stack{padding-top:120px}
+.stack .section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:48px;margin-bottom:40px}
+.stack .section-intro{max-width:40ch;margin:0;font-size:16.5px;line-height:1.6;color:#c9ccd3}
+.stack-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1px solid rgba(255,255,255,.1)}
+.stack-group{padding:26px 28px 28px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.stack-group:not(:nth-child(3n+1)){padding-left:28px;border-left:1px solid rgba(255,255,255,.08)}
+.stack-group h3{margin:0;font-size:19px!important;font-weight:600;letter-spacing:-.015em;color:#f5f5f7}
+.stack-group p{margin:8px 0 16px;font-size:15px;line-height:1.55;color:#a1a6b0;max-width:34ch}
+.stack-group ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.stack-group li{font-size:13.5px;font-weight:550;color:#d7dbe2;padding:5px 11px;border-radius:999px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}
+.stack-group:last-child li{color:#8cc4ff;background:rgba(77,163,255,.08);border-color:rgba(77,163,255,.2)}
+@media(max-width:959px){
+  .stack .section-heading{display:block}.stack .section-intro{margin-top:18px}
+  .stack-grid{grid-template-columns:1fr 1fr}
+  .stack-group,.stack-group:not(:nth-child(3n+1)){padding:22px 20px 22px 0;border-left:0}
+  .stack-group:nth-child(2n){padding-left:20px;border-left:1px solid rgba(255,255,255,.08)}
+}
+@media(max-width:600px){
+  .stack{padding-top:80px}
+  .stack-grid{grid-template-columns:1fr}
+  .stack-group,.stack-group:nth-child(2n){padding:20px 0;border-left:0}
+}
+
+/* Scroll-driven scenes. Each interface card pins inside its own stage while
+   a runway scrolls past; the animation follows that travel, forward and back. */
+.mechanism-stage{min-width:0}
+.mechanism-runway{display:none}
+@media(prefers-reduced-motion:no-preference) and (min-height:620px){
+  .work-row.engineering-case{align-items:start}
+  .work-row.engineering-case .case-copy{padding-top:40px}
+  .mechanism-stage .trace-mechanism{position:sticky;top:max(16px,calc(50svh - 290px))}
+  .mechanism-runway{display:block;height:62vh}
+}
+@media(prefers-reduced-motion:no-preference) and (min-height:620px) and (max-width:959px){
+  .work-row.engineering-case .case-copy{padding-top:0}
+}
+/* The chart also pins on narrow screens that can hold its copy and card. */
+@media(max-width:959px) and (min-height:880px) and (prefers-reduced-motion:no-preference){
+  .data-film.sequence-ready .data-film-track{height:240svh}
+  .data-film.sequence-ready .data-film-sticky{position:sticky;top:0;min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding-block:12px}
+  .data-film.sequence-ready .data-film-copy{min-height:0}
+}

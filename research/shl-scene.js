@@ -1,5 +1,6 @@
 import * as THREE from '../vendor/three-r180/three.module.min.js';
 import { createPhone } from './phone-object.js';
+import { createOverlay } from './scene-overlay.js?v=20261023a';
 
 const clamp = n => Math.max(0, Math.min(1, n));
 const ease = (a, b, p) => { const t = clamp((p - a) / (b - a)); return t * t * (3 - 2 * t); };
@@ -47,6 +48,8 @@ export function createScene(host) {
   studioGeometry.dispose();
   studioMaterials.forEach(material => material.dispose());
 
+  const overlay = createOverlay(host);
+  const projected = new THREE.Vector3();
   const phone = createPhone(THREE);
   scene.add(phone.group);
   const N = 144;
@@ -86,6 +89,7 @@ export function createScene(host) {
     const { width, height } = host.getBoundingClientRect();
     if (width < 1 || height < 1 || disposed) return;
     renderer.setSize(width, height, false);
+    overlay.resize(width, height);
     camera.aspect = width / height;
     camera.position.z = Math.max(7.6, 5.4 / camera.aspect);
     camera.updateProjectionMatrix();
@@ -111,7 +115,9 @@ export function createScene(host) {
     ribbons.forEach((ribbon, channel) => {
       ribbon.port.copy(phone.screenPorts[channel]);
       phone.group.localToWorld(ribbon.port);
-      const stream = Math.floor(channel / 3), sub = channel % 3;
+      // Each model stream carries one channel from every sensor: all three
+      // models see the full input, so no stream stands for a single sensor.
+      const stream = channel % 3, sub = Math.floor(channel / 3);
       const alpha = ease(.13, .26, p) * (1 - ease(.94, 1, p) * .40);
       ribbon.material.opacity = alpha * (sub === 1 ? .95 : .64);
       ribbon.mesh.visible = alpha > .001;
@@ -157,6 +163,32 @@ export function createScene(host) {
       ribbon.geometry.attributes.position.needsUpdate = true;
     });
     renderer.render(scene, camera);
+    annotate(p, release, group, converge);
+  }
+  const at = (x, y) => overlay.project(projected.set(x, y, 0), camera);
+  function annotate(p, release, group, converge) {
+    overlay.clear();
+    const narrow = overlay.width < 640, size = narrow ? 11 : 13;
+    // Five-second window: the flattened ribbons are one window of nine channels.
+    const sensors = ease(.46, .52, p) * (1 - ease(.56, .62, p));
+    const a = at(-2.55, 1.42), b = at(2.55, -1.42);
+    ['Accelerometer', 'Gyroscope', 'Magnetometer'].forEach((name, g) => {
+      const left = at(-2.45, (4 - (g * 3 + 1)) * .29);
+      if (narrow || a.x < 140) overlay.text(name, Math.max(12, a.x + 10), left.y - 24, { size, color: '#3d4f40', alpha: sensors });
+      else overlay.text(name, a.x - 14, left.y, { size, color: '#3d4f40', align: 'right', alpha: sensors });
+    });
+    overlay.frame(a.x, a.y, b.x - a.x, b.y - a.y, { color: '#a08042', alpha: sensors * .9, radius: 16, fill: 'rgba(160,128,66,.04)' });
+    overlay.chip(narrow ? '5 s · 500 samples' : '5 s window · 500 samples per channel', (a.x + b.x) / 2, a.y, { size: narrow ? 11 : 12, color: '#6e5527', alpha: sensors });
+    // Three frozen-model classifiers; their probabilities are weighted and summed.
+    const models = ease(.62, .7, p) * (1 - ease(.78, .84, p));
+    [['NuTime', '0.54'], ['MantisV2', '0.29'], ['TiRex', '0.17']].forEach(([name, weight], stream) => {
+      const y = (1 - stream) * .85, left = at(-2.2, y), right = at(2.2, y);
+      if (narrow || left.x < 110) overlay.text(name, Math.max(12, left.x), left.y - 22, { size, weight: 600, color: '#1e2d22', alpha: models });
+      else overlay.text(name, left.x - 14, left.y, { size, weight: 600, color: '#1e2d22', align: 'right', alpha: models });
+      overlay.chip(`× ${weight}`, narrow ? Math.min(overlay.width - 34, right.x) : right.x + 34, right.y, { size: narrow ? 10.5 : 12, color: '#6e5527', alpha: models });
+    });
+    const top = at(2.2, 1.35);
+    if (!narrow) overlay.text('weighted probabilities', top.x + 34, top.y - 6, { size: 12, color: '#5d6b57', align: 'center', alpha: models });
   }
   function dispose() {
     if (disposed) return;
@@ -164,7 +196,7 @@ export function createScene(host) {
     phone.dispose();
     ribbons.forEach(({ geometry, material }) => { geometry.dispose(); material.dispose(); });
     shadowGeometry.dispose(); shadowMaterial.dispose(); shadowTexture.dispose();
-    environment.dispose(); renderer.dispose(); renderer.domElement.remove();
+    environment.dispose(); renderer.dispose(); renderer.domElement.remove(); overlay.dispose();
   }
   resize();
   render(lastProgress);

@@ -1,0 +1,124 @@
+/* Design system — October 23, 2026.
+   One typeface (Inter, self-hosted), one type ramp, one container and a
+   13px floor for readable text. Loaded after every other homepage sheet. */
+@font-face{font-family:"Inter";src:url("assets/fonts/inter-latin-var.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+:root{
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  --ink:#1b231e;--muted:#5a6457;--blue:#2f6650;
+  /* Type ramp (px at 1440 → 390): display, title card, section, scene, card, lede, body, small, label */
+  --t-display:clamp(56px,11vw,168px);
+  --t-card:clamp(46px,7vw,112px);
+  --t-section:clamp(42px,5.4vw,80px);
+  --t-scene:clamp(34px,3.9vw,58px);
+  --t-h3:clamp(21px,1.75vw,26px);
+  --t-lede:clamp(19px,1.45vw,21px);
+  --t-body:17px;--t-small:15px;--t-label:13px;
+  --gutter:clamp(20px,5.5vw,80px);
+  --container:min(1200px,calc(100% - 2 * var(--gutter)));
+}
+html{-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);font-feature-settings:"cv11","ss03";font-optical-sizing:auto;color:var(--ink);letter-spacing:-.006em}
+button,input,select,textarea{font-family:inherit}
+
+/* One container: header, sections and scene copy share the same left edge. */
+@media(min-width:721px){
+  .wrap,.nav-inner{width:var(--container)}
+}
+@media(min-width:761px) and (min-height:681px){
+  .shl-film-grid{width:var(--container)}
+  .project-story .journey-copy{left:max(var(--gutter),calc(50% - 600px))}
+}
+
+/* Labels: one style for eyebrows, meta lines and indices. */
+.eyebrow,.hero-eyebrow,.stage-meta,.projects-heading>span,.paper-meta>span:first-child,.stage-number,.paper-index,.interest-number,.experience-date,.education-label,.experience-place{
+  font-size:var(--t-label)!important;font-weight:600;letter-spacing:.075em;text-transform:uppercase;line-height:1.5}
+.experience-date,.education-label,.experience-place,.paper-index,.interest-number{letter-spacing:.04em;text-transform:none;font-weight:500}
+.eyebrow,.hero-eyebrow,.projects-heading>span{color:#46614c}
+
+/* Display and titles. */
+[data-focus-intro] .focus-name{font-size:var(--t-display);font-weight:650;letter-spacing:-.055em;line-height:1}
+[data-focus-intro] .focus-work-title{font-size:clamp(50px,6.6vw,100px);font-weight:620;letter-spacing:-.05em;line-height:1.02}
+.stage-title{font-size:var(--t-card);font-weight:650;letter-spacing:-.052em;line-height:1}
+.stage-lede{font-size:clamp(25px,2.7vw,40px);font-weight:520;letter-spacing:-.028em;line-height:1.2}
+.section-title,#papers-heading,.contact-section h2{font-size:var(--t-section)!important;font-weight:650!important;letter-spacing:-.048em!important;line-height:1.02!important}
+.shl-film-copy h3,.project-story .journey-copy h3{font-size:var(--t-scene)!important;font-weight:620!important;letter-spacing:-.042em!important;line-height:1.04!important}
+.paper h3,.interest h3,.experience-row h3,.education-row h3{font-size:var(--t-h3)!important;font-weight:600!important;letter-spacing:-.022em!important;line-height:1.22!important}
+.stage-note h3{font-size:19px;font-weight:600;letter-spacing:-.015em}
+
+/* Reading text. */
+.hero-intro,.focus-research-copy .hero-intro{font-size:var(--t-lede);line-height:1.6;letter-spacing:-.01em}
+.shl-film-copy p,.project-story .journey-copy p{font-size:18px!important;line-height:1.6!important;max-width:34ch}
+.interest p,.paper-description,.experience-row>div>p:last-of-type,.education-row p,.stage-note p,.contact-intro{font-size:16px!important;line-height:1.65!important}
+.authors{font-size:15px!important;line-height:1.55}
+.paper-meta .status{font-size:13px!important;font-weight:550}
+.hero-facts strong{font-weight:650;letter-spacing:-.045em}
+.hero-facts span{font-size:15px}
+.hero-facts small{font-size:13px}
+
+/* Controls, captions and small print: nothing below 13px. */
+.focus-scroll,.hero-bottom-line,.shl-film-caption,.lab-caption,.papers-note,.section-aside,.chapter-position,.paper-actions a,.paper-actions button,.contact-profiles a,.project-notes summary,.recognition a,.recognition p{font-size:max(13px,1em)}
+.focus-scroll{font-size:13px}
+.contact-section footer{font-size:13px}
+.shl-film-controls button,.shl-film-controls summary,.story-controls .stage-button{font-size:14px}
+.chapter-position{font-size:12px}
+
+@media(max-width:699px){
+  .shl-film-copy p,.project-story .journey-copy p{font-size:16px!important}
+  .interest p,.paper-description,.experience-row>div>p:last-of-type{font-size:15.5px!important}
+}
+
+/* Honors: a quiet, scannable list — year, distinction, optional source. */
+.honors-section{padding-block:104px}
+.honors-list{list-style:none;margin:44px 0 0;padding:0;border-top:1px solid rgba(32,39,34,.12)}
+.honors-list li{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:32px;align-items:baseline;padding:22px 0;border-bottom:1px solid rgba(32,39,34,.1)}
+.honor-year{font-size:var(--t-label);font-weight:600;letter-spacing:.04em;color:#46614c;font-variant-numeric:tabular-nums}
+.honors-list p{margin:0;font-size:17px;line-height:1.55;color:#4a5547;max-width:64ch}
+.honors-list strong{color:var(--ink);font-weight:600}
+.honors-list a{font-size:14px;color:var(--blue);white-space:nowrap}
+.honors-list a:hover{text-decoration:underline;text-underline-offset:4px}
+/* Teaching: named courses rather than one summary line. */
+.course-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:16px}
+.course-list li{display:grid;gap:4px}
+.course-list strong{font-size:16px;font-weight:600;color:var(--ink)}
+.course-list span{font-size:15px;line-height:1.55;color:#5f6a5c;max-width:68ch}
+@media(max-width:699px){
+  .honors-section{padding-block:72px}
+  .honors-list li{grid-template-columns:1fr;gap:6px;padding:18px 0}
+  .honors-list p{font-size:16px}
+}
+
+/* Publications: an editorial list — thumbnail, venue/status, title, authors,
+   one-line summary, the author's part, then links. No boxed cards. */
+.papers-header{align-items:flex-end;gap:48px;margin-bottom:48px}
+.papers-lede{max-width:36ch;margin:0;font-size:17px;line-height:1.55;color:#5a6457;text-align:left}
+.pub-list{border-top:1px solid rgba(32,39,34,.14)}
+.pub{display:grid;grid-template-columns:240px minmax(0,1fr);gap:48px;padding:44px 0;border-bottom:1px solid rgba(32,39,34,.12);scroll-margin-top:90px}
+.pub-thumb{display:block;border-radius:14px;overflow:hidden;aspect-ratio:3/2;align-self:start;box-shadow:0 1px 0 rgba(32,39,34,.06),0 10px 30px rgba(32,39,34,.08);transition:transform .35s cubic-bezier(.2,.7,.2,1),box-shadow .35s}
+.pub-thumb svg{display:block;width:100%;height:100%}
+.pub-thumb:hover,.pub-thumb:focus-visible{transform:translateY(-3px);box-shadow:0 1px 0 rgba(32,39,34,.06),0 16px 36px rgba(32,39,34,.14)}
+.pub-venue{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:0 0 12px;font-size:var(--t-label);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#46614c}
+.pub-status{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:550;letter-spacing:0;text-transform:none;color:#2f5a46}
+.pub-status::before{content:"";width:7px;height:7px;border-radius:50%;background:#3f8a64}
+.pub-status.is-pending{color:#7a5a1f}
+.pub-status.is-pending::before{background:#c99a3e}
+.pub h3{font-size:clamp(21px,1.75vw,26px);font-weight:600;letter-spacing:-.022em;line-height:1.25;margin:0;max-width:30em}
+.pub .authors{font-size:15px;line-height:1.55;color:#5a6457;margin:12px 0 0}
+.pub .authors strong{color:var(--ink);font-weight:600}
+.pub-summary{font-size:16.5px;line-height:1.6;color:#3e4a3c;margin:16px 0 0;max-width:62ch}
+.pub-role{display:flex;gap:12px;align-items:baseline;font-size:15px;line-height:1.55;color:#5a6457;margin:10px 0 0;max-width:66ch}
+.pub-role span{flex:none;font-size:12px;font-weight:650;letter-spacing:.06em;text-transform:uppercase;color:#46614c;padding:2px 8px;border-radius:6px;background:rgba(63,138,100,.1)}
+.pub .paper-actions{margin-top:18px;gap:6px 26px}
+.pub .paper-actions a,.pub .paper-actions .cite-button{font-size:15px;font-weight:550;color:var(--blue);min-height:40px;padding:0}
+.pub .paper-actions a:hover,.pub .paper-actions .cite-button:hover{text-decoration:underline;text-underline-offset:4px}
+.papers-note{margin-top:28px;font-size:14px;color:#6a7366}
+@media(max-width:900px){
+  .pub{grid-template-columns:180px minmax(0,1fr);gap:28px}
+}
+@media(max-width:699px){
+  .papers-header{display:block;margin-bottom:32px}
+  .papers-lede{margin-top:16px;font-size:16px}
+  .pub{grid-template-columns:1fr;gap:18px;padding:30px 0}
+  .pub-thumb{max-width:none;aspect-ratio:16/7}
+  .pub-thumb svg{object-fit:cover}
+  .pub-role{flex-direction:column;gap:6px}
+}

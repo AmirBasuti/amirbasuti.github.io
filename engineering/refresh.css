@@ -1,0 +1,117 @@
+/* Engineering refresh — October 23, 2026.
+   Neutral graphite and white with one signal-blue accent and amber highlights,
+   distinct from the academic paper/sage palette. Loaded last; layout, data,
+   motion timing and copy are owned by the earlier stylesheets and scripts. */
+:root{
+  --ink:#0a0b0d;--paper:#f5f5f7;--muted:#a1a6b0;--amber:#ffb547;--line:rgba(255,255,255,.1);
+  --e-surface:#131519;--e-surface-2:#1a1d23;--e-border:rgba(255,255,255,.08);
+  --e-text:#f5f5f7;--e-soft:#c9ccd3;--e-muted:#a1a6b0;--e-faint:#7d828c;
+  --e-blue:#4da3ff;--e-blue-soft:#8cc4ff;--e-amber:#ffb547;
+  --l-bg:#f5f5f7;--l-card:#fff;--l-text:#1d1d1f;--l-soft:#424245;--l-muted:#6e6e73;--l-line:rgba(0,0,0,.09);
+}
+body{background:var(--ink);color:var(--e-text)}
+a:hover{color:var(--e-blue-soft)}
+a:focus-visible,select:focus-visible,input:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--e-blue);outline-offset:5px}
+h1,h2,h3,p{text-wrap:balance}
+p{text-wrap:pretty}
+
+/* Header and opening. */
+.site-header{border-bottom-color:var(--e-border)}
+.wordmark span{color:var(--e-blue)}
+nav a{color:var(--e-muted)}
+nav [aria-current]{color:var(--e-text)}
+[data-focus-intro] .focus-name{font-weight:600}
+[data-focus-intro] .focus-work-title,h1{font-weight:600;letter-spacing:-.055em}
+[data-focus-intro] .focus-work-title em,h1 em{color:transparent;background:linear-gradient(90deg,#4da3ff,#7dd3fc);-webkit-background-clip:text;background-clip:text}
+.eyebrow,.hero-caption{color:var(--e-muted)}
+.eyebrow{color:var(--e-blue-soft);font-weight:600}
+.hero-bottom p{color:var(--e-soft)}
+.text-link{border-bottom-color:rgba(255,255,255,.28)}
+.hero-caption{border-top-color:var(--e-border)}
+.hero-caption span:not(:last-child){border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:6px 14px;color:var(--e-soft)}
+.hero-caption{align-items:center}
+
+/* Section headings carry the same weight as the academic profile. */
+h2,.data-film-heading h2,.sequence-copy h3,.work-row .case-copy h3,.work-row h3,.contact h2{font-weight:600;letter-spacing:-.04em}
+.section-intro,.data-film-heading>p{color:var(--e-soft)}
+
+/* Public-data chart: one framed instrument panel. */
+.data-film{border-top-color:var(--e-border)}
+.sequence-copy p{color:var(--e-soft)}
+.data-film .market-panel{background:linear-gradient(180deg,var(--e-surface-2),var(--e-surface));border:1px solid var(--e-border);border-radius:22px;padding:6px 28px 20px;box-shadow:0 30px 80px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.04)}
+.data-film .market-top{border-bottom:1px solid var(--e-border);padding:14px 0}
+.data-film .status-dot,.status-dot{background:var(--e-blue);box-shadow:0 0 0 4px rgba(77,163,255,.16)}
+.panel-label,.snapshot-label{color:var(--e-soft)}
+.snapshot-label{color:var(--e-muted)}
+.series-control label,.market-reading span,.inspection,.data-caption,.calendar-note,.source-line{color:var(--e-muted)}
+.data-caption #data-unit,.source-line a{color:var(--e-text)}
+.market-reading output,.data-film .market-reading output{color:var(--e-text);font-weight:600}
+select,.series-control select{border-bottom-color:rgba(255,255,255,.22);color:var(--e-text)}
+option{background:var(--e-surface)}
+.chart-frame text{fill:#9ba1ab}
+.inspection input,.sequence-controls input{accent-color:var(--e-blue)}
+.source-line{border-top-color:var(--e-border)}
+.data-film-caption{color:var(--e-faint)}
+.data-film .chapter-position{color:var(--e-muted)}
+.data-film .chapter-meter::before{background:var(--ink)}
+
+/* Shared scene controls (dark surfaces). */
+.sequence-controls{color:var(--e-soft)}
+.sequence-controls button{color:var(--e-text);border-bottom-color:rgba(77,163,255,.7)}
+.sequence-controls summary{color:var(--e-muted)}
+.sequence-controls label{color:var(--e-muted)}
+
+/* Contributions: a light band; each mechanism plays on its own dark screen. */
+#selected-work::before{background:var(--l-bg);box-shadow:0 0 0 100vmax var(--l-bg)}
+#selected-work{color:var(--l-text);padding-bottom:120px}
+#selected-work .eyebrow{color:#0a66d8}
+#selected-work .section-intro{color:var(--l-soft)}
+#selected-work .work-row{border-top-color:var(--l-line)}
+#selected-work .case-copy h3,#selected-work .work-row h3{color:var(--l-text)}
+#selected-work .work-row .case-copy>p,#selected-work .work-row>div>p{color:var(--l-soft)}
+#selected-work .work-row .case-copy .case-index,#selected-work .work-number{color:#0a66d8}
+#selected-work .work-row .case-copy .case-detail{color:var(--l-muted)}
+#selected-work .work-type{color:var(--l-muted)}
+#selected-work .work-row .work-tools{color:var(--l-muted)}
+#selected-work .work-row:not(.engineering-case){background:var(--l-card);border:1px solid var(--l-line);border-radius:22px;padding:34px 36px;margin-top:24px}
+#selected-work a:hover{color:#0a66d8}
+.trace-mechanism{background:radial-gradient(120% 90% at 50% 0%,#1b1f26 0%,#0e1014 60%);border-radius:26px;padding:26px 0 24px;box-shadow:0 24px 60px rgba(16,24,40,.18),0 2px 6px rgba(16,24,40,.08);color:var(--e-text);overflow:hidden}
+.trace-mechanism .trace-surface{margin-inline:4%}
+.precision-reading span{color:var(--e-amber)}
+.mechanism-copy h4{color:var(--e-text);font-weight:600}
+.mechanism-copy p{color:var(--e-muted)}
+.trace-mechanism figcaption{color:var(--e-faint)}
+.trace-mechanism .sequence-controls button{color:var(--e-text)}
+
+/* Experience: light, then contact returns to graphite. */
+.experience{position:relative;isolation:isolate;color:var(--l-text)}
+.experience::before{content:"";position:absolute;inset:0;background:#fff;box-shadow:0 0 0 100vmax #fff;clip-path:inset(0 -100vmax);z-index:-1;pointer-events:none}
+.experience .eyebrow{color:#0a66d8}
+.experience h2{color:var(--l-text)}
+.role+.role{border-top-color:var(--l-line)}
+.role h3{color:var(--l-text);font-weight:600}
+.role-top span{color:var(--l-muted)}
+.role-company{color:#0a66d8}
+.role>p:last-child{color:var(--l-soft)}
+.contact{border-top:0;padding-top:110px}
+.contact-email{border-bottom-color:rgba(255,255,255,.28)}
+.contact-email span{color:var(--e-blue)}
+.contact-links{color:var(--e-muted)}
+footer{border-top-color:var(--e-border);color:var(--e-faint)}
+
+@media(max-width:650px){
+  .data-film .market-panel{padding:4px 16px 14px;border-radius:18px}
+  .trace-mechanism{border-radius:20px;padding:20px 0 18px}
+  #selected-work .work-row:not(.engineering-case){padding:24px 20px}
+  .hero-caption span:not(:last-child){padding:5px 11px}
+}
+/* The light band itself never fades; only its content reveals. */
+.experience.reveal-ready,.experience.reveal-in{opacity:1;transform:none}
+.experience.reveal-ready>*{opacity:0;transform:translateY(22px)}
+.experience.reveal-in>*{opacity:1;transform:none;transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+@media(prefers-reduced-motion:reduce){.experience.reveal-ready>*{opacity:1;transform:none}}
+/* Interface scenes need a little more room than the earlier single traces. */
+.trace-surface{height:340px}
+.trace-rendered .precision-reading{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:959px){.trace-surface{height:320px}}
+@media(max-width:600px){.trace-surface{height:300px}}

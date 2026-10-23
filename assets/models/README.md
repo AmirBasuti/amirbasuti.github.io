@@ -64,3 +64,9 @@ recordings, clinical inertial measurements, or model predictions.
 The supporting GLTFLoader and BufferGeometryUtils are from official Three.js
 release r180, under `vendor/three-r180/LICENSE` (MIT). Their sole source edit
 changes the bare `three` imports to the matching vendored module path.
+
+## Use since 23 October 2026
+
+The model's meshes are hidden. Its skeleton and authored walking/idle clips drive the original faceless mannequin in `research/fog-scene.js`; no Quaternius geometry is visible.
+
+Since the later 23 October revision, the same hidden skeleton drives a point-light walker. A callout explains the freeze; no procedural tremble is applied.

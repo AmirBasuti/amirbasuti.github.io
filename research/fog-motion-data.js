@@ -16,16 +16,18 @@ const integral = (a, b, t) => {
  */
 export function createMotionData(model, mixer, walk, idle, bones) {
   const rate = 60, duration = 6, count = rate * duration + 1;
-  const slowStart = duration * .17 / .57;
-  const slowEnd = duration * .27 / .57;
+  // One illustrative episode: walking, shorter steps, a stop with the feet
+  // planted (the freeze), then walking again. A callout explains the freeze.
+  const freeze = [3, 5.2];
+  const freezing = t => ease(2.75, 3.1, t) * (1 - ease(5.0, 5.35, t));
   function pose(seconds) {
     const t = Math.max(0, Math.min(duration, seconds));
-    const hesitation = ease(slowStart, slowEnd, t);
-    const walkTime = t - integral(slowStart, slowEnd, t);
-    walk.setEffectiveWeight(1 - hesitation);
-    idle.setEffectiveWeight(hesitation);
+    const shorten = ease(1.6, 2.9, t) * (1 - ease(5.15, 5.8, t));
+    // Cadence briefly rises as steps shorten (festination), then walking stops.
+    const walkTime = t + .9 * (integral(1.5, 2.3, t) - integral(2.6, 3.0, t));
+    walk.setEffectiveWeight(1 - shorten);
+    idle.setEffectiveWeight(shorten);
     mixer.setTime(walkTime);
-    // Idle breathing remains actual authored animation, not a frozen mannequin.
     idle.time = (t * .55) % idle.getClip().duration;
     mixer.update(0);
     model.updateWorldMatrix(true, true);
@@ -107,5 +109,5 @@ export function createMotionData(model, mixer, walk, idle, bones) {
     return signals[sensor][a] + (signals[sensor][b] - signals[sensor][a]) * f;
   }
   pose(0);
-  return { rate, duration, root, positions, velocities, accelerations, signals, pose, readVector, signalAt };
+  return { rate, duration, freeze, freezing, root, positions, velocities, accelerations, signals, pose, readVector, signalAt };
 }

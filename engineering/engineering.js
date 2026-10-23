@@ -25,9 +25,13 @@
   const status = $('market-status'), content = $('market-content');
   const select = $('asset-select'), slider = $('date-range'), chart = $('price-chart');
   const ns = 'http://www.w3.org/2000/svg';
-  const dates = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' });
-  const shortDate = new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', timeZone: 'UTC' });
-  const numbers = new Intl.NumberFormat('en-US', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+  // Formats follow the active series: its decimals and its market time zone.
+  const zone = () => (active && active.timeZone) || 'UTC';
+  const intraday = () => active && active.points[active.points.length - 1].time - active.points[0].time < 2.5 * 864e5;
+  const dates = { format: date => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false, timeZone: zone() }).format(date) + (zone() === 'Asia/Tehran' ? ' Tehran' : ' UTC') };
+  const spanDate = { format: date => new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: zone() }).format(date) };
+  const shortDate = { format: date => new Intl.DateTimeFormat('en-GB', intraday() ? { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: zone() } : { day: 'numeric', month: 'short', timeZone: zone() }).format(date) };
+  const numbers = { format: value => new Intl.NumberFormat('en-US', { minimumFractionDigits: active?.decimals ?? 4, maximumFractionDigits: active?.decimals ?? 4 }).format(value) };
   const bounds = { left: 72, right: 965, top: 24, bottom: 300 };
   let assets = [], active = null, x = null, y = null;
 
@@ -95,7 +99,7 @@
     const grid = $('chart-grid'); grid.replaceChildren();
     for (let i = 0; i < 5; i++) {
       const value = min + (max - min) * i / 4;
-      grid.append(svgNode('line', { x1: bounds.left, x2: bounds.right, y1: y(value), y2: y(value), stroke: '#b8ccbe', 'stroke-opacity': '.1' }));
+      grid.append(svgNode('line', { x1: bounds.left, x2: bounds.right, y1: y(value), y2: y(value), stroke: '#ffffff', 'stroke-opacity': '.1' }));
       grid.append(svgNode('text', { x: bounds.left - 15, y: y(value) + 4, 'text-anchor': 'end' }, numbers.format(value)));
     }
     const dateTicks = compact ? 3 : 4;
@@ -105,7 +109,7 @@
     }
     $('chart-title').textContent = `${active.name} — historical values`;
     $('chart-description').textContent = `${points.length} observations, ${dates.format(new Date(start))} to ${dates.format(new Date(end))}. Unit: ${active.unit}. Lines connect recorded observations across calendar gaps. Use the observation slider to inspect dates and values.`;
-    $('data-span').textContent = `${points.length} observations · ${dates.format(new Date(start))} — ${dates.format(new Date(end))}`;
+    $('data-span').textContent = `${points.length} prices · ${spanDate.format(new Date(start))} — ${spanDate.format(new Date(end))}`;
     $('data-unit').textContent = active.unit;
     slider.max = String(points.length - 1);
     inspect(Number.isFinite(selectedIndex) ? selectedIndex : points.length - 1);
@@ -137,11 +141,35 @@
   }
   chart.addEventListener('pointermove', pointerInspect);
   chart.addEventListener('pointerdown', pointerInspect);
+  // Milli's public widget endpoint, read live when the browser allows it (CORS);
+  // otherwise the dated snapshot stored beside this page.
+  const LIVE = 'https://milli.gold/api/v1/public/milli-price/widget';
+  const RANGES = [['DAILY', 'Last 24 hours'], ['WEEKLY', 'Last 7 days'], ['MONTHLY', 'Last 30 days']];
+  async function readLive() {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
+    try {
+      const response = await fetch(LIVE, { credentials: 'omit', signal: controller.signal });
+      if (!response.ok) throw new Error('Live source unavailable');
+      const json = await response.json();
+      const prices = json && json.data && json.data.prices;
+      if (!prices) throw new Error('Unexpected live response');
+      return { live: true, as_of_utc: new Date().toISOString(), source_name: 'Milli public price widget', source_url: LIVE,
+        assets: RANGES.map(([key, name]) => ({ name, unit: 'IRR per milligram', decimals: 0, timeZone: 'Asia/Tehran',
+          points: (prices[key] || []).map(point => ({ date: new Date(point.timestamp).toISOString(), value: point.value })) })) };
+    } finally { clearTimeout(timer); }
+  }
+  async function readSnapshot() {
+    const response = await fetch('./milli-price.json', { credentials: 'omit' });
+    if (!response.ok) throw new Error('Snapshot unavailable');
+    const data = await response.json();
+    (data.assets || []).forEach(asset => { asset.timeZone = 'Asia/Tehran'; });
+    return data;
+  }
   async function load() {
     try {
-      const response = await fetch('./market-data.json', { credentials: 'omit' });
-      if (!response.ok) throw new Error('Snapshot unavailable');
-      const data = await response.json();
+      let data;
+      try { data = await readLive(); } catch (_) { data = await readSnapshot(); }
       if (!data || !Array.isArray(data.assets) || typeof data.source_name !== 'string' || !Number.isFinite(Date.parse(data.as_of_utc))) throw new Error('Invalid snapshot');
       const url = safeLink(data.source_url);
       assets = data.assets.map(cleanAsset).filter(Boolean);
@@ -151,7 +179,10 @@
       });
       $('data-source').textContent = data.source_name;
       $('data-source').href = url;
-      $('data-asof').textContent = `Snapshot retrieved ${dates.format(new Date(data.as_of_utc))} (UTC)`;
+      active = assets[0];
+      $('data-asof').textContent = data.live ? `Live · read ${dates.format(new Date(data.as_of_utc))}` : `Snapshot retrieved ${dates.format(new Date(data.as_of_utc))}`;
+      $('data-mode').textContent = data.live ? 'Live · public API' : 'Snapshot · not live';
+      document.querySelector('.market-panel')?.classList.toggle('is-live', !!data.live);
       status.hidden = true; content.hidden = false;
       render();
     } catch (_) {

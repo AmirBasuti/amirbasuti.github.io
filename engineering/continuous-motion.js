@@ -1,8 +1,11 @@
 import { createFilmCopy } from '../film-copy.js?v=20261022h';
-import { createObservationScene, createMechanismScene } from './continuous-scene.js?v=20261022h';
+import { createObservationScene, createMechanismScene } from './continuous-scene.js?v=20261023b';
 
 const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+// Pinned chart layout needs room; every other size still animates as the scene scrolls past.
 const scrollLayout = window.matchMedia('(min-width: 960px) and (min-height: 760px) and (prefers-reduced-motion: no-preference)');
+const motionOK = window.matchMedia('(prefers-reduced-motion: no-preference)');
+const pinLayout = window.matchMedia('(min-width: 960px) and (min-height: 760px) and (prefers-reduced-motion: no-preference), (max-width: 959px) and (min-height: 880px) and (prefers-reduced-motion: no-preference)');
 const clamp = value => Math.max(0, Math.min(1, value));
 const items = [];
 let frame = 0, lastFrame = 0;
@@ -96,12 +99,23 @@ function ensureScene(item) {
   render(item, performance.now(), true);
 }
 function scrollPosition(item) {
-  if (!scrollLayout.matches) return 1;
-  if (item.track) {
+  if (!motionOK.matches) return 1;
+  // Pinned chart: progress follows the travel of its sticky panel.
+  if (item.track && pinLayout.matches && getComputedStyle(item.sticky).position === 'sticky') {
     const travel = Math.max(1, item.track.offsetHeight - item.sticky.offsetHeight);
     return clamp(-item.track.getBoundingClientRect().top / travel);
   }
-  return clamp((window.innerHeight * .86 - item.element.getBoundingClientRect().top) / (window.innerHeight * .7));
+  // Pinned interface card: it sticks while its runway scrolls past.
+  const runway = item.element.parentElement?.querySelector('.mechanism-runway');
+  if (runway && getComputedStyle(item.element).position === 'sticky') {
+    const lane = runway.getBoundingClientRect(), card = item.element.getBoundingClientRect();
+    return clamp(1 - (lane.bottom - card.bottom) / Math.max(1, lane.height));
+  }
+  // Unpinned fallback: begin only once the artwork is fully visible.
+  const art = item.type === 'observations' ? item.element.querySelector('[data-observation-art]') || item.element : item.element;
+  const rect = art.getBoundingClientRect(), height = window.innerHeight;
+  const begin = Math.max(height * .1, height - rect.height - 8);
+  return clamp((begin - rect.top) / Math.max(height * .35, begin - height * .08));
 }
 function stage(item) {
   const p = item.progress;
@@ -138,7 +152,7 @@ function tick(now) {
     if (item.playing) {
       item.target = clamp(item.playFrom + (now - item.playStart) / item.duration);
       item.progress = item.target;
-      if (item.target >= 1) { item.playing = false; setPlayLabel(item, 'Replay the sequence'); }
+      if (item.target >= 1) { item.playing = false; item.progress = item.target = 1; setPlayLabel(item, 'Replay the sequence'); }
     } else if (!item.manual) item.target = scrollPosition(item);
     if (reduced.matches) item.progress = item.target;
     else item.progress += (item.target - item.progress) * (1 - Math.exp(-elapsed / 90));
@@ -171,7 +185,7 @@ function refreshLayout() {
     if (!item.scene) return;
     if (item.type === 'observations') item.element.classList.toggle('pipeline-enhanced', scrollLayout.matches);
     item.scene.resize?.();
-    if (!scrollLayout.matches && !item.manual) item.progress = item.target = 1;
+    if (!motionOK.matches && !item.manual) item.progress = item.target = 1;
   });
   window.dispatchEvent(new Event('engineering:layout'));
   requestFrame();
@@ -179,6 +193,8 @@ function refreshLayout() {
 window.addEventListener('scroll', requestFrame, { passive: true });
 window.addEventListener('resize', refreshLayout, { passive: true });
 scrollLayout.addEventListener('change', refreshLayout);
+pinLayout.addEventListener('change', refreshLayout);
+motionOK.addEventListener('change', refreshLayout);
 reduced.addEventListener('change', () => {
   items.forEach(item => { item.playing = false; setPlayLabel(item); });
   refreshLayout();

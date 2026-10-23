@@ -8,22 +8,27 @@ const clamp = value => Math.max(0, Math.min(1, value));
 const smooth = value => { value = clamp(value); return value * value * (3 - 2 * value); };
 const allowed = () => !preference.matches && document.documentElement.dataset.motion !== 'off' && document.body.dataset.motion !== 'off';
 
-function register(owner, visual, when = () => true) {
+function register(owner, visual, when = () => true, overlap = owner) {
   if (!owner || !visual) return;
   visual.setAttribute('data-chapter-visual', '');
-  frames.push({ owner, visual, when });
+  frames.push({ owner, visual, when, overlap });
 }
+// A scene pulled up beneath a pinned stage (negative top margin) takes over
+// only when that stage releases, so both views hand off in place.
+const lead = item => Math.max(0, -parseFloat(getComputedStyle(item.overlap).marginTop) || 0);
 document.querySelectorAll('[data-focus-intro]').forEach(intro => {
   const enhanced = () => intro.classList.contains('focus-intro-ready');
   register(intro.querySelector('.focus-intro-track'), intro.querySelector('.focus-intro-sticky'), enhanced);
   intro.querySelectorAll('[data-focus-panel]').forEach(panel => register(panel, panel, () => !enhanced()));
 });
 document.querySelectorAll('[data-focus-chapter]').forEach(chapter => register(chapter, chapter.querySelector('[data-focus-chapter-inner]')));
-document.querySelectorAll('.shl-film-track').forEach(track => register(track, track.querySelector('.shl-film-sticky')));
+document.querySelectorAll('.shl-film-track').forEach(track => register(track, track.querySelector('.shl-film-sticky'), undefined, track.closest('.shl-film') || track));
 document.querySelectorAll('.journey-track').forEach(track => register(track, track.querySelector('.lab')));
 document.querySelectorAll('.data-film-track').forEach(track => register(track, track.querySelector('.data-film-sticky')));
 document.querySelectorAll('.case-hero').forEach(hero => register(hero, hero));
-document.querySelectorAll('.method-section, .paper-section, .research-section, .papers-section, .craft-section, .contact-section, .engineering-case').forEach(section => register(section, section));
+// Long reading sections (papers, experience, method notes, contact) stay in
+// normal flow with their own one-time reveals. Hiding them during a handoff
+// left large blank areas while their text still filled the screen.
 
 // A small position cue makes pinned animation travel visible without another
 // navigation rail. Its values come from each scene's existing controller.
@@ -58,7 +63,8 @@ function paint(now) {
     else {
       // Reveal an arriving view while it is already readable, rather than
       // leaving half a viewport empty waiting for its track's midpoint.
-      if (rect.top <= height * .82 && rect.bottom > height * .18) candidate = item;
+      const overlap = lead(item);
+      if ((overlap ? rect.top + overlap <= height : rect.top <= height * .82) && rect.bottom > height * .18) candidate = item;
       if (item !== active) show(item, 0);
     }
   });
